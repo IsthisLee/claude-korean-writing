@@ -5,6 +5,10 @@
 </picture>
 
 <p align="center">
+  <strong>한국어</strong> · <a href="README.en.md">English</a>
+</p>
+
+<p align="center">
   <strong>Claude Code가 쓰는 한국어의 품질을 맡는 플러그인.</strong><br>
   처음 쓸 때 잡고, 이미 쓴 글은 다듬고, 편집은 검사합니다.
 </p>
@@ -25,6 +29,8 @@
   <a href="#검증">검증</a> ·
   <a href="#자주-묻는-질문">FAQ</a>
 </p>
+
+> **v0.2.0 (2026-09-10)**: 목적을 "Claude Code가 쓰는 한국어의 품질을 맡는다"로 다시 잡고 README를 다시 썼습니다. 영어판, 릴리스 노트, 릴리스 스크립트를 넣었습니다. 상세: [CHANGELOG.md](CHANGELOG.md)
 
 > **korean-writing은 Claude Code의 한국어 출력 품질을 맡습니다.** **"운영팀에 보낼 안내문 써줘"**라고 말하면 규칙이 스스로 로드되어 처음부터 자연스러운 한국어로 쓰고, `.md` 파일을 고치면 훅이 번역투와 AI 관용구를 잡아 알려줍니다. 원문은 어디로도 나가지 않습니다.
 
@@ -237,6 +243,23 @@ python3 hooks-handlers/test_posttooluse.py    # 회귀 28건
 3. `hooks-handlers/test_posttooluse.py`에 케이스 추가. 오탐 케이스를 먼저
 
 **어색한 문장을 발견하면 이슈로 보내 주세요.** 이 플러그인의 정답 데이터는 실제로 생성됐던 문장만 씁니다. 합성 예문보다 실제 실패 한 건이 더 값집니다.
+
+## 버전과 릴리스
+
+[SemVer](https://semver.org/lang/ko/)를 따릅니다. 버전은 `.claude-plugin/plugin.json` 한 곳에만 두고 릴리스 스크립트가 나머지에 전파합니다.
+
+| 올리는 자리 | 언제                                                                                  |
+| ----------- | ------------------------------------------------------------------------------------- |
+| 패치        | 오탐 줄이기, 문구, 문서                                                               |
+| 마이너      | 새 패턴이나 스킬, 더 많이 잡게 되는 임계 변경, 목적·구성 변경                         |
+| 메이저      | 훅이 편집을 막기 시작하는 것처럼 동작 약속이 바뀌거나, 스킬 이름이 바뀌거나 없어질 때 |
+
+릴리스 노트는 [`CHANGELOG.md`](./CHANGELOG.md)의 `[Unreleased]` 아래에 쓰고, 두 README 상단 인용구를 고친 뒤 스크립트를 돌립니다.
+
+```bash
+scripts/release.sh 0.3.0          # 테스트·validate·버전 반영·CHANGELOG·커밋·태그
+scripts/release.sh 0.3.0 --push   # 여기에 git push --follow-tags 와 GitHub 릴리스까지
+```
 
 ## 출처
 
