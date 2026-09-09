@@ -1,0 +1,45 @@
+name: 버그 신고
+description: 설치가 안 되거나, 훅이 안 돌거나, 스크립트가 죽습니다.
+title: "[버그] "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        훅이 **멀쩡한 문장을 잡은 경우**(오탐)는 이 양식이 아니라
+        [어색한 문장 제보](https://github.com/IsthisLee/claude-korean-writing/issues/new?template=awkward-sentence.yml) 를 써 주세요. 정답 데이터가 됩니다.
+
+        보안 문제는 공개 이슈 대신 [SECURITY.md](https://github.com/IsthisLee/claude-korean-writing/blob/main/SECURITY.md) 의 절차를 씁니다.
+  - type: textarea
+    id: what
+    attributes:
+      label: 무슨 일이 있었나
+      description: 기대한 동작과 실제 동작을 적습니다.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: 재현 방법
+      description: 돌린 명령을 그대로 붙입니다.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: env
+    attributes:
+      label: 환경
+      description: 아래 명령의 출력을 그대로 붙여 주세요.
+      value: |
+        $ uname -sm
+        $ bash --version | head -1
+        $ python3 --version
+        $ claude --version
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: 출력이나 오류 메시지
+      render: shell
