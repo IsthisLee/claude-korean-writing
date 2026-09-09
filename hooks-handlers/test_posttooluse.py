@@ -197,6 +197,21 @@ with open(_formal, "w", encoding="utf-8") as _f:
 expect_clean("파일 머리의 표시 (Edit 로 일부만 고칠 때)", BAD, path=_formal, tool="Edit", key="new_string")
 expect_clean("환경변수 KOREAN_WRITING_HOOK_DISABLED=1", BAD, env={"KOREAN_WRITING_HOOK_DISABLED": "1"})
 
+print("\n줄표 누적 - 이번 편집에 있으면 파일 전체 개수로 판정한다")
+_dir = tempfile.mkdtemp()
+_acc = os.path.join(_dir, "acc.md")
+with open(_acc, "w", encoding="utf-8") as _f:
+    _f.write(FILLER * 2 + "가 — 나. 다 — 라. 마 — 바.\n" + FILLER * 2 + "사 — 아.\n")
+expect_hit("파일에 3개 있고 이번 편집이 1개를 더해 4개", FILLER * 2 + "사 — 아.", "K1", path=_acc, tool="Edit", key="new_string")
+_many = os.path.join(_dir, "many.md")
+with open(_many, "w", encoding="utf-8") as _f:
+    _f.write(FILLER * 2 + "가 — 나. 다 — 라. 마 — 바. 사 — 아. 자 — 차.\n" + FILLER * 3 + "\n")
+expect_clean("파일에 5개 있어도 이번 편집에 없으면 잡지 않는다", FILLER * 3, path=_many, tool="Edit", key="new_string")
+_one = os.path.join(_dir, "one.md")
+with open(_one, "w", encoding="utf-8") as _f:
+    _f.write(FILLER * 3 + "가 — 나.\n")
+expect_clean("이번 편집 1개, 파일 전체 1개", FILLER * 3 + "가 — 나.", path=_one, tool="Edit", key="new_string")
+
 print("\n형식")
 rc, out = run("결론적으로 축은 두 개고 갈래가 셋이며 레이어도 다르다. 혁신적인 변화다.")
 if "K2" not in out or "K4" not in out:

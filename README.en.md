@@ -155,24 +155,25 @@ Edit · Write · MultiEdit finishes
   ├─ if Hangul is under 30%, keep only lines that are at least 30% Hangul     (a Korean paragraph in an English document)
   ├─ fewer than 20 Hangul characters left                                     pass
   ├─ run the K1 to K8 regular expressions
+  ├─ em-dashes: if the edit adds at least one, the whole file is counted     (they pile up paragraph by paragraph)
   └─ on a hit, print the items and how to fix them to stderr and exit 2. The file is left as is
 ```
 
-Only the part just written is checked, because checking the whole file would re-flag old wording on every edit. Table rows are dropped entirely because of this README: the bad examples in the before column of the correction table were flagged. If an edit is mostly English but contains Korean paragraphs, only those lines are checked, so em-dashes in English prose are not counted.
+Only the part just written is checked, because checking the whole file would re-flag old wording on every edit. Table rows are dropped entirely because of this README: the bad examples in the before column of the correction table were flagged. If an edit is mostly English but contains Korean paragraphs, only those lines are checked, so em-dashes in English prose are not counted. Em-dashes alone are counted over the whole file: real documents reached 34, 66 and 207 em-dashes while being edited one paragraph at a time, and counting only the edit never fired. An edit that adds none is never flagged, however many the file holds.
 
 ### Thresholds sit one notch below the rulebook
 
 The hook informs; it does not block. A check that interrupts normal work gets switched off, so where the rulebook says "at most once per document", the hook fires from the second occurrence.
 
-| Code                                            | Hook fires at                                    | Rulebook prescription                                                                                                               |
-| ----------------------------------------------- | ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
-| `K1` em-dash interjection                       | 4                                                | `SKILL.md`: at most two per document. Taxonomy J-3: one or two in internal documents                                                |
-| `K2` abstract structure words                   | 3                                                | Taxonomy D-9: the four words combined, at most twice per document                                                                   |
-| `K6` win/lose personification                   | 2                                                | Taxonomy D-8: at most once per document                                                                                             |
-| `K4` AI idioms                                  | 1                                                | Taxonomy D: S1, replaced on first sight                                                                                             |
-| `K5` mechanical enumeration                     | 첫째 and 둘째 both present                       | Taxonomy C-1: S1                                                                                                                    |
-| `K3` 것 constructions, `K7` personified objects | 1                                                | Sentence rules in `SKILL.md`; both came from real failed sentences in the ground truth                                              |
-| `K8` translation-ese                            | `~에 의해` 2, `가지고 있다` and double passive 1 | Taxonomy A-7 and A-8 are S1, A-9 is S2. Counting `~에 대해`·`~를 통해` was dropped: on real documents it only flagged human writing |
+| Code                                            | Hook fires at                                               | Rulebook prescription                                                                                                               |
+| ----------------------------------------------- | ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `K1` em-dash interjection                       | 4. If the edit adds at least one, the whole file is counted | `SKILL.md`: at most two per document. Taxonomy J-3: one or two in internal documents                                                |
+| `K2` abstract structure words                   | 3                                                           | Taxonomy D-9: the four words combined, at most twice per document                                                                   |
+| `K6` win/lose personification                   | 2                                                           | Taxonomy D-8: at most once per document                                                                                             |
+| `K4` AI idioms                                  | 1                                                           | Taxonomy D: S1, replaced on first sight                                                                                             |
+| `K5` mechanical enumeration                     | 첫째 and 둘째 both present                                  | Taxonomy C-1: S1                                                                                                                    |
+| `K3` 것 constructions, `K7` personified objects | 1                                                           | Sentence rules in `SKILL.md`; both came from real failed sentences in the ground truth                                              |
+| `K8` translation-ese                            | `~에 의해` 2, `가지고 있다` and double passive 1            | Taxonomy A-7 and A-8 are S1, A-9 is S2. Counting `~에 대해`·`~를 통해` was dropped: on real documents it only flagged human writing |
 
 `K6` started at one occurrence and was raised to two because that was stricter than the rulebook. Such adjustments are recorded in [`EVALUATION.md`](./EVALUATION.md) under "측정 중 고친 것".
 
@@ -184,7 +185,7 @@ The hook informs; it does not block. A check that interrupts normal work gets sw
 | Hook         | 1            | PostToolUse, patterns `K1` to `K8`                                                          |
 | Rulebooks    | 2            | `quick-rules.md` (compressed), `taxonomy.md` (10 categories, 73 items, severity, fixes)     |
 | Scripts      | 4            | character count (`node`); whole-file check, corpus measurement and release (`bash`)         |
-| Verification | 15 sentences | 10 violations, 5 clean. 40 regression cases                                                 |
+| Verification | 15 sentences | 10 violations, 5 clean. 43 regression cases                                                 |
 
 ```
 korean-writing/
@@ -208,7 +209,7 @@ korean-writing/
 │   ├── posttooluse.sh                the checker: python3 regular expressions K1 to K8
 │   ├── ground-truth.json             10 awkward sentences that were actually generated
 │   ├── clean.json                    5 clean sentences from the same context
-│   └── test_posttooluse.py           40 regression cases; verifies reported counts to catch mutations
+│   └── test_posttooluse.py           43 regression cases; verifies reported counts to catch mutations
 ├── docs/                             banners (Korean and English, light and dark), hook output demo
 ├── scripts/
 │   ├── check.sh                      pushes whole files through the hook, for CI and pre-commit
@@ -225,16 +226,16 @@ korean-writing/
 
 Editing a `.md` checks **only the part you just wrote**. Checking the whole file would re-flag old wording on every edit and turn the hook into noise.
 
-| Code | Pattern                            | Example                                                                                     | Threshold    |
-| ---- | ---------------------------------- | ------------------------------------------------------------------------------------------- | ------------ |
-| `K1` | Em-dash interjection               | `가 — 나 — 다`                                                                              | 4            |
-| `K2` | Abstract structure words           | `축`·`갈래`·`결이 다`·`레이어` (axis, branch, "different grain", layer)                     | 3            |
-| `K3` | Translation-ese `것` constructions | `탈이 날 것들이었다`                                                                        | 1            |
-| `K4` | AI idioms                          | `결론적으로`·`혁신적`·`시사하는 바가 크다` (in conclusion, innovative, "highly suggestive") | 1            |
-| `K5` | Mechanical enumeration             | `첫째 … 둘째 …` (firstly... secondly...)                                                    | both present |
-| `K6` | Win/lose personification           | `규칙이 이깁니다` (the rule wins)                                                           | 2            |
-| `K7` | Personified objects                | `화면이 굳어`·`장비를 넘어뜨리고` (the screen freezes, knocks the server over)              | 1            |
-| `K8` | Translation-ese                    | `되어지`·`가지고 있다`·`~에 의해` (double passive, "have", by-passive)                      | per item     |
+| Code | Pattern                            | Example                                                                                     | Threshold                                             |
+| ---- | ---------------------------------- | ------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| `K1` | Em-dash interjection               | `가 — 나 — 다`                                                                              | 4, counted over the whole file when the edit adds one |
+| `K2` | Abstract structure words           | `축`·`갈래`·`결이 다`·`레이어` (axis, branch, "different grain", layer)                     | 3                                                     |
+| `K3` | Translation-ese `것` constructions | `탈이 날 것들이었다`                                                                        | 1                                                     |
+| `K4` | AI idioms                          | `결론적으로`·`혁신적`·`시사하는 바가 크다` (in conclusion, innovative, "highly suggestive") | 1                                                     |
+| `K5` | Mechanical enumeration             | `첫째 … 둘째 …` (firstly... secondly...)                                                    | both present                                          |
+| `K6` | Win/lose personification           | `규칙이 이깁니다` (the rule wins)                                                           | 2                                                     |
+| `K7` | Personified objects                | `화면이 굳어`·`장비를 넘어뜨리고` (the screen freezes, knocks the server over)              | 1                                                     |
+| `K8` | Translation-ese                    | `되어지`·`가지고 있다`·`~에 의해` (double passive, "have", by-passive)                      | per item                                              |
 
 Code blocks (``` and ~~~), inline code, URLs, table rows, and HTML comments are skipped. If Hangul is under 30% of the edited part, only the lines that are at least 30% Hangul are kept (a Korean paragraph inside an English document); if those have fewer than 20 Hangul characters, the hook does not apply.
 
@@ -257,7 +258,7 @@ Pass criteria and measurements are in [`EVALUATION.md`](./EVALUATION.md) (Korean
 | False positives on real documents | 1 / 143 (0.7%)   |
 | Correct classification            | 10 / 10          |
 | Mutations caught                  | 15 / 15          |
-| Regression tests                  | 40 / 40          |
+| Regression tests                  | 43 / 43          |
 | Network calls                     | 0                |
 | Always-on context cost            | about 270 tokens |
 
@@ -348,7 +349,7 @@ If a marketplace-installed copy exists, it takes precedence and the symlinked co
 git clone https://github.com/IsthisLee/claude-korean-writing.git
 ln -s "$PWD/claude-korean-writing" ~/.claude/skills/korean-writing
 claude plugin list                            # should show loaded
-python3 hooks-handlers/test_posttooluse.py    # 40 regression cases
+python3 hooks-handlers/test_posttooluse.py    # 43 regression cases
 ```
 
 Adding a pattern touches three places:
