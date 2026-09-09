@@ -359,7 +359,7 @@ Adding a pattern touches three places:
 
 After changing a rule, run it over a corpus of real documents to see that false positives did not grow: `scripts/measure.sh ~/Documents` prints the flagged files and counts per code. Whether a flagged file was written by a person or by Claude is a human call.
 
-**If you spot an awkward sentence, open an issue.** The ground truth uses only sentences that were actually generated. One real failure is worth more than any synthetic example.
+**If you spot an awkward sentence, open an issue.** The ground truth uses only sentences that were actually generated. One real failure is worth more than any synthetic example. The issue form asks for the sentence, the request it came from, and whether the hook caught it.
 
 ## Versioning and releases
 

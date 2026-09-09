@@ -1,0 +1,35 @@
+name: 어색한 문장 제보
+description: Claude Code 가 실제로 쓴 어색한 한국어 문장을 보냅니다. 정답 데이터는 실제로 생성됐던 문장만 씁니다.
+title: "[문장] "
+labels: [ground-truth]
+body:
+  - type: textarea
+    id: sentence
+    attributes:
+      label: 문장
+      description: Claude Code 가 생성한 문장을 그대로 붙입니다. 고치지 않은 원문이어야 합니다.
+      placeholder: 점검 장치가 장비를 계속 넘어뜨리고 있었습니다
+    validations:
+      required: true
+  - type: input
+    id: context
+    attributes:
+      label: 어떤 요청에서 나왔나
+      placeholder: 운영팀 슬랙 안내문 / 배포 런북 .md 편집 / 커밋 메시지
+    validations:
+      required: true
+  - type: dropdown
+    id: hook
+    attributes:
+      label: 훅이 잡았나
+      options:
+        - 잡지 못했다 (미탐)
+        - 잡았는데 정상 문장이다 (오탐)
+        - 파일 편집이 아니라 훅 대상이 아니었다
+    validations:
+      required: true
+  - type: textarea
+    id: fix
+    attributes:
+      label: 이렇게 썼어야 한다 (선택)
+      placeholder: 점검 장치 때문에 장비가 계속 멈췄습니다
