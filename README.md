@@ -37,19 +37,46 @@ claude plugin marketplace add IsthisLee/claude-korean-writing
 claude plugin install korean-writing
 ```
 
-설치하면 끝난다. 설정할 것이 없다. 훅은 `python3` 로, 글자 수 스크립트는 `node` 로 실행되고 별도 패키지는 설치하지 않는다.
+설치하면 끝난다. 설정할 것이 없다.
 
-슬랙 메시지, 공지, 보고서, README 를 쓰라고 하면 규칙이 자동으로 로드된다. `.md` 파일을 고치면 훅이 검사한다.
+**필요한 것**
+
+- Claude Code (2.1.266 에서 확인)
+- `python3` (훅), `node` (글자 수 스크립트). 별도 패키지는 설치하지 않는다
+- 훅이 bash 스크립트라 macOS 에서 확인했다. Windows 는 확인하지 않았다
+
+## 사용법
+
+설치 후 평소처럼 말하면 된다. 스킬은 요청 내용을 보고 스스로 로드되고, 직접 부르려면 슬래시 이름을 쓴다.
+
+**처음 쓸 때** `/korean-writing`
 
 ```
-> 운영 담당자에게 보낼 안내문 써줘
-  → korean-writing 스킬 로드 → 처음부터 자연스러운 한국어로 작성
-
-> (README.md 편집)
-  → [korean-writing] README.md 에 AI 티 패턴이 있다
-      K1  줄표(—) 삽입구 5개 — 쉼표나 문장 분리로 바꾼다
-      K2  추상 구조어 4회 — 기준·경우·종류·단계 같은 구체 명사로 바꾼다
+운영 담당자에게 보낼 옵션 변경 안내문 써줘. 슬랙에 캐주얼하게.
 ```
+
+슬랙·메일·공지·보고서·README 처럼 밖으로 나갈 글이면 자동으로 걸린다. 다 쓰고 고치는 것이 아니라 처음부터 규칙을 적용한다.
+
+**이미 쓴 글 다듬을 때** `/korean-writing:humanize-korean`
+
+```
+아래 글 번역투만 고쳐줘. 사실과 숫자는 그대로 두고.
+(글 붙여넣기)
+```
+
+주요 교정 3~6개를 전 → 후로 보여주고, 변경률이 50% 를 넘으면 결과 대신 그 사실을 알린다.
+
+**글자 수 셀 때** `/korean-writing:korean-character-count`
+
+```
+이 자기소개서 공백 포함 몇 자야? 1,000자 제한이야.
+```
+
+grapheme 기준으로 세고 줄 수와 바이트를 함께 낸다. 세는 일은 스크립트가 하므로 모델이 어림하지 않는다.
+
+**`.md` 를 고칠 때** 훅이 자동으로 검사한다. 실제로는 이렇게 보인다.
+
+<p align="center"><img src="docs/hook-output.svg" alt="훅이 K1·K2·K3·K4·K7 을 잡은 실제 출력" width="860"></p>
 
 ## 훅이 잡는 것
 
@@ -151,6 +178,43 @@ python3 hooks-handlers/test_posttooluse.py    # 회귀 28건
 - 맞춤법·띄어쓰기 검사 — 이 플러그인은 문체만 본다
 
 정규식은 알려진 패턴만 잡는다. 새로운 어색함은 사람이 찾아 목록에 넣어야 한다.
+
+## 자주 묻는 것
+
+<details>
+<summary><b>훅이 편집을 되돌리나?</b></summary>
+
+아니다. 걸린 항목을 stderr 로 알리고 종료 코드 2 를 낼 뿐 파일은 건드리지 않는다. 고칠지는 사람이 정한다.
+
+</details>
+
+<details>
+<summary><b>내 글이 외부로 나가나?</b></summary>
+
+아니다. 훅은 `python3` 정규식이고 글자 수 스크립트는 `node:fs` 만 쓴다. 네트워크 호출이 한 건도 없다. 원문을 외부 서버로 보내는 `korean-spell-check` 를 가져오지 않은 이유이기도 하다.
+
+</details>
+
+<details>
+<summary><b>오탐이 나면?</b></summary>
+
+격식 문서(계약·약관·법률)면 무시하면 된다. 훅 메시지가 그렇게 안내한다. 패턴 자체가 틀렸으면 `hooks-handlers/test_posttooluse.py` 에 그 문장을 오탐 케이스로 넣고 훅을 고친다(「개발」). 훅째 끄려면 `claude plugin disable korean-writing`.
+
+</details>
+
+<details>
+<summary><b>토큰을 얼마나 쓰나?</b></summary>
+
+상시로 드는 것은 스킬 설명 416 토큰뿐이다. 스킬 본문은 글쓰기 요청이 있을 때만 로드되고, 훅은 LLM 을 부르지 않는 정규식이다. 답변마다 다시 검토하는 Stop 훅은 그래서 두지 않았다.
+
+</details>
+
+<details>
+<summary><b>왜 <code>.md</code> 파일만 검사하나?</b></summary>
+
+훅은 파일 편집 도구에만 걸린다. 슬랙 메시지처럼 파일이 아닌 답변은 훅이 볼 수 없고, 그건 처음 쓸 때 스킬이 맡는다. 이번에 쓴 부분의 한글이 20자 미만이거나 비중이 30% 미만이면 건너뛴다.
+
+</details>
 
 ## 출처
 

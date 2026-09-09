@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="352" viewBox="0 0 860 352" font-family="SF Mono, Menlo, Consolas, 'Noto Sans Mono CJK KR', 'Apple SD Gothic Neo', monospace" font-size="13">
+<rect width="860" height="352" rx="10" fill="#1e2229"/>
+<circle cx="20" cy="18" r="6" fill="#ff5f56"/><circle cx="40" cy="18" r="6" fill="#ffbd2e"/><circle cx="60" cy="18" r="6" fill="#27c93f"/>
+<text x="18" y="48" fill="#9aa4b2" xml:space="preserve">$ claude</text>
+<text x="18" y="70" fill="#9aa4b2" xml:space="preserve">&gt; 배포-지연.md 에 지연 사유 정리해줘</text>
+<text x="18" y="92" fill="#d7dde5" xml:space="preserve"></text>
+<text x="18" y="114" fill="#7fb3ff" xml:space="preserve">⏺ Edit(배포-지연.md)</text>
+<text x="18" y="136" fill="#7fb3ff" xml:space="preserve">  ⎿  Updated 배포-지연.md with 5 additions</text>
+<text x="18" y="158" fill="#d7dde5" xml:space="preserve"></text>
+<text x="18" y="180" fill="#ffd166" xml:space="preserve">[korean-writing] 배포-지연.md 에 AI 티 패턴이 있다. 편집은 그대로 두었으니 확인하고 고쳐라.</text>
+<text x="18" y="202" fill="#ff8fa3" xml:space="preserve">  K1  줄표(—) 삽입구 4개 — 쉼표나 문장 분리로 바꾼다. 한국어에서 가장 강한 AI 티다</text>
+<text x="18" y="224" fill="#ff8fa3" xml:space="preserve">  K2  추상 구조어 3회 — 기준·경우·종류·단계 같은 구체 명사로 바꾼다</text>
+<text x="18" y="246" fill="#ff8fa3" xml:space="preserve">  K3  번역투 것 구문 1회 — 구체 명사로 바꾼다. 예: 탈이 날 것들이었다 → 탈이 날 문제였다</text>
+<text x="18" y="268" fill="#ff8fa3" xml:space="preserve">  K4  AI 관용구 1회 — 대부분 삭제해도 뜻이 통한다</text>
+<text x="18" y="290" fill="#ff8fa3" xml:space="preserve">  K7  사물 의인화 2회 — 멈춘다·죽는다 대신 사실대로 서술한다. 예: 화면이 굳어 → 화면이 멈춰</text>
+<text x="18" y="312" fill="#d7dde5" xml:space="preserve">  교정 규칙은 korean-writing 스킬에 있다. 격식 문서(계약·약관·법률)면 무시해도 된다.</text>
+</svg>
