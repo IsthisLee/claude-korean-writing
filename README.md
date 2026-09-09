@@ -34,7 +34,7 @@
 
 ```bash
 claude plugin marketplace add IsthisLee/claude-korean-writing
-claude plugin install korean-writing@korean-writing
+claude plugin install korean-writing
 ```
 
 설치하면 끝난다. 설정할 것이 없다. 훅은 `python3` 로, 글자 수 스크립트는 `node` 로 실행되고 별도 패키지는 설치하지 않는다.
