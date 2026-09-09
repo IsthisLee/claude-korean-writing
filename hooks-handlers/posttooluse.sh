@@ -44,7 +44,9 @@ if not raw:
 body = re.sub(r"```.*?```", "", raw, flags=re.S)     # 코드블록
 body = re.sub(r"`[^`\n]+`", "", body)                 # 인라인 코드
 body = re.sub(r"https?://\S+", "", body)              # URL
-body = re.sub(r"^\s*\|[\s|:-]+\|\s*$", "", body, flags=re.M)  # 표 구분선
+body = re.sub(r"^\s*\|.*$", "", body, flags=re.M)             # 표 행 전체
+# 표는 산문이 아니다. 라벨·비교·교정 예시(전/후)가 들어가므로 산문 규칙을 적용하면
+# 나쁜 예를 인용한 것까지 위반으로 잡는다. 실제로 이 플러그인의 README 가 그렇게 걸렸다.
 
 ko = len(re.findall(r"[가-힣]", body))
 if ko < 20 or ko / max(len(body), 1) < 0.30:
@@ -53,10 +55,8 @@ if ko < 20 or ko / max(len(body), 1) < 0.30:
 hits = []
 
 # K1 줄표 삽입구
-# 표 행은 제외한다. `| 항목 | PASS — 근거 |` 는 삽입구가 아니라 셀 구분 용법이다.
 # 양쪽에 공백과 실제 문자가 있는 것만 센다(Forge 의 INTERJECT 와 같은 기준).
-prose = "\n".join(l for l in body.splitlines() if not l.lstrip().startswith("|"))
-n = len(re.findall(r"[^|\s]\s[—–]\s[^|\s]", prose))
+n = len(re.findall(r"[^|\s]\s[—–]\s[^|\s]", body))
 if n >= 4:
     hits.append(("K1", f"줄표(—) 삽입구 {n}개", "쉼표나 문장 분리로 바꾼다. 한국어에서 가장 강한 AI 티다"))
 
