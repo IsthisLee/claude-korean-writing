@@ -231,7 +231,7 @@ korean-writing/
 │   ├── ground-truth.json             실제로 생성됐던 위반 문장 10건
 │   ├── clean.json                    같은 맥락의 정상 문장 5건
 │   └── test_posttooluse.py           회귀 43건. 보고 횟수까지 검증해 변이를 잡습니다
-├── docs/                             배너(한·영, 밝음·어두움), 훅 출력 데모
+├── docs/                             배너(한·영, 밝음·어두움), 훅 출력 데모, 소셜 프리뷰
 ├── scripts/
 │   ├── check.sh                      파일을 통째로 훅에 넣어 검사. CI·pre-commit 용
 │   ├── measure.sh                    실제 문서 뭉치의 오탐 측정. 분기마다

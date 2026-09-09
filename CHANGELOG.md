@@ -12,6 +12,7 @@
 - `.github/`: PR 양식, 이슈 양식 두 종(버그 신고, 판정 규칙 제안), 이슈 첫 화면의 보안·기여 안내 링크, `CODEOWNERS`, `dependabot.yml`
 - `.gitattributes`: 셸 스크립트를 LF 로 고정합니다. CRLF 로 체크아웃되면 훅이 `bad interpreter` 로 죽습니다. 가져온 파일은 GitHub 언어 통계에서 뺍니다
 - `.editorconfig`
+- `docs/social-preview.png`(1280×640): 링크를 공유할 때 GitHub 이 보여주는 카드 이미지. 저장소 설정에서 올립니다
 - CI 작업 셋: `shellcheck`, 버전 표기 일치(`plugin.json`·README 배지·CHANGELOG), 이슈 양식과 워크플로의 YAML 문법
 
 ### 변경

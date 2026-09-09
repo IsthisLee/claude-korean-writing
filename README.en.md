@@ -217,7 +217,7 @@ korean-writing/
 │   ├── ground-truth.json             10 awkward sentences that were actually generated
 │   ├── clean.json                    5 clean sentences from the same context
 │   └── test_posttooluse.py           43 regression cases; verifies reported counts to catch mutations
-├── docs/                             banners (Korean and English, light and dark), hook output demo
+├── docs/                             banners (Korean and English, light and dark), hook output demo, social preview
 ├── scripts/
 │   ├── check.sh                      pushes whole files through the hook, for CI and pre-commit
 │   ├── measure.sh                    false-positive measurement over a corpus of real documents, quarterly
