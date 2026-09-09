@@ -141,6 +141,8 @@ description: 밖으로 나갈 한국어 글을 쓸 때 사용한다. 슬랙·메
 
 글자 수·바이트를 정확히 세야 하면 `korean-character-count` 를 쓴다.
 
+README 의 구조와 절 선택은 `crafting-effective-readmes` 가 맡는다. 문장은 이 스킬 규칙대로 쓴다.
+
 ## 더 깊은 판정이 필요할 때
 
 | 파일 | 무엇 | 언제 |

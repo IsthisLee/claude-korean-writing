@@ -1,8 +1,8 @@
 {
   "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
   "name": "korean-writing",
-  "version": "0.1.0",
-  "description": "밖으로 나갈 한국어 글에서 번역투와 AI 관용구를 처음 쓸 때부터 걷어낸다. .md 편집 시 자동 검사 훅 포함.",
+  "version": "0.2.0",
+  "description": "Claude Code가 쓰는 한국어의 품질을 맡는 플러그인. 처음 쓸 때 번역투·AI 관용구를 피하는 스킬, 이미 쓴 글을 다듬는 윤문 스킬, .md 편집을 검사하는 훅, 글자 수 스크립트.",
   "author": {
     "name": "Isthis",
     "email": "rjsgmldnwn@gmail.com"
@@ -10,7 +10,8 @@
   "skills": [
     "./",
     "./skills/humanize-korean",
-    "./skills/korean-character-count"
+    "./skills/korean-character-count",
+    "./skills/crafting-effective-readmes"
   ],
   "keywords": [
     "korean",
@@ -18,7 +19,9 @@
     "prose",
     "translation-ese",
     "style",
-    "character-count"
+    "character-count",
+    "readme",
+    "documentation"
   ],
   "repository": "https://github.com/IsthisLee/claude-korean-writing"
 }
