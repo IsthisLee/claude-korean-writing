@@ -93,7 +93,7 @@ PY
 )"
 git add -A
 git commit -q -m "release: $TAG"
-git tag -a "$TAG" -m "$TAG" -m "$NOTES"
+git tag -a "$TAG" --cleanup=verbatim -m "$TAG" -m "$NOTES"   # ### 헤딩이 주석으로 잘리지 않게
 echo "  커밋 $(git rev-parse --short HEAD) · 태그 $TAG"
 
 # 7. push
