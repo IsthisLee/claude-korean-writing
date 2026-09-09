@@ -33,7 +33,7 @@
 ## 빠른 시작
 
 ```bash
-claude plugin marketplace add IsthisLee/korean-writing
+claude plugin marketplace add IsthisLee/claude-korean-writing
 claude plugin install korean-writing@korean-writing
 ```
 
@@ -128,8 +128,8 @@ python3 hooks-handlers/test_posttooluse.py
 저장소를 `~/.claude/skills/` 로 링크하면 `korean-writing@skills-dir` 로 자동 로드된다. 마켓플레이스를 거치지 않으므로 고치는 즉시 반영된다.
 
 ```bash
-git clone https://github.com/IsthisLee/korean-writing.git
-ln -s "$PWD/korean-writing" ~/.claude/skills/korean-writing
+git clone https://github.com/IsthisLee/claude-korean-writing.git
+ln -s "$PWD/claude-korean-writing" ~/.claude/skills/korean-writing
 claude plugin list                            # loaded 확인
 python3 hooks-handlers/test_posttooluse.py    # 회귀 28건
 ```
