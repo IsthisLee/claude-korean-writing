@@ -1,0 +1,24 @@
+{
+  "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
+  "name": "korean-writing",
+  "version": "0.1.0",
+  "description": "밖으로 나갈 한국어 글에서 번역투와 AI 관용구를 처음 쓸 때부터 걷어낸다. .md 편집 시 자동 검사 훅 포함.",
+  "author": {
+    "name": "Isthis",
+    "email": "rjsgmldnwn@gmail.com"
+  },
+  "skills": [
+    "./",
+    "./skills/humanize-korean",
+    "./skills/korean-character-count"
+  ],
+  "keywords": [
+    "korean",
+    "writing",
+    "prose",
+    "translation-ese",
+    "style",
+    "character-count"
+  ],
+  "repository": "https://github.com/isthis/claude-korean-writing"
+}
