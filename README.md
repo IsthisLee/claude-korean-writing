@@ -10,15 +10,16 @@
 
 <p align="center">
   <strong>Claude Code가 쓰는 한국어의 품질을 맡는 플러그인.</strong><br>
-  처음 쓸 때 잡고, 이미 쓴 글은 다듬고, 편집은 검사합니다.
+  처음 쓸 때 잡고 이미 쓴 글은 다듬고 편집은 검사합니다.
 </p>
 
 <p align="center">
+  <a href="https://github.com/IsthisLee/claude-korean-writing/actions/workflows/validate.yml"><img alt="Validate" src="https://github.com/IsthisLee/claude-korean-writing/actions/workflows/validate.yml/badge.svg?branch=main"></a>
   <img alt="MIT" src="https://img.shields.io/badge/license-MIT-blue.svg">
   <img alt="Claude Code Plugin" src="https://img.shields.io/badge/Claude%20Code-plugin-8A2BE2">
   <img alt="version" src="https://img.shields.io/badge/version-1.0.0-lightgrey">
   <img alt="network" src="https://img.shields.io/badge/network-none-success">
-  <img alt="platform" src="https://img.shields.io/badge/platform-macOS-lightgrey">
+  <img alt="platform" src="https://img.shields.io/badge/platform-macOS%20%7C%20Linux-lightgrey">
 </p>
 
 <p align="center">
@@ -34,7 +35,7 @@
 
 > **v1.0.0**: 첫 릴리스입니다. 스킬 4종(처음 쓰기·윤문·글자 수·README 구성), `.md` 편집을 검사하는 훅, 문서 검사와 릴리스 스크립트를 담았습니다. 상세: [CHANGELOG.md](CHANGELOG.md)
 
-> **korean-writing은 Claude Code가 쓰는 한국어의 품질을 맡습니다.** **"운영팀에 보낼 안내문 써줘"**라고 말하면 규칙이 스스로 로드되어 처음부터 자연스러운 한국어로 쓰고, `.md` 파일을 고치면 훅이 번역투와 AI 관용구를 잡아 알려줍니다. 원문은 어디로도 나가지 않습니다.
+> **korean-writing은 Claude Code가 쓰는 한국어의 품질을 맡습니다.** **"운영팀에 보낼 안내문 써줘"**라고 말하면 규칙이 스스로 로드되어 처음부터 자연스러운 한국어로 씁니다. `.md` 파일을 고치면 훅이 번역투와 AI 관용구를 잡아 알려줍니다. 원문은 어디로도 나가지 않습니다.
 
 ## 개요
 
@@ -49,7 +50,7 @@ Claude Code는 한국어를 문법에 맞게 씁니다. 그런데 읽으면 걸�
 | 충돌하면 상위 문서가 **이깁니다**                                   | 충돌하면 상위 문서를 **따릅니다**                                  |
 | 원인은 힙 부족이 아니라 **—** 실측해보니 **—** 설정이 안 먹혔습니다 | 원인은 힙 부족이 아니었습니다**.** 실측해보니 설정이 안 먹혔습니다 |
 
-왼쪽이 틀린 것은 아닙니다. 다만 사람이 한국어로 쓸 때는 나오지 않는 표현입니다. 이 플러그인은 그런 문장이 나오는 길목 네 곳에 하나씩 붙고, README에는 절 구성을 잡는 스킬이 하나 더 붙습니다.
+왼쪽이 틀린 것은 아닙니다. 다만 사람이 한국어로 쓸 때는 나오지 않는 표현입니다. 이 플러그인은 그런 문장이 나오는 길목 네 곳에 하나씩 붙습니다. README에는 절 구성을 잡는 스킬이 하나 더 붙습니다.
 
 | 길목                   | 붙는 것                           | 하는 일                                                                     |
 | ---------------------- | --------------------------------- | --------------------------------------------------------------------------- |
@@ -85,7 +86,7 @@ claude plugin install korean-writing
 
 ## 사용법
 
-평소처럼 말하면 됩니다. 스킬은 요청 내용을 보고 스스로 로드되고, 직접 부르려면 슬래시 이름을 씁니다.
+평소처럼 말하면 됩니다. 스킬은 요청 내용을 보고 스스로 로드됩니다. 직접 부르려면 슬래시 이름을 씁니다.
 
 | 하고 싶은 것                      | 이렇게 말하면                                             | 직접 부를 때                                 |
 | --------------------------------- | --------------------------------------------------------- | -------------------------------------------- |
@@ -94,7 +95,7 @@ claude plugin install korean-writing
 | 글자 수 정확히 세기               | "이 자기소개서 공백 포함 몇 자야? 1,000자 제한이야."      | `/korean-writing:korean-character-count`     |
 | README 쓰기                       | "이 프로젝트 README 써줘. 오픈소스용으로."                | `/korean-writing:crafting-effective-readmes` |
 
-윤문은 주요 교정 3~6개를 전 → 후로 보여 주고, 변경률이 50%를 넘으면 결과 대신 그 사실을 알립니다. 그건 윤문이 아니라 재작성이기 때문입니다. README 스킬은 프로젝트 유형(오픈소스·개인·사내·설정)에 맞춰 절을 고르고, 문장은 `korean-writing` 규칙으로 씁니다.
+윤문은 주요 교정 3~6개를 전 → 후로 보여 줍니다. 변경률이 50%를 넘으면 결과 대신 그 사실을 알립니다. 그건 윤문이 아니라 재작성이기 때문입니다. README 스킬은 프로젝트 유형(오픈소스·개인·사내·설정)에 맞춰 절을 고르고 문장은 `korean-writing` 규칙으로 씁니다.
 
 글자 수는 grapheme(사람이 한 글자로 보는 단위) 기준이고 줄 수와 바이트를 함께 냅니다. 아래는 이모지가 든 두 줄짜리 문장을 실제로 넣은 출력입니다. 계약 설명 세 줄은 뺐습니다.
 
@@ -114,9 +115,9 @@ bytes_neis: 117
 
 <p align="center"><img src="docs/hook-output.svg" alt="훅이 K1·K2·K3·K4·K7을 잡은 실제 출력" width="860"></p>
 
-편집을 되돌리지는 않습니다. 걸린 항목과 고치는 법을 알려 주고, 고칠지는 사람이 정합니다.
+편집을 되돌리지는 않습니다. 걸린 항목과 고치는 법을 알려 줍니다. 고칠지는 사람이 정합니다.
 
-이미 써 둔 문서를 통째로 검사하려면 `scripts/check.sh 파일...`을 씁니다. 훅과 같은 기준으로 보고, 걸린 파일이 있으면 종료 코드 1을 냅니다. CI와 pre-commit에서 그대로 쓸 수 있고, 설치 경로는 `claude plugin list`의 Path에 나옵니다.
+이미 써 둔 문서를 통째로 검사하려면 `scripts/check.sh 파일...`을 씁니다. 훅과 같은 기준으로 봅니다. 걸린 파일이 있으면 종료 코드 1을 냅니다. CI와 pre-commit에서 그대로 쓸 수 있습니다. 설치 경로는 `claude plugin list`의 Path에 나옵니다.
 
 ```bash
 scripts/check.sh docs/*.md
@@ -126,7 +127,7 @@ scripts/check.sh docs/*.md
 
 ## 동작 원리
 
-스킬 넷과 훅 하나가 각자 다른 시점에 붙습니다. 요청이 오면 스킬이 골라지고, 파일을 저장하면 훅이 검사합니다.
+스킬 넷과 훅 하나가 각자 다른 시점에 붙습니다. 요청이 오면 스킬이 골라지고 파일을 저장하면 훅이 검사합니다.
 
 ### 어느 스킬이 나서나
 
@@ -138,7 +139,7 @@ scripts/check.sh docs/*.md
 └─ README 를 만들거나 고쳐 달라     crafting-effective-readmes   절을 고르고, 문장은 korean-writing 규칙으로 씁니다
 ```
 
-스킬끼리는 서로 넘깁니다. 아직 쓰지 않은 글을 윤문해 달라고 하면 `humanize-korean`이 `korean-writing`으로 돌려보내고, 다 쓰고도 기준에 못 미치면 `korean-writing`이 `humanize-korean`으로 넘깁니다. 윤문은 한글 5,000자가 넘으면 논리 단위로 나눠 돌리고, 8,000자가 넘거나 정확도가 특히 중요한 글은 단일 패스로 부족하다고 알립니다.
+스킬끼리는 서로 넘깁니다. 아직 쓰지 않은 글을 윤문해 달라고 하면 `humanize-korean`이 `korean-writing`으로 돌려보내고 다 쓰고도 기준에 못 미치면 `korean-writing`이 `humanize-korean`으로 넘깁니다. 윤문은 한글 5,000자가 넘으면 논리 단위로 나눠 돌리고 8,000자가 넘거나 정확도가 특히 중요한 글은 단일 패스로 부족하다고 알립니다.
 
 ### 요청에서 출력까지
 
@@ -146,10 +147,10 @@ scripts/check.sh docs/*.md
 | ------ | ---------------------------------------------------------------------------------------------------------------- |
 | 1 요청 | "안내문 써줘" 같은 요청이 오면 스킬 설명과 맞는지 봅니다. 상시로 읽히는 것은 이 설명뿐입니다                     |
 | 2 로드 | 맞으면 `SKILL.md`(원칙·품질 기준·교정 예시)를 읽고 그 규칙으로 씁니다                                            |
-| 3 판정 | 다듬을 때는 `references/quick-rules.md`로 훑고, 애매한 것만 `references/taxonomy.md`(10분류 73항목)로 확인합니다 |
-| 4 편집 | `.md`를 저장하면 훅이 이번에 쓴 부분만 정규식으로 검사하고, 걸리면 stderr로 알립니다. LLM을 부르지 않습니다      |
+| 3 판정 | 다듬을 때는 `references/quick-rules.md`로 훑고 애매한 것만 `references/taxonomy.md`(10분류 73항목)로 확인합니다  |
+| 4 편집 | `.md`를 저장하면 훅이 이번에 쓴 부분만 정규식으로 검사하고 걸리면 stderr로 알립니다. LLM을 부르지 않습니다       |
 
-세 층으로 나눈 이유는 비용입니다. 평소에는 설명 한 줄만 읽히고, 깊은 판정이 필요할 때만 큰 파일을 엽니다.
+세 층으로 나눈 이유는 비용입니다. 평소에는 설명 한 줄만 읽히고 깊은 판정이 필요할 때만 큰 파일을 엽니다.
 
 ```
 SKILL.md                        7.7 KB   글쓰기 요청에 로드. 원칙·품질 기준·교정 예시
@@ -203,7 +204,13 @@ Edit · Write · MultiEdit 가 끝난다
 
 ```
 korean-writing/
-├── .github/workflows/validate.yml    push·PR마다 회귀 테스트, 문서 자체 검사, validate
+├── .github/
+│   ├── workflows/validate.yml        push·PR마다 회귀 테스트, shellcheck, 버전 일치, validate
+│   ├── ISSUE_TEMPLATE/               어색한 문장 제보, 버그, 판정 규칙 제안
+│   ├── PULL_REQUEST_TEMPLATE.md      확인한 명령과 실측을 적는 자리
+│   ├── CODEOWNERS                    판정 규칙과 가져온 파일의 리뷰어
+│   └── dependabot.yml                GitHub Actions 버전 갱신
+├── .claude/settings.json             기여자용 프로젝트 설정. 검증 명령은 허용, 가져온 파일 편집은 확인
 ├── .claude-plugin/
 │   ├── plugin.json                   매니페스트. 이름·버전·스킬 4개 경로. 버전의 정본
 │   └── marketplace.json              마켓플레이스 카탈로그. 버전은 두지 않습니다
@@ -231,6 +238,10 @@ korean-writing/
 │   └── release.sh                    버전·CHANGELOG·배지·태그를 한 번에
 ├── EVALUATION.md                     합격 기준과 측정 결과
 ├── CHANGELOG.md                      릴리스 노트
+├── CLAUDE.md                         이 저장소에서 작업하는 Claude 를 위한 규칙
+├── CONTRIBUTING.md · .en.md          기여 절차. 규칙을 바꾸려면 실측이 필요합니다
+├── CODE_OF_CONDUCT.md                Contributor Covenant 2.1 한국어판
+├── SECURITY.md                       신고 절차, 훅이 무엇을 읽고 무엇을 하지 않는지
 ├── LICENSE                           MIT 본문
 ├── NOTICE.md                         가져온 파일의 원 저작권 표시와 파일별 범위
 └── README.md · README.en.md
@@ -251,7 +262,7 @@ korean-writing/
 | `K7` | 사물 의인화      | `화면이 굳어`·`장비를 넘어뜨리고`          | 1회                                    |
 | `K8` | 번역투           | `되어지`·`가지고 있다`·`~에 의해`          | 항목별                                 |
 
-코드블록(``` 과 ~~~), 인라인 코드, URL, 표 행, HTML 주석은 검사하지 않습니다. 이번에 쓴 부분의 한글 비중이 30% 미만이면 한글 비중 30% 이상인 줄만 모아 보고, 그래도 한글이 20자 미만이면 대상이 아닙니다.
+코드블록(``` 과 ~~~), 인라인 코드, URL, 표 행, HTML 주석은 검사하지 않습니다. 이번에 쓴 부분의 한글 비중이 30% 미만이면 한글 비중 30% 이상인 줄만 모아 보고 그래도 한글이 20자 미만이면 대상이 아닙니다.
 
 ## 패턴의 근거
 
@@ -259,7 +270,7 @@ korean-writing/
 
 문법적으로 맞아도 AI 서명처럼 굳은 표현은 피합니다. 그것이 이 플러그인의 기준입니다.
 
-**목적은 탐지기 우회가 아닙니다.** 어색한 번역투를 자연스러운 한국어로 고치는 것이고, 누가 초안을 썼는지와 무관한 품질 개선입니다.
+**목적은 탐지기 우회가 아닙니다.** 어색한 번역투를 자연스러운 한국어로 고치는 것이고 누가 초안을 썼는지와 무관한 품질 개선입니다.
 
 ## 검증
 
@@ -276,11 +287,11 @@ korean-writing/
 | 외부 호출          | 0건            |
 | 상시 컨텍스트 비용 | 약 270토큰     |
 
-정답 데이터는 [`hooks-handlers/ground-truth.json`](./hooks-handlers/ground-truth.json)에 있습니다. **실제로 생성됐던 어색한 문장 10건과 같은 맥락의 정상 문장 5건**이고, 합성 예문이 아닙니다.
+정답 데이터는 [`hooks-handlers/ground-truth.json`](./hooks-handlers/ground-truth.json)에 있습니다. **실제로 생성됐던 어색한 문장 10건과 같은 맥락의 정상 문장 5건**이고 합성 예문이 아닙니다.
 
 **오탐을 미탐보다 무겁게 봅니다.** 검사가 정상 작업을 막으면 사람이 검사를 꺼 버리기 때문입니다.
 
-스킬 유무를 같은 프롬프트 4개로 비교한 결과는 [`EVALUATION.md`](./EVALUATION.md)의 C4에 있습니다. 2026-09-10의 claude-opus-5에서는 두 조건 모두 훅을 통과해 생성 단계 효과를 이 표본으로 구분하지 못했고, 훅은 모델이 바뀌어도 남는 안전망입니다.
+스킬 유무를 같은 프롬프트 4개로 비교한 결과는 [`EVALUATION.md`](./EVALUATION.md)의 C4에 있습니다. 2026-09-10의 claude-opus-5에서는 두 조건 모두 훅을 통과해 생성 단계 효과를 이 표본으로 구분하지 못했습니다. 훅은 모델이 바뀌어도 남는 안전망입니다.
 
 변이 테스트는 훅에 결함을 심고 회귀 테스트가 잡는지 확인합니다. 정규식 대안 하나가 조용히 빠지는 경우까지 검출합니다.
 
@@ -288,13 +299,13 @@ korean-writing/
 python3 hooks-handlers/test_posttooluse.py
 ```
 
-같은 검사를 GitHub Actions가 push와 PR마다 돌립니다(`.github/workflows/validate.yml`). 회귀 테스트, 매니페스트 JSON, 훅의 실행 비트, 한국어 문서 8종이 자기 훅을 통과하는지, 글자 수 스크립트 스모크, `claude plugin validate`입니다.
+같은 검사를 GitHub Actions가 push와 PR마다 돌립니다(`.github/workflows/validate.yml`). 회귀 테스트, 매니페스트와 이슈 양식의 JSON·YAML 문법, 훅의 실행 비트, 한국어 문서 13종이 자기 훅을 통과하는지, 글자 수 스크립트 스모크를 **macOS와 Linux 양쪽에서** 돌립니다. 여기에 shellcheck, 버전 표기 일치, `claude plugin validate`가 더해집니다.
 
 ## 이웃 도구와의 관계
 
 | 도구                                                        | 그쪽은                                                                                                              | 이 플러그인은                                                                                                                                                               |
 | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [claude-forge](https://github.com/sangrokjung/claude-forge) | Claude Code 전체 프레임워크입니다. 에이전트·커맨드·훅·규칙 묶음이고, 한국어 산문 품질 가드레일은 그중 한 부분입니다 | 그 부분만 떼어 독립시킨 것입니다. Forge를 `install.sh`로 전체 설치했다면 같은 훅과 윤문 스킬이 이미 있으니 이 플러그인은 필요 없습니다. 둘을 같이 쓰면 줄표 검사가 겹칩니다 |
+| [claude-forge](https://github.com/sangrokjung/claude-forge) | Claude Code 전체 프레임워크입니다. 에이전트·커맨드·훅·규칙 묶음이고 한국어 산문 품질 가드레일은 그중 한 부분입니다  | 그 부분만 떼어 독립시킨 것입니다. Forge를 `install.sh`로 전체 설치했다면 같은 훅과 윤문 스킬이 이미 있으니 이 플러그인은 필요 없습니다. 둘을 같이 쓰면 줄표 검사가 겹칩니다 |
 | [k-skill](https://github.com/NomaDamas/k-skill)             | 한국인을 위한 스킬 모음집입니다. 글자 수·맞춤법부터 교통·날씨·검색까지 100개가 넘습니다                             | 글자 수 스킬만 가져왔습니다. 맞춤법 검사는 원문을 외부 서버로 보내서 뺐습니다. 필요하면 k-skill에서 따로 설치하되 그 점을 알고 쓰는 편이 좋습니다                           |
 | 맞춤법·띄어쓰기 검사기                                      | 맞춤법을 봅니다                                                                                                     | 문체만 봅니다. 둘은 겹치지 않으니 같이 쓰면 됩니다                                                                                                                          |
 
@@ -311,7 +322,7 @@ python3 hooks-handlers/test_posttooluse.py
 <details>
 <summary><b>Q1. 위반 검출 10/10이면 다 잡는다는 뜻인가요?</b></summary>
 
-**A.** 아닙니다. 정답 10건으로 패턴을 만들었으니 그 10건이 잡히는 것은 당연하고, 이 숫자는 고치다 깨뜨리지 않았는지 보는 회귀용입니다. 의미 있는 숫자는 오탐 쪽입니다. 이 머신에 쌓인 한국어 문서 143개를 통째로 넣어 60개가 걸렸는데, 59개는 2026년에 Claude가 쓴 문서였고 사람이 쓴 문서는 1개(0.7%)였습니다. 정규식은 알려진 패턴만 잡으므로 새로운 어색함은 놓칩니다.
+**A.** 아닙니다. 정답 10건으로 패턴을 만들었으니 그 10건이 잡히는 것은 당연하고 이 숫자는 고치다 깨뜨리지 않았는지 보는 회귀용입니다. 의미 있는 숫자는 오탐 쪽입니다. 이 머신에 쌓인 한국어 문서 143개를 통째로 넣어 60개가 걸렸습니다. 59개는 2026년에 Claude가 쓴 문서였고 사람이 쓴 문서는 1개(0.7%)였습니다. 정규식은 알려진 패턴만 잡으므로 새로운 어색함은 놓칩니다.
 
 **근거:**
 
@@ -344,18 +355,20 @@ python3 hooks-handlers/test_posttooluse.py
 <details>
 <summary><b>Q5. 토큰을 얼마나 쓰나요?</b></summary>
 
-**A.** 상시로 드는 것은 스킬 설명 넷뿐이고, `/context`가 보고한 값으로 약 270토큰입니다. 스킬 본문은 글쓰기 요청이 있을 때만 로드되고, 훅은 LLM을 부르지 않는 정규식입니다. 답변마다 다시 검토하는 Stop 훅은 그래서 두지 않았습니다.
+**A.** 상시로 드는 것은 스킬 설명 넷뿐이고 `/context`가 보고한 값으로 약 270토큰입니다. 스킬 본문은 글쓰기 요청이 있을 때만 로드되고 훅은 LLM을 부르지 않는 정규식입니다. 답변마다 다시 검토하는 Stop 훅은 그래서 두지 않았습니다.
 
 </details>
 
 <details>
 <summary><b>Q6. 왜 <code>.md</code> 파일만 검사하나요?</b></summary>
 
-**A.** 훅은 파일 편집 도구에만 걸립니다. 슬랙 메시지처럼 파일이 아닌 답변은 훅이 볼 수 없고, 그건 처음 쓸 때 스킬이 맡습니다.
+**A.** 훅은 파일 편집 도구에만 걸립니다. 슬랙 메시지처럼 파일이 아닌 답변은 훅이 볼 수 없고 그건 처음 쓸 때 스킬이 맡습니다.
 
 </details>
 
 ## 개발과 기여
+
+기여 절차, 규칙을 바꿀 때 필요한 실측, PR 체크리스트는 [CONTRIBUTING.md](./CONTRIBUTING.md)에 있습니다. 참여하는 사람은 [행동 강령](./CODE_OF_CONDUCT.md)을 따르고, 보안 문제는 공개 이슈 대신 [SECURITY.md](./SECURITY.md)의 절차로 보냅니다.
 
 저장소를 `~/.claude/skills/`로 링크하면 `korean-writing@skills-dir`로 자동 로드됩니다. 마켓플레이스를 거치지 않으므로 고치는 즉시 반영됩니다.
 
@@ -388,7 +401,7 @@ python3 hooks-handlers/test_posttooluse.py    # 회귀 43건
 | 마이너      | 새 패턴이나 스킬, 더 많이 잡게 되는 임계 변경, 목적·구성 변경                         |
 | 메이저      | 훅이 편집을 막기 시작하는 것처럼 동작 약속이 바뀌거나, 스킬 이름이 바뀌거나 없어질 때 |
 
-릴리스 노트는 [`CHANGELOG.md`](./CHANGELOG.md)의 `[Unreleased]` 아래에 쓰고, 두 README 상단 인용구를 고친 뒤 스크립트를 돌립니다.
+릴리스 노트는 [`CHANGELOG.md`](./CHANGELOG.md)의 `[Unreleased]` 아래에 쓰고 두 README 상단 인용구를 고친 뒤 스크립트를 돌립니다.
 
 ```bash
 scripts/release.sh 1.1.0          # 테스트·validate·버전 반영·CHANGELOG·커밋·태그
@@ -412,7 +425,7 @@ scripts/release.sh 1.1.0 --push   # 여기에 git push --follow-tags 와 GitHub 
 
 모두 MIT입니다. 원 저작권 표시와 파일별 범위는 [`NOTICE.md`](./NOTICE.md)에 있습니다.
 
-`korean-spell-check`는 가져오지 않았습니다. 검사할 원문을 외부 서버로 전송하고, 그 서비스 약관이 개인·학생 무료로 제한합니다.
+`korean-spell-check`는 가져오지 않았습니다. 검사할 원문을 외부 서버로 전송하고 그 서비스 약관이 개인·학생 무료로 제한합니다.
 
 ## 라이선스
 

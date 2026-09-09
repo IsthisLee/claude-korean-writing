@@ -4,6 +4,28 @@
 
 ## [Unreleased]
 
+### 추가
+
+- 공개 저장소 문서: `CONTRIBUTING.md`(한국어·영어), `CODE_OF_CONDUCT.md`(Contributor Covenant 2.1 공식 한국어판), `SECURITY.md`(한국어·영어). SECURITY.md 에는 훅이 무엇을 읽고 무엇을 하지 않는지, 네트워크를 쓰지 않는다는 것을 직접 확인하는 명령 세 가지를 적었습니다
+- `CLAUDE.md`: 이 저장소에서 작업하는 Claude 를 위한 규칙. 기준선 명령, 네트워크 금지, 가져온 파일 취급, 버전 정본, 커밋 형식, 판정 기준을 바꿀 때의 실측 의무
+- `.claude/settings.json`: 기여자가 공유하는 프로젝트 설정. 검증 명령은 묻지 않고 허용하고, 가져온 파일과 `plugin.json` 편집은 확인을 받습니다
+- `.github/`: PR 양식, 이슈 양식 두 종(버그 신고, 판정 규칙 제안), 이슈 첫 화면의 보안·기여 안내 링크, `CODEOWNERS`, `dependabot.yml`
+- `.gitattributes`: 셸 스크립트를 LF 로 고정합니다. CRLF 로 체크아웃되면 훅이 `bad interpreter` 로 죽습니다. 가져온 파일은 GitHub 언어 통계에서 뺍니다
+- `.editorconfig`
+- CI 작업 셋: `shellcheck`, 버전 표기 일치(`plugin.json`·README 배지·CHANGELOG), 이슈 양식과 워크플로의 YAML 문법
+
+### 변경
+
+- CI 를 macOS 와 Linux 양쪽에서 돌립니다. 훅은 bash 와 python3 만 쓰므로 platform 배지를 `macOS | Linux` 로 고쳤습니다
+- CI 워크플로에 `permissions: contents: read` 와 같은 브랜치 중복 실행 취소를 넣고, 액션을 v7 로 올렸습니다
+- README 두 판에 CI 배지를 넣고, 파일 구조와 CI 설명을 실제와 맞췄습니다
+- `.gitignore` 가 `.claude/` 를 통째로 무시하던 것을 고쳐 `.claude/settings.json` 만 추적합니다
+- GitHub 저장소 설정: 설명 문구, 토픽 15종, 비공개 취약점 신고 활성화
+
+### 고침
+
+- `hooks-handlers/posttooluse.sh` 에 shellcheck 지시문 한 줄을 넣어 정적 검사를 통과시켰습니다. 판정 동작은 그대로입니다
+
 ## [1.0.0] - 2026-09-10
 
 ### 추가
