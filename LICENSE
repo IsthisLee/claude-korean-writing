@@ -28,8 +28,10 @@ SOFTWARE.
 
 ### claude-forge
 
-    references/taxonomy.md
-    references/quick-rules.md
+    references/taxonomy.md                      (그대로)
+    references/quick-rules.md                   (그대로)
+    skills/humanize-korean/SKILL.md             (한국어로 옮기고 구조 정리)
+    hooks-handlers/posttooluse.sh               (발동 조건과 K1 정규식을 emdash-slop-guard 에서 가져옴)
 
     MIT License
     Copyright (c) 2026 sangrokjung
@@ -37,9 +39,10 @@ SOFTWARE.
 
 ### k-skill
 
-    skills/korean-character-count/instruction.md
-    skills/korean-character-count/scripts/korean_character_count.js
+    skills/korean-character-count/scripts/korean_character_count.js   (그대로)
+    skills/korean-character-count/instruction.md                      (실행 경로만 수정)
+    skills/korean-character-count/SKILL.md                            (원본을 바탕으로 다시 씀)
 
     MIT License
-    Copyright (c) NomaDamas
+    Copyright (c) 2026
     https://github.com/NomaDamas/k-skill

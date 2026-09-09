@@ -88,6 +88,8 @@ references/quick-rules.md       9.7 KB   다듬기 시작할 때. 압축 룰북
 references/taxonomy.md         66   KB   판정이 애매할 때만. 10분류 73항목
 ```
 
+`references/` 두 파일은 claude-forge 에서 그대로 가져왔다. 파일별 출처는 「출처」에 있다.
+
 스킬은 셋이다.
 
 | 스킬                     | 언제                            | 무엇                                  |
@@ -152,7 +154,19 @@ python3 hooks-handlers/test_posttooluse.py    # 회귀 28건
 
 ## 출처
 
-`references/` 는 [claude-forge](https://github.com/sangrokjung/claude-forge), `skills/korean-character-count/` 는 [k-skill](https://github.com/NomaDamas/k-skill) 에서 가져왔다. 둘 다 MIT 이고 [`LICENSE`](./LICENSE) 에 원 저작권 표시를 남겼다.
+이 플러그인은 [claude-forge](https://github.com/sangrokjung/claude-forge) 의 한국어 산문 품질 부분에서 출발했다. 규칙집과 윤문 스킬을 거기서 가져왔고, 편집 훅은 Forge 의 `emdash-slop-guard` 에서 착안했다. 여기서 더한 것은 처음 쓸 때 쓰는 `korean-writing` 스킬, 훅의 K2~K8, 실제 실패 문장으로 만든 검증이다.
+
+| 파일                                           | 원본                                                            | 가져온 정도                                                                    |
+| ---------------------------------------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `references/taxonomy.md`                       | claude-forge `reference/ai-tell-taxonomy.md`                    | 그대로                                                                         |
+| `references/quick-rules.md`                    | claude-forge `skills/humanize-korean/references/quick-rules.md` | 그대로                                                                         |
+| `skills/humanize-korean/SKILL.md`              | claude-forge `skills/humanize-korean/SKILL.md`                  | 한국어로 옮기고 구조 정리. 절차와 철칙은 원본과 같다                           |
+| `hooks-handlers/posttooluse.sh`                | claude-forge `hooks/emdash-slop-guard.sh`                       | 착안. 발동 조건(`.md` 편집, 한글 비중)과 K1 정규식이 같고 나머지는 여기서 썼다 |
+| `skills/korean-character-count/scripts/*.js`   | [k-skill](https://github.com/NomaDamas/k-skill)                 | 그대로                                                                         |
+| `skills/korean-character-count/instruction.md` | k-skill                                                         | 실행 경로만 `node` 로 바꿈                                                     |
+| `skills/korean-character-count/SKILL.md`       | k-skill                                                         | 원본을 바탕으로 다시 씀                                                        |
+
+둘 다 MIT 이고 [`LICENSE`](./LICENSE) 에 원 저작권 표시와 파일별 범위를 남겼다.
 
 `korean-spell-check` 는 가져오지 않았다. 검사할 원문을 외부 서버로 전송하고, 그 서비스 약관이 개인·학생 무료로 제한한다.
 
