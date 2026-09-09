@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-09-10
+
 ### 바뀜
 
 - 목적을 "번역투를 걷어낸다"에서 "Claude Code가 쓰는 한국어의 품질을 맡는다"로 다시 잡았습니다. `plugin.json`·`marketplace.json`의 설명과 `EVALUATION.md`의 목적 문장도 같이 바꿨습니다
@@ -34,5 +36,6 @@
 - 실제 실패 문장 10건·정상 문장 5건으로 만든 검증(`EVALUATION.md`)과 회귀 테스트 27건
 - LICENSE에 claude-forge·k-skill 원 저작권 표시
 
-[Unreleased]: https://github.com/IsthisLee/claude-korean-writing/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/IsthisLee/claude-korean-writing/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/IsthisLee/claude-korean-writing/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/IsthisLee/claude-korean-writing/releases/tag/v0.1.0
