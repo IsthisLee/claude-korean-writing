@@ -1,0 +1,12 @@
+# 기본 리뷰어
+*                       @IsthisLee
+
+# 판정 규칙과 정답 데이터. 실측 없이 바뀌면 안 되는 곳이다.
+/hooks-handlers/        @IsthisLee
+/hooks/                 @IsthisLee
+/EVALUATION.md          @IsthisLee
+
+# 다른 MIT 프로젝트에서 가져온 파일. 고치면 NOTICE.md 도 같이 고쳐야 한다.
+/references/            @IsthisLee
+/NOTICE.md              @IsthisLee
+/LICENSE                @IsthisLee

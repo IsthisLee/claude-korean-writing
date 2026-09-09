@@ -14,11 +14,12 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/IsthisLee/claude-korean-writing/actions/workflows/validate.yml"><img alt="Validate" src="https://github.com/IsthisLee/claude-korean-writing/actions/workflows/validate.yml/badge.svg?branch=main"></a>
   <img alt="MIT" src="https://img.shields.io/badge/license-MIT-blue.svg">
   <img alt="Claude Code Plugin" src="https://img.shields.io/badge/Claude%20Code-plugin-8A2BE2">
   <img alt="version" src="https://img.shields.io/badge/version-1.0.0-lightgrey">
   <img alt="network" src="https://img.shields.io/badge/network-none-success">
-  <img alt="platform" src="https://img.shields.io/badge/platform-macOS-lightgrey">
+  <img alt="platform" src="https://img.shields.io/badge/platform-macOS%20%7C%20Linux-lightgrey">
 </p>
 
 <p align="center">
@@ -189,7 +190,13 @@ The hook informs; it does not block. A check that interrupts normal work gets sw
 
 ```
 korean-writing/
-├── .github/workflows/validate.yml    regression suite, docs self-check and validate on every push and PR
+├── .github/
+│   ├── workflows/validate.yml        regression suite, shellcheck, version sync and validate on push and PR
+│   ├── ISSUE_TEMPLATE/               awkward sentence report, bug, rule proposal
+│   ├── PULL_REQUEST_TEMPLATE.md      where you paste the commands you ran and what you measured
+│   ├── CODEOWNERS                    reviewers for the rules and the vendored files
+│   └── dependabot.yml                keeps GitHub Actions current
+├── .claude/settings.json             shared project settings: verification commands allowed, vendored edits prompt
 ├── .claude-plugin/
 │   ├── plugin.json                   manifest: name, version, the four skill paths. The version lives here
 │   └── marketplace.json              marketplace catalog. Carries no version
@@ -210,13 +217,17 @@ korean-writing/
 │   ├── ground-truth.json             10 awkward sentences that were actually generated
 │   ├── clean.json                    5 clean sentences from the same context
 │   └── test_posttooluse.py           43 regression cases; verifies reported counts to catch mutations
-├── docs/                             banners (Korean and English, light and dark), hook output demo
+├── docs/                             banners (Korean and English, light and dark), hook output demo, social preview
 ├── scripts/
 │   ├── check.sh                      pushes whole files through the hook, for CI and pre-commit
 │   ├── measure.sh                    false-positive measurement over a corpus of real documents, quarterly
 │   └── release.sh                    version, CHANGELOG, badges and tag in one run
 ├── EVALUATION.md                     pass criteria and measurements
 ├── CHANGELOG.md                      release notes
+├── CLAUDE.md                         rules for Claude working inside this repo
+├── CONTRIBUTING.md · .en.md          how to contribute; rule changes need measurements
+├── CODE_OF_CONDUCT.md                Contributor Covenant 2.1
+├── SECURITY.md                       reporting process, and what the hook reads and never does
 ├── LICENSE                           MIT text
 ├── NOTICE.md                         original copyright notices and per-file scope of imported files
 └── README.md · README.en.md
@@ -274,7 +285,7 @@ Mutation testing injects defects into the hook and confirms the regression suite
 python3 hooks-handlers/test_posttooluse.py
 ```
 
-GitHub Actions runs the same checks on every push and pull request (`.github/workflows/validate.yml`): the regression suite, manifest JSON, the hook's executable bit, eight Korean documents passing their own hook, a character-count smoke test, and `claude plugin validate`.
+GitHub Actions runs the same checks on every push and pull request (`.github/workflows/validate.yml`): the regression suite, JSON and YAML syntax for the manifests and issue forms, the hook's executable bit, thirteen Korean documents passing their own hook, and a character-count smoke test, all **on both macOS and Linux**. Three more jobs run shellcheck, verify the version is written the same way everywhere, and run `claude plugin validate`.
 
 ## Neighbors
 
@@ -342,6 +353,8 @@ Regular expressions catch known patterns. New kinds of awkwardness have to be fo
 </details>
 
 ## Development and contributing
+
+The full process, the measurements a rule change needs, and the PR checklist live in [CONTRIBUTING.en.md](./CONTRIBUTING.en.md). Everyone taking part follows the [Code of Conduct](./CODE_OF_CONDUCT.md), and security issues go through [SECURITY.md](./SECURITY.md) rather than a public issue.
 
 Symlink the repository into `~/.claude/skills/` and it loads as `korean-writing@skills-dir`, bypassing the marketplace so changes apply immediately.
 

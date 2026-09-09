@@ -18,6 +18,8 @@ command -v python3 >/dev/null 2>&1 || exit 0
 
 IN=$(cat)
 
+# 아래 작은따옴표는 의도다. 안쪽은 python 코드라 셸이 확장하면 안 된다.
+# shellcheck disable=SC2016
 printf '%s' "$IN" | python3 -c '
 import sys, json, re, os
 

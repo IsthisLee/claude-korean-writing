@@ -1,0 +1,15 @@
+version: 2
+updates:
+  # 이 저장소가 쓰는 외부 의존성은 GitHub Actions 뿐이다.
+  # 훅과 스킬은 표준 라이브러리만 쓰므로 패키지 매니저 생태계가 없다.
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: "chore"
+    labels:
+      - dependencies
+    groups:
+      actions:
+        patterns: ["*"]

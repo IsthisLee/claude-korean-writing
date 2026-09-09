@@ -1,0 +1,39 @@
+name: 판정 규칙 제안
+description: 잡아야 할 패턴을 추가하거나, 잡지 말아야 할 패턴을 빼자는 제안입니다.
+title: "[규칙] "
+labels: [rule]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        규칙은 실측으로 정합니다. 근거 없는 임계 조정은 오탐을 조용히 늘립니다.
+        배경은 [EVALUATION.md](https://github.com/IsthisLee/claude-korean-writing/blob/main/EVALUATION.md) 에 있습니다.
+  - type: dropdown
+    id: direction
+    attributes:
+      label: 어느 쪽인가
+      options:
+        - 잡아야 하는데 안 잡힌다 (규칙 추가·강화)
+        - 잡지 말아야 하는데 잡힌다 (규칙 삭제·완화)
+    validations:
+      required: true
+  - type: textarea
+    id: examples
+    attributes:
+      label: 실제 문장
+      description: Claude 가 실제로 쓴 문장이면 좋습니다. 지어낸 예문이면 그렇다고 적어 주세요.
+    validations:
+      required: true
+  - type: textarea
+    id: measure
+    attributes:
+      label: 실측 (있으면)
+      description: |
+        `scripts/measure.sh ~/문서폴더` 결과를 붙입니다.
+        걸린 파일이 사람이 쓴 글인지 Claude 가 쓴 글인지 구분해 주시면 가장 좋습니다.
+      render: shell
+  - type: input
+    id: code
+    attributes:
+      label: 해당 코드 (알면)
+      placeholder: K1 줄표 / K7 사물 의인화 / 새 코드가 필요함

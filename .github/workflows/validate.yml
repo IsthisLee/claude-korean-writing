@@ -6,18 +6,50 @@ on:
   pull_request:
   workflow_dispatch:
 
+# 최소 권한. 이 워크플로는 저장소를 읽기만 하고 아무것도 쓰지 않는다.
+# 명시하지 않으면 저장소 기본값이 적용되고, 그 기본값이 쓰기일 수 있다.
+permissions:
+  contents: read
+
+# 같은 브랜치에 연달아 push 하면 앞선 실행을 취소한다.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   tests:
-    name: 회귀 테스트와 문서 자체 검사
-    runs-on: ubuntu-latest
+    # 훅은 bash 와 python3 만 쓴다. 두 OS 에서 돌려 README 의 platform 배지를 실측으로 뒷받침한다.
+    name: 회귀 테스트와 문서 자체 검사 (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: 매니페스트 JSON 문법
         run: |
           for f in .claude-plugin/plugin.json .claude-plugin/marketplace.json hooks/hooks.json; do
             python3 -m json.tool "$f" > /dev/null && echo "OK: $f"
           done
+
+      - name: 이슈 양식과 워크플로 YAML 문법
+        run: |
+          python3 - <<'PY'
+          import pathlib, sys
+          try:
+              import yaml
+          except ImportError:
+              print("PyYAML 없음 — 건너뜀"); sys.exit(0)
+          bad = 0
+          for p in sorted(pathlib.Path(".github").rglob("*.yml")):
+              try:
+                  yaml.safe_load(p.read_text(encoding="utf-8")); print(f"OK: {p}")
+              except Exception as e:
+                  print(f"::error file={p}::{e}"); bad = 1
+          sys.exit(bad)
+          PY
 
       - name: 훅 실행 비트 (git 모드 100755)
         run: |
@@ -34,18 +66,59 @@ jobs:
         run: |
           scripts/check.sh README.md SKILL.md skills/humanize-korean/SKILL.md \
             skills/korean-character-count/SKILL.md skills/korean-character-count/instruction.md \
-            EVALUATION.md CHANGELOG.md NOTICE.md
+            EVALUATION.md CHANGELOG.md NOTICE.md CLAUDE.md \
+            CONTRIBUTING.md CONTRIBUTING.en.md SECURITY.md CODE_OF_CONDUCT.md
 
       - name: 글자 수 스크립트 스모크
         run: |
           node skills/korean-character-count/scripts/korean_character_count.js --text "가나다" --format text | grep -q "^characters: 3$"
 
+  lint:
+    name: shellcheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: shellcheck
+        run: |
+          if ! command -v shellcheck >/dev/null 2>&1; then
+            sudo apt-get update -qq && sudo apt-get install -y -qq shellcheck
+          fi
+          shellcheck --version
+          shellcheck hooks-handlers/posttooluse.sh scripts/check.sh scripts/measure.sh scripts/release.sh
+
+  version:
+    # 버전의 정본은 plugin.json 이다. README 배지와 CHANGELOG 가 따라오지 않으면 막는다.
+    name: 버전 표기 일치
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - run: |
+          python3 - <<'PY'
+          import json, re, sys, pathlib
+          ver = json.load(open(".claude-plugin/plugin.json"))["version"]
+          bad = []
+          for p in ("README.md", "README.en.md"):
+              s = pathlib.Path(p).read_text(encoding="utf-8")
+              m = re.search(r"badge/version-([^-]+)-lightgrey", s)
+              if not m:
+                  bad.append(f"{p}: version 배지를 찾지 못했다")
+              elif m.group(1) != ver:
+                  bad.append(f"{p}: 배지 {m.group(1)} != plugin.json {ver}")
+          s = pathlib.Path("CHANGELOG.md").read_text(encoding="utf-8")
+          if not re.search(rf"^## \[{re.escape(ver)}\]", s, re.M):
+              bad.append(f"CHANGELOG.md: [{ver}] 절이 없다")
+          for b in bad:
+              print(f"::error::{b}")
+          print(f"plugin.json 버전 {ver} — " + (f"불일치 {len(bad)}건" if bad else "README 배지·CHANGELOG 와 일치"))
+          sys.exit(1 if bad else 0)
+          PY
+
   plugin-validate:
     name: claude plugin validate
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
       - name: Claude Code CLI 설치
