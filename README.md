@@ -127,6 +127,8 @@ python3 hooks-handlers/test_posttooluse.py
 
 저장소를 `~/.claude/skills/` 로 링크하면 `korean-writing@skills-dir` 로 자동 로드된다. 마켓플레이스를 거치지 않으므로 고치는 즉시 반영된다.
 
+마켓플레이스로 설치한 사본이 있으면 그쪽이 우선하고 링크 사본은 로드되지 않는다. 개발 전에 `claude plugin uninstall korean-writing` 으로 설치본을 뺀다.
+
 ```bash
 git clone https://github.com/IsthisLee/claude-korean-writing.git
 ln -s "$PWD/claude-korean-writing" ~/.claude/skills/korean-writing
