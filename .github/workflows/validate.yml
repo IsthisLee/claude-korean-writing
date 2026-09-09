@@ -21,7 +21,7 @@ jobs:
 
       - name: 훅 실행 비트 (git 모드 100755)
         run: |
-          for f in hooks-handlers/posttooluse.sh scripts/check.sh scripts/release.sh; do
+          for f in hooks-handlers/posttooluse.sh scripts/check.sh scripts/measure.sh scripts/release.sh; do
             mode=$(git ls-files -s "$f" | cut -d' ' -f1)
             [ "$mode" = "100755" ] || { echo "::error file=$f::git 모드가 $mode 다. 실행되려면 100755 여야 한다. git update-index --chmod=+x $f"; exit 1; }
             echo "OK: $f $mode"

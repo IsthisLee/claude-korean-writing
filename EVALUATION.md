@@ -115,8 +115,11 @@ B1 대상: "슬랙 내 캐쥬얼하게 확인 요청드리려는데", "비개발
 ## 재현
 
 ```bash
-python3 hooks-handlers/test_posttooluse.py     # 회귀 28건
+python3 hooks-handlers/test_posttooluse.py     # 회귀 40건
+scripts/measure.sh ~/Documents                 # 실제 문서 뭉치의 오탐 측정
 ```
+
+실문서 오탐은 분기마다 다시 잰다. `scripts/measure.sh` 로 실제 문서가 쌓인 디렉터리를 돌리고, 걸린 파일을 사람이 쓴 글과 Claude 가 쓴 글로 나눠 이 문서에 날짜와 함께 적는다. 사람이 쓴 글의 비율이 1% 를 넘으면 그 코드의 규칙을 다시 본다. 2026-09-10 측정은 이 방법으로 했다(이 저장소의 문서를 포함하면 154개 중 60개, 사람 글 1개).
 
 정답 데이터는 `hooks-handlers/ground-truth.json`(위반 10건)과 `clean.json`(정상 5건)이다.
 실제로 생성됐던 어색한 문장에서 가져왔다. 합성 예문이 아니다.

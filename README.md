@@ -197,7 +197,7 @@ Edit · Write · MultiEdit 가 끝난다
 | 스킬        | 4      | `korean-writing`, `humanize-korean`, `korean-character-count`, `crafting-effective-readmes` |
 | 훅          | 1      | PostToolUse. 패턴 8종 `K1`~`K8`                                                             |
 | 규칙집      | 2      | `quick-rules.md`(압축), `taxonomy.md`(10분류 73항목, 심각도, 처방)                          |
-| 스크립트    | 3      | 글자 수(`node`), 통째 검사와 릴리스(`bash`)                                                 |
+| 스크립트    | 4      | 글자 수(`node`), 통째 검사·오탐 측정·릴리스(`bash`)                                         |
 | 검증 데이터 | 15문장 | 위반 10건, 정상 5건. 회귀 테스트 40건                                                       |
 
 ```
@@ -226,6 +226,7 @@ korean-writing/
 ├── docs/                             배너(한·영, 밝음·어두움), 훅 출력 데모
 ├── scripts/
 │   ├── check.sh                      파일을 통째로 훅에 넣어 검사. CI·pre-commit 용
+│   ├── measure.sh                    실제 문서 뭉치의 오탐 측정. 분기마다
 │   └── release.sh                    버전·CHANGELOG·배지·태그를 한 번에
 ├── EVALUATION.md                     합격 기준과 측정 결과
 ├── CHANGELOG.md                      릴리스 노트
@@ -369,6 +370,8 @@ python3 hooks-handlers/test_posttooluse.py    # 회귀 40건
 1. `hooks-handlers/posttooluse.sh`에 검사 추가
 2. `hooks-handlers/ground-truth.json`에 실제 문장 추가
 3. `hooks-handlers/test_posttooluse.py`에 케이스 추가. 오탐 케이스를 먼저
+
+규칙을 고쳤으면 실제 문서 뭉치에 돌려 오탐이 늘지 않았는지 봅니다. `scripts/measure.sh ~/Documents`처럼 문서가 쌓인 디렉터리를 주면 걸린 파일과 코드별 수를 냅니다. 걸린 파일이 사람이 쓴 글인지 Claude가 쓴 글인지는 사람이 판단합니다.
 
 **어색한 문장을 발견하면 이슈로 보내 주세요.** 이 플러그인의 정답 데이터는 실제로 생성됐던 문장만 씁니다. 합성 예문보다 실제 실패 한 건이 더 값집니다.
 

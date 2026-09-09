@@ -183,7 +183,7 @@ The hook informs; it does not block. A check that interrupts normal work gets sw
 | Skills       | 4            | `korean-writing`, `humanize-korean`, `korean-character-count`, `crafting-effective-readmes` |
 | Hook         | 1            | PostToolUse, patterns `K1` to `K8`                                                          |
 | Rulebooks    | 2            | `quick-rules.md` (compressed), `taxonomy.md` (10 categories, 73 items, severity, fixes)     |
-| Scripts      | 3            | character count (`node`), whole-file check and release (`bash`)                             |
+| Scripts      | 4            | character count (`node`); whole-file check, corpus measurement and release (`bash`)         |
 | Verification | 15 sentences | 10 violations, 5 clean. 40 regression cases                                                 |
 
 ```
@@ -212,6 +212,7 @@ korean-writing/
 ├── docs/                             banners (Korean and English, light and dark), hook output demo
 ├── scripts/
 │   ├── check.sh                      pushes whole files through the hook, for CI and pre-commit
+│   ├── measure.sh                    false-positive measurement over a corpus of real documents, quarterly
 │   └── release.sh                    version, CHANGELOG, badges and tag in one run
 ├── EVALUATION.md                     pass criteria and measurements
 ├── CHANGELOG.md                      release notes
@@ -355,6 +356,8 @@ Adding a pattern touches three places:
 1. `hooks-handlers/posttooluse.sh`: the check
 2. `hooks-handlers/ground-truth.json`: a real sentence
 3. `hooks-handlers/test_posttooluse.py`: the case, false-positive cases first
+
+After changing a rule, run it over a corpus of real documents to see that false positives did not grow: `scripts/measure.sh ~/Documents` prints the flagged files and counts per code. Whether a flagged file was written by a person or by Claude is a human call.
 
 **If you spot an awkward sentence, open an issue.** The ground truth uses only sentences that were actually generated. One real failure is worth more than any synthetic example.
 
