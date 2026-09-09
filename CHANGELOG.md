@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-09-10
+
 ### 추가
 
 - `korean-writing` 스킬: 밖으로 나갈 글을 처음 쓸 때 번역투·AI 관용구를 피하는 원칙과 교정 예시
@@ -19,4 +21,5 @@
 - README 한국어판·영어판, 훅 출력 데모 이미지(`docs/hook-output.svg`)
 - 제3자 고지(`NOTICE.md`): im-not-ai·claude-forge·k-skill·agent-toolkit 의 원 저작권 표시
 
-[Unreleased]: https://github.com/IsthisLee/claude-korean-writing/commits/main
+[Unreleased]: https://github.com/IsthisLee/claude-korean-writing/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/IsthisLee/claude-korean-writing/releases/tag/v1.0.0
