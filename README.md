@@ -10,7 +10,6 @@
   <img alt="MIT" src="https://img.shields.io/badge/license-MIT-blue.svg">
   <img alt="Claude Code Plugin" src="https://img.shields.io/badge/Claude%20Code-plugin-8A2BE2">
   <img alt="version" src="https://img.shields.io/badge/version-0.1.0-lightgrey">
-  <img alt="tests" src="https://img.shields.io/badge/tests-28%2F28-brightgreen">
   <img alt="network" src="https://img.shields.io/badge/network-none-success">
 </p>
 
@@ -34,11 +33,11 @@
 ## 빠른 시작
 
 ```bash
-claude plugin marketplace add <사용자명>/korean-writing
+claude plugin marketplace add IsthisLee/korean-writing
 claude plugin install korean-writing@korean-writing
 ```
 
-설치하면 끝난다. 설정할 것이 없다.
+설치하면 끝난다. 설정할 것이 없다. 훅은 `python3` 로, 글자 수 스크립트는 `node` 로 실행되고 별도 패키지는 설치하지 않는다.
 
 슬랙 메시지, 공지, 보고서, README 를 쓰라고 하면 규칙이 자동으로 로드된다. `.md` 파일을 고치면 훅이 검사한다.
 
@@ -129,7 +128,7 @@ python3 hooks-handlers/test_posttooluse.py
 저장소를 `~/.claude/skills/` 로 링크하면 `korean-writing@skills-dir` 로 자동 로드된다. 마켓플레이스를 거치지 않으므로 고치는 즉시 반영된다.
 
 ```bash
-git clone https://github.com/<사용자명>/korean-writing.git
+git clone https://github.com/IsthisLee/korean-writing.git
 ln -s "$PWD/korean-writing" ~/.claude/skills/korean-writing
 claude plugin list                            # loaded 확인
 python3 hooks-handlers/test_posttooluse.py    # 회귀 28건
