@@ -266,6 +266,8 @@ The ground truth is [`hooks-handlers/ground-truth.json`](./hooks-handlers/ground
 
 **False positives weigh more than misses.** A check that blocks normal work gets switched off.
 
+A with/without comparison of the skill on four identical prompts is recorded in [`EVALUATION.md`](./EVALUATION.md), item C4. On claude-opus-5 as of 2026-09-10 both conditions passed the hook, so the generation-time effect could not be separated on that sample; the hook is the safety net that stays when the model changes.
+
 Mutation testing injects defects into the hook and confirms the regression suite catches them, down to a single alternative silently dropping out of a regular expression.
 
 ```bash
