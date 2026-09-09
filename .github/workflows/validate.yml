@@ -1,0 +1,56 @@
+name: Validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  tests:
+    name: 회귀 테스트와 문서 자체 검사
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 매니페스트 JSON 문법
+        run: |
+          for f in .claude-plugin/plugin.json .claude-plugin/marketplace.json hooks/hooks.json; do
+            python3 -m json.tool "$f" > /dev/null && echo "OK: $f"
+          done
+
+      - name: 훅 실행 비트 (git 모드 100755)
+        run: |
+          for f in hooks-handlers/posttooluse.sh scripts/check.sh scripts/release.sh; do
+            mode=$(git ls-files -s "$f" | cut -d' ' -f1)
+            [ "$mode" = "100755" ] || { echo "::error file=$f::git 모드가 $mode 다. 실행되려면 100755 여야 한다. git update-index --chmod=+x $f"; exit 1; }
+            echo "OK: $f $mode"
+          done
+
+      - name: 훅 회귀 테스트
+        run: python3 hooks-handlers/test_posttooluse.py
+
+      - name: 한국어 문서가 자기 훅을 통과하는가
+        run: |
+          scripts/check.sh README.md SKILL.md skills/humanize-korean/SKILL.md \
+            skills/korean-character-count/SKILL.md skills/korean-character-count/instruction.md \
+            EVALUATION.md CHANGELOG.md NOTICE.md
+
+      - name: 글자 수 스크립트 스모크
+        run: |
+          node skills/korean-character-count/scripts/korean_character_count.js --text "가나다" --format text | grep -q "^characters: 3$"
+
+  plugin-validate:
+    name: claude plugin validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Claude Code CLI 설치
+        run: npm install -g @anthropic-ai/claude-code
+      - name: validate
+        run: |
+          claude plugin validate . | tee /tmp/validate.log
+          grep -q "Validation passed" /tmp/validate.log

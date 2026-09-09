@@ -11,10 +11,12 @@ pytest 없이 assert 만 쓴다. 실행: python3 hooks-handlers/test_posttooluse
 검증할 때, 어느 케이스가 깨졌는지 정확히 알아야 하기 때문이다.
 """
 import json
+import os
 import pathlib
 import re
 import subprocess
 import sys
+import tempfile
 
 HOOK = pathlib.Path(__file__).resolve().parent / "posttooluse.sh"
 CODES = ("K1", "K2", "K3", "K4", "K5", "K6", "K7", "K8")
@@ -22,12 +24,13 @@ FILLER = "이번 배포에서 고칠 곳이 나왔다. 담당자가 수강생을
 FAILS = []
 
 
-def run(content, path="/tmp/x.md", tool="Write", key="content"):
+def run(content, path="/tmp/x.md", tool="Write", key="content", env=None):
     payload = json.dumps(
         {"tool_name": tool, "tool_input": {"file_path": path, key: content}},
         ensure_ascii=False,
     )
-    p = subprocess.run([str(HOOK)], input=payload, capture_output=True, text=True)
+    full_env = {**os.environ, **env} if env else None
+    p = subprocess.run([str(HOOK)], input=payload, capture_output=True, text=True, env=full_env)
     return p.returncode, p.stdout + p.stderr
 
 
@@ -97,6 +100,21 @@ expect_clean(
 )
 expect_clean("줄표 삽입구 3개는 통과 (임계 4)", FILLER * 2 + "가 — 나. 다 — 라. 마 — 바.")
 expect_clean("승패 1회는 통과 (임계 2)", FILLER * 3 + "충돌하면 규칙이 이깁니다.")
+expect_clean("서버가 죽다는 개발자의 일상어", FILLER * 3 + "새벽에 서버가 죽어서 재시작했다. 훅이 죽어도 편집은 남는다.")
+expect_clean(
+    "~에 대해·~를 통해는 사람도 많이 쓴다 (실측 후 제외)",
+    "이 글에서는 중첩 DTO 검증에 대해 다룬다. 먼저 데코레이터를 통해 규칙을 붙이고, "
+    "실패 응답에 대해 어떤 형식을 쓸지 정한다. 마지막으로 테스트를 통해 동작을 확인하고, "
+    "운영에서 만난 문제에 대해 적는다.",
+)
+expect_clean(
+    "~~~ 울타리 코드블록 안의 위반은 제외",
+    FILLER * 3 + "\n~~~\n축이 두 개다. 갈래가 셋. 레이어가 다르다. 결론적으로 혁신적이다.\n~~~\n",
+)
+expect_clean(
+    "HTML 주석 안의 위반은 제외",
+    FILLER * 3 + "\n<!-- 축이 두 개다. 갈래가 셋. 레이어가 다르다. 결론적으로 혁신적이다. -->\n",
+)
 expect_clean(
     "표 안의 교정 예시(전/후)는 위반이 아니다",
     FILLER * 2 + "\n\n| 전 | 후 |\n|---|---|\n"
@@ -155,6 +173,29 @@ expect_hit(
     "담당자가 로그를 가지고 있지 않아 원인을 확인하지 못했다. 다시 살펴봐야 한다.",
     "K8",
 )
+
+EN = "This section explains how the release script works and what it checks. " * 8
+EN_DASH = "The plan — as agreed — is fine. Also — yes — done. " * 8
+
+print("\n영어가 대부분인 편집 - 한글 비중 30% 이상인 줄만 모아 다시 본다")
+expect_hit(
+    "영어 문서 안의 한국어 위반 문단",
+    EN + "\n\n규칙이 충돌하면 상위 문서가 이깁니다. 둘 다 값이 있으면 텍스트가 이기고 참조는 무시됩니다.\n\n" + EN,
+    "K6",
+)
+expect_clean("영어 문서 안의 정상 한국어 문단", EN + "\n\n" + FILLER * 2 + "\n\n" + EN)
+expect_clean("영어 문서 안의 한국어가 20자 미만", EN + "\n\n오타 하나 고침\n\n" + EN)
+expect_clean("영어 줄의 줄표는 세지 않는다", EN_DASH + "\n\n" + FILLER * 2)
+
+print("\n끄기 - 표시가 없으면 걸리고, 있으면 통과한다")
+BAD = FILLER * 3 + "결론적으로 혁신적이다."
+expect_hit("표시가 없으면 같은 글이 걸린다", BAD, "K4")
+expect_clean("이번에 쓴 부분에 korean-writing: ignore 표시", "<!-- korean-writing: ignore -->\n" + BAD)
+_formal = os.path.join(tempfile.mkdtemp(), "formal.md")
+with open(_formal, "w", encoding="utf-8") as _f:
+    _f.write("<!-- korean-writing: ignore -->\n# 이용 약관\n")
+expect_clean("파일 머리의 표시 (Edit 로 일부만 고칠 때)", BAD, path=_formal, tool="Edit", key="new_string")
+expect_clean("환경변수 KOREAN_WRITING_HOOK_DISABLED=1", BAD, env={"KOREAN_WRITING_HOOK_DISABLED": "1"})
 
 print("\n형식")
 rc, out = run("결론적으로 축은 두 개고 갈래가 셋이며 레이어도 다르다. 혁신적인 변화다.")

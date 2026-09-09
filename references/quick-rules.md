@@ -1,7 +1,7 @@
 # Quick Rules — single-pass cleanup cheat sheet (한 콜 윤문용 룰북)
 
 A compressed rulebook for this skill's single-pass cleanup: the S1/S2 patterns
-from `reference/ai-tell-taxonomy.md` (the full ~50-pattern reference), reduced
+from `taxonomy.md` (the full ~50-pattern reference), reduced
 to one line each — definition + prescription, no examples. IDs match the full
 taxonomy 1:1, so cross-reference by ID when you need the worked example.
 
@@ -16,7 +16,7 @@ abbreviations (LLM, GPU, MCP, API, etc.).
 **Over-polish guard**: a change rate above 30% is a warning sign; above 50%,
 stop and reconsider the pass — you're likely rewriting, not cleaning up.
 
-이 스킬의 단일 패스 윤문에 쓰는 압축 룰북이다. `reference/ai-tell-taxonomy.md`
+이 스킬의 단일 패스 윤문에 쓰는 압축 룰북이다. `taxonomy.md`
 (전체 ~50패턴 본진)에서 S1·S2 핵심 패턴만 추려 정의+처방 한 줄로 압축했다. ID는
 본진과 1:1로 매칭되므로, 예문이 필요하면 해당 ID로 본진을 참조한다.
 
