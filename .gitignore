@@ -1,5 +1,6 @@
 # User-specific settings (secrets, local overrides)
 settings.local.json
+CLAUDE.local.md
 
 # Backup files
 *.bak.*
@@ -28,12 +29,17 @@ venv/
 # Logs
 *.log
 
+# Claude Code
+# .claude/settings.json 은 기여자가 공유하는 프로젝트 설정이라 커밋한다.
+# 개인 설정과 세션 부산물만 무시한다.
+.claude/*
+!.claude/settings.json
+.claude/settings.local.json
+.claude/artifacts/
+.claude/work-log/
+.claude-session-imports/
+.codex/backups/
+
 # Archive
 archive/
 reports/
-.claude/
-.claude/settings.local.json
-.codex/backups/
-.claude-session-imports/
-.claude/artifacts/
-.claude/work-log/

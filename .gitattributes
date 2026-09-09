@@ -1,0 +1,28 @@
+# 줄바꿈. 셸 스크립트가 CRLF 로 체크아웃되면 `#!/usr/bin/env bash` 가
+# `bad interpreter` 로 죽는다. Windows 체크아웃에서도 LF 를 강제한다.
+* text=auto eol=lf
+
+*.sh    text eol=lf
+*.py    text eol=lf
+*.js    text eol=lf
+*.json  text eol=lf
+*.md    text eol=lf
+*.yml   text eol=lf
+*.svg   text eol=lf
+
+# 바이너리로 다뤄 diff 를 만들지 않는다.
+*.png binary
+*.jpg binary
+*.gif binary
+*.ico binary
+
+# GitHub 언어 통계. 가져온 스킬과 규칙집 원문은 이 저장소가 쓴 코드가 아니다.
+skills/crafting-effective-readmes/** linguist-vendored
+skills/korean-character-count/scripts/** linguist-vendored
+references/taxonomy.md               linguist-generated
+docs/**                              linguist-documentation
+
+# 릴리스 아카이브(zip·tarball)에서 빼는 것. 쓰는 사람에게 필요 없다.
+.github/        export-ignore
+.gitattributes  export-ignore
+.gitignore      export-ignore
