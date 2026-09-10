@@ -7,9 +7,10 @@
 <!-- 돌린 명령과 결과를 붙여 주세요. 통과했다는 말보다 출력이 낫습니다. -->
 
 - [ ] `python3 hooks-handlers/test_posttooluse.py`
+- [ ] `python3 hooks-handlers/test_sessionstart.py`
 - [ ] `scripts/check.sh <고친 .md 파일>`
 
-## 판정 규칙(K1~K8)을 바꿨다면
+## 판정 규칙(K1~K10)을 바꿨다면
 
 <!-- 규칙을 안 건드렸으면 이 절은 지우세요. -->
 
