@@ -44,8 +44,9 @@ json.dump({"hooks": {"SessionStart": [{"matcher": "startup",
           open(out, "w"), ensure_ascii=False)
 PY
 }
-settings_for "$OLD" "$WORK/old.json"
-settings_for "$NEW" "$WORK/new.json"
+mkdir -p "$WORK/cfg"   # 설정을 생성물과 같은 자리에 두면 validate.py 가 생성물로 오인한다
+settings_for "$OLD" "$WORK/cfg/old.json"
+settings_for "$NEW" "$WORK/cfg/new.json"
 
 echo "옛 규칙: $OLD"
 echo "새 규칙: $NEW"
@@ -56,7 +57,7 @@ for id in "${IDS[@]}"; do
   [ -r "$p" ] || { echo "프롬프트 없음: $p" >&2; exit 2; }
   for side in old new; do
     claude -p "$(cat "$p")" --append-system-prompt "$(cat "$SYS")" \
-      "${COMMON[@]}" --settings "$WORK/$side.json" < /dev/null > "$WORK/${id}_${side}.json" 2>/dev/null
+      "${COMMON[@]}" --settings "$WORK/cfg/$side.json" < /dev/null > "$WORK/${id}_${side}.json" 2>/dev/null
   done
   echo "  생성 $id"
 done
