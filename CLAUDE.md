@@ -4,14 +4,15 @@
 
 ## 이 저장소가 무엇인가
 
-Claude Code 가 쓰는 한국어의 품질과 자연스러움을 맡는 플러그인입니다. 스킬 넷과 PostToolUse 훅 하나, 검사·릴리스 스크립트로 이루어집니다. 구조와 사용법은 [README.md](README.md), 판정 기준은 [EVALUATION.md](EVALUATION.md) 에 있습니다.
+Claude Code 가 쓰는 모든 한국어의 품질과 자연스러움을 맡는 플러그인입니다. 스킬 넷과 훅 둘(세션 시작의 상시 규칙 주입, 편집 뒤 검사), 검사·릴리스 스크립트로 이루어집니다. 구조와 사용법은 [README.md](README.md), 판정 기준은 [EVALUATION.md](EVALUATION.md) 에 있습니다.
 
 ## 먼저 돌린다
 
 작업을 시작하면 기준선부터 잡습니다. 무엇이 원래 깨져 있었는지 모르면 내가 깬 것과 구분할 수 없습니다.
 
 ```bash
-python3 hooks-handlers/test_posttooluse.py     # 훅 회귀 테스트
+python3 hooks-handlers/test_posttooluse.py     # 검사 훅 회귀 테스트
+python3 hooks-handlers/test_sessionstart.py    # 상시 규칙 주입 회귀 테스트
 scripts/check.sh README.md CLAUDE.md           # 문서가 자기 훅을 통과하는가
 ```
 
@@ -21,9 +22,11 @@ scripts/check.sh README.md CLAUDE.md           # 문서가 자기 훅을 통과�
 
 **훅은 편집을 되돌리지 않습니다.** 걸린 항목을 stderr 로 알리고 종료 코드 2 로 끝냅니다. 사람이 쓰던 작업을 막는 설계가 아닙니다.
 
+**상시 규칙 주입은 무엇도 막지 않습니다.** `hooks-handlers/sessionstart.sh` 는 어떤 경우에도 종료 코드 0 으로 끝납니다. 규칙 파일이 없거나 읽히지 않아도 마찬가지입니다. 주입문을 늘리면 상시 비용이 커지므로 EVALUATION.md 의 D2 예산을 먼저 보고, 늘렸으면 `usage` 로 실측해 그 값을 남깁니다.
+
 **한국어 문서를 고쳤으면 `scripts/check.sh` 를 통과시킵니다.** CI 가 같은 검사를 돌리므로 여기서 걸리면 거기서도 걸립니다. 나쁜 예를 일부러 싣는 문서라면 파일 머리에 `<!-- korean-writing: ignore -->` 를 넣습니다.
 
-**밖으로 나갈 한국어를 쓸 때는 이 저장소의 규칙을 씁니다.** 커밋 메시지, README, 이슈 답변 모두 해당합니다. 규칙은 [SKILL.md](SKILL.md) 에 있습니다. 자기 규칙을 어기는 저장소는 설득력이 없습니다.
+**한국어 글 작성 요청에는 이 저장소의 규칙을 씁니다.** 커밋 메시지, README, 이슈 답변, 작업 메모처럼 남에게 보내든 안에 남기든 모두 해당합니다. 규칙은 [SKILL.md](SKILL.md) 에 있습니다. 자기 규칙을 어기는 저장소는 설득력이 없습니다.
 
 ## 건드리지 않는 것
 
