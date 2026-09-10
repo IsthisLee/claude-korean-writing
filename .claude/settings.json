@@ -16,8 +16,6 @@
     ],
     "ask": [
       "Bash(scripts/release.sh:*)",
-      "Edit(/references/**)",
-      "Write(/references/**)",
       "Edit(/skills/crafting-effective-readmes/**)",
       "Write(/skills/crafting-effective-readmes/**)",
       "Edit(/skills/korean-character-count/scripts/**)",

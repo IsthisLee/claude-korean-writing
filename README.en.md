@@ -48,16 +48,16 @@ This plugin attaches wherever that Korean is produced. When a session opens, rep
 
 > Think of a linter, attached to Korean prose instead of code. It points things out and does not fix them; fixing is your call.
 
-| Part           | Count        | What                                                                                                                                                         |
-| -------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Skills         | 4            | `korean-writing`, `humanize-korean`, `korean-character-count`, `crafting-effective-readmes`                                                                  |
-| Hooks          | 2            | rule injection at session start, a check right after `.md` edits                                                                                             |
-| Check patterns | 8            | `K1` to `K8`: em-dashes, abstract structure words, 것 constructions, AI idioms, mechanical enumeration, win/lose and object personification, translation-ese |
-| Rulebook       | 84 items     | im-not-ai's taxonomy: 10 categories, each item with a severity and a fix                                                                                     |
-| Ground truth   | 15 sentences | 10 violations Claude Code actually generated, 5 clean sentences from the same context                                                                        |
-| Regression     | 63 cases     | 43 for the check hook, 20 for the always-on rules                                                                                                            |
-| Scripts        | 4            | character count, whole-file check, false-positive measurement, release                                                                                       |
-| Network        | none         | the hooks are bash and python3 regular expressions; the counter uses `node:fs`                                                                               |
+| Part              | Count        | What                                                                                                                                                         |
+| ----------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Skills            | 3            | `korean-writing`, `korean-character-count`, `crafting-effective-readmes`                                                                                     |
+| Hooks             | 2            | rule injection at session start, a check right after `.md` edits                                                                                             |
+| Check patterns    | 8            | `K1` to `K8`: em-dashes, abstract structure words, 것 constructions, AI idioms, mechanical enumeration, win/lose and object personification, translation-ese |
+| Dependency plugin | 1            | im-not-ai's `humanize-korean`. It polishes existing text and is installed alongside                                                                          |
+| Ground truth      | 15 sentences | 10 violations Claude Code actually generated, 5 clean sentences from the same context                                                                        |
+| Regression        | 63 cases     | 43 for the check hook, 20 for the always-on rules                                                                                                            |
+| Scripts           | 4            | character count, whole-file check, false-positive measurement, release                                                                                       |
+| Network           | none         | the hooks are bash and python3 regular expressions; the counter uses `node:fs`                                                                               |
 
 ## Seeing it work
 
@@ -131,7 +131,7 @@ claude plugin marketplace add IsthisLee/claude-korean-writing
 claude plugin install korean-writing
 ```
 
-When `claude plugin list` shows `korean-writing` as `enabled`, you are done. New versions come with `claude plugin update korean-writing`. A local checkout can be registered as a marketplace too, for an internal copy or a fork.
+When `claude plugin list` shows `korean-writing` as `enabled`, you are done. im-not-ai's `humanize-korean`, which handles polishing, is installed as a dependency and appears in the list as well. If you installed 1.1.0 or earlier, run `claude plugin install korean-writing` again to pull in the dependency. New versions come with `claude plugin update korean-writing`. A local checkout can be registered as a marketplace too, for an internal copy or a fork.
 
 ```bash
 claude plugin marketplace add /path/to/claude-korean-writing
@@ -161,12 +161,12 @@ Talk to Claude Code as usual; the skills load from the request. These lines can 
 
 To call a skill directly, use its slash name.
 
-| Ask for                              | Direct call                                  |
-| ------------------------------------ | -------------------------------------------- |
-| Text written well from the start     | `/korean-writing`                            |
-| Translation-ese removed from a draft | `/korean-writing:humanize-korean`            |
-| A character count                    | `/korean-writing:korean-character-count`     |
-| A README                             | `/korean-writing:crafting-effective-readmes` |
+| Ask for                              | Direct call                                    |
+| ------------------------------------ | ---------------------------------------------- |
+| Text written well from the start     | `/korean-writing`                              |
+| Translation-ese removed from a draft | `/humanize-korean:humanize-korean` (im-not-ai) |
+| A character count                    | `/korean-writing:korean-character-count`       |
+| A README                             | `/korean-writing:crafting-effective-readmes`   |
 
 Ordinary replies have nothing to call, because the rules are in place the moment the session opens.
 
@@ -176,23 +176,24 @@ To check existing documents in one go, run `scripts/check.sh FILE...`. It applie
 
 It can be switched off at four scopes.
 
-| Scope                | How                                                                                                                                 |
-| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| One file             | `<!-- korean-writing: ignore -->` at the top. For contracts, or a catalog of bad examples, where flagging every time makes no sense |
-| Whole session        | `KOREAN_WRITING_HOOK_DISABLED=1`. Turns off both hooks                                                                              |
-| Always-on rules only | `KOREAN_WRITING_ALWAYS_ON_DISABLED=1`                                                                                               |
-| The whole plugin     | `claude plugin disable korean-writing`                                                                                              |
+| Scope                     | How                                                                                                                                      |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| One file                  | `<!-- korean-writing: ignore -->` at the top. For contracts, or a catalog of bad examples, where flagging every time makes no sense      |
+| Whole session             | `KOREAN_WRITING_HOOK_DISABLED=1`. Turns off both hooks                                                                                   |
+| Always-on rules only      | `KOREAN_WRITING_ALWAYS_ON_DISABLED=1`                                                                                                    |
+| The whole plugin          | `claude plugin disable korean-writing`                                                                                                   |
+| The polishing plugin only | `claude plugin disable humanize-korean`. Blocked while korean-writing is enabled; the error message gives the command that disables both |
 
 ## Where it attaches
 
-| Place                   | Owner                              | When it runs                                | Where the rules live                 |
-| ----------------------- | ---------------------------------- | ------------------------------------------- | ------------------------------------ |
-| Ordinary replies        | SessionStart hook                  | Session start, resume, `/clear`, compaction | `hooks-handlers/always-on.md`        |
-| Writing requests        | `korean-writing` skill             | When you ask for text                       | `SKILL.md`                           |
-| Polishing existing text | `humanize-korean` skill            | When you ask for a touch-up                 | `skills/humanize-korean/SKILL.md`    |
-| Editing `.md` files     | PostToolUse hook                   | Right after `Edit`, `Write`, `MultiEdit`    | `hooks-handlers/posttooluse.sh`      |
-| Length limits           | `korean-character-count` skill     | When you ask how many characters            | `skills/korean-character-count/`     |
-| READMEs                 | `crafting-effective-readmes` skill | When you ask to write or update a README    | `skills/crafting-effective-readmes/` |
+| Place                   | Owner                                                   | When it runs                                | Where the rules live                                  |
+| ----------------------- | ------------------------------------------------------- | ------------------------------------------- | ----------------------------------------------------- |
+| Ordinary replies        | SessionStart hook                                       | Session start, resume, `/clear`, compaction | `hooks-handlers/always-on.md`                         |
+| Writing requests        | `korean-writing` skill                                  | When you ask for text                       | `SKILL.md`                                            |
+| Polishing existing text | im-not-ai's `humanize-korean` skill (dependency plugin) | When you ask for a touch-up                 | `skills/humanize-korean/` in the im-not-ai repository |
+| Editing `.md` files     | PostToolUse hook                                        | Right after `Edit`, `Write`, `MultiEdit`    | `hooks-handlers/posttooluse.sh`                       |
+| Length limits           | `korean-character-count` skill                          | When you ask how many characters            | `skills/korean-character-count/`                      |
+| READMEs                 | `crafting-effective-readmes` skill                      | When you ask to write or update a README    | `skills/crafting-effective-readmes/`                  |
 
 ## Components
 
@@ -216,15 +217,13 @@ The sentence rules: keep people or organizations as subjects; use only metaphors
 
 Before sending, only four things are checked: three or more em-dashes; `축`, `갈래`, `결` and `레이어` three or more times combined; a sentence where an object acts like a person; anything that snags when read aloud. The last of the four weighs most. Contracts, terms, legal documents and official letters sit outside the rule because stiffness is their requirement, and code, logs, commands, quotations, proper nouns and English source text are left untouched.
 
-### The humanize-korean skill
+### Polishing: the im-not-ai dependency plugin
 
-Existing text is its material. Say "remove the AI tells," "fix the translation-ese" or "tidy this up" and it loads, stripping translation-ese and AI idioms and nothing else. Text not yet written belongs to `korean-writing`.
+Touching up text that already exists is not done here. [im-not-ai](https://github.com/epoko77-ai/im-not-ai)'s `humanize-korean` plugin does the same job far more thoroughly, so it is declared as a dependency: installing this plugin installs and enables it too. Say "remove the AI tells" or "fix the translation-ese" and that skill loads.
 
-It finishes in a single pass: read while noting the key nouns of each sentence, scan with the compressed rulebook `references/quick-rules.md`, look up only the unclear items in the full taxonomy, fix only the flagged spans, run the rulebook's six-point self-check, hand it back. Text is never split by length; the upstream project measured that chunking only multiplied tokens at equal quality. When a text needs the multi-stage treatment, with separate diagnosis and final review, the skill points to the original project, im-not-ai.
+im-not-ai picks a path by the state of the text. A well-written text gets one call; an ordinary AI draft gets two, diagnosis and rewrite; a severe case, or one that needs verification evidence, gets three: diagnosis, rewrite and final review. A script measures the change rate, warns above 30% and discards the result above 50%. Its taxonomy has 84 items in 10 categories, validated against a baseline of 532 human-written texts. It creates a `_workspace/` folder in the working directory and runs Python scripts.
 
-Five iron rules, each rolled back if broken. Facts, claims, numbers, dates, proper nouns and quotations are not changed at all. Nothing outside a span matched by the rulebook or taxonomy is touched. Genre, register and modality stay as the source had them. No metaphor or stock phrase the source did not have is added. A change rate over 30% is treated as a warning sign, and over 50% the result is withheld.
-
-Its purpose is to turn awkward translation-ese into natural Korean. It is not a tool for slipping past AI detectors, and the skill text forbids describing it that way.
+This repository's own polish skill and its copies of the rulebooks, present in the previous version, were removed. That ends the clash of two skills with the same name and the chore of refreshing the copies every time upstream changes. In exchange, the dependency plugin adds about 1,130 tokens per session for its skill description and nine agent descriptions. The reason this plugin attaches im-not-ai is to turn awkward translation-ese into natural Korean. im-not-ai's trigger list includes detector-bypass phrasing; this repository does not describe it that way.
 
 ### The korean-character-count skill
 
@@ -284,33 +283,32 @@ Thresholds are one step above the rulebook's. Where the rulebook allows one per 
 
 **No contact with the outside.** What the hook reads and never does is in [SECURITY.md](./SECURITY.md), together with three `grep` commands that let you check for yourself.
 
-**What is always loaded stays small.** Ordinarily only the always-on rules and the four skill descriptions enter the context, and the large files open when their job comes up.
+**What is always loaded stays small.** Ordinarily only the always-on rules, the three skill descriptions and the dependency plugin's skill and agent descriptions enter the context, and the large files open when their job comes up.
 
 ```
 hooks-handlers/always-on.md     1.4 KB   once per session
-SKILL.md                        8.1 KB   on writing requests
-references/quick-rules.md      16.6 KB   when polishing starts
-references/taxonomy.md        124   KB   to look up one ambiguous item
+SKILL.md                        8.3 KB   on writing requests
+im-not-ai (dependency plugin)    about 1.1k tokens of descriptions always, bodies on polish requests
 ```
 
-**Imported files stay imported.** The taxonomy, the compressed rulebook, the README skill and the counting script belong to other MIT projects. [`NOTICE.md`](./NOTICE.md) records, file by file, where each came from and which lines were changed.
+**Imported files stay imported.** The README skill and the counting script belong to other MIT projects. [`NOTICE.md`](./NOTICE.md) records, file by file, where each came from and which lines were changed. The polishing rulebooks are not copied; the im-not-ai plugin is used as a dependency instead.
 
 ## Verification
 
 The pass criteria and the measurements are in [`EVALUATION.md`](./EVALUATION.md) (Korean). The criteria form six groups, hook accuracy, skill triggering, skill effectiveness, structural soundness, failure modes and the user's own criteria, and any group that falls short gets fixed and measured again.
 
-| Measurement                        | Result                                          |
-| ---------------------------------- | ----------------------------------------------- |
-| Violations detected                | 10 / 10                                         |
-| False positives on clean sentences | 0 / 5                                           |
-| False positives on real documents  | 1 / 143 (0.7%)                                  |
-| Correct code on detected items     | 10 / 10                                         |
-| Writing-request triggers           | 5 / 5, with 0 / 5 misfires on code work         |
-| Mutation testing                   | 15 / 15 injected defects caught                 |
-| Always-on rules, blind pairs       | 21 won, 0 lost, 3 tied out of 24                |
-| Always-on context cost             | about 950 tokens (descriptions 290 + rules 662) |
-| Network calls                      | 0                                               |
-| Regression tests                   | 63 / 63                                         |
+| Measurement                        | Result                                                                             |
+| ---------------------------------- | ---------------------------------------------------------------------------------- |
+| Violations detected                | 10 / 10                                                                            |
+| False positives on clean sentences | 0 / 5                                                                              |
+| False positives on real documents  | 1 / 143 (0.7%)                                                                     |
+| Correct code on detected items     | 10 / 10                                                                            |
+| Writing-request triggers           | 5 / 5, with 0 / 5 misfires on code work                                            |
+| Mutation testing                   | 15 / 15 injected defects caught                                                    |
+| Always-on rules, blind pairs       | 21 won, 0 lost, 3 tied out of 24                                                   |
+| Always-on context cost             | this plugin about 860 tokens (descriptions 200 + rules 662), im-not-ai about 1,130 |
+| Network calls                      | 0                                                                                  |
+| Regression tests                   | 63 / 63                                                                            |
 
 False positives on real documents were measured on 143 Korean `.md` files that had accumulated on one machine, unrelated to this plugin. Fed through the hook whole, 60 were flagged: 59 were implementation logs, QA reports and CLAUDE.md files that Claude wrote in 2026, and one was written by a person. The same measurement before the rule changes flagged seven human-written files, 4.9%.
 
@@ -327,7 +325,7 @@ scripts/check.sh README.md CLAUDE.md           # do the documents pass their own
 scripts/measure.sh ~/Documents                 # false positives over real documents
 ```
 
-GitHub Actions repeats the checks on macOS and Linux for every push and pull request: manifest and issue-form syntax, the hooks' executable bits, both regression suites, thirteen Korean documents passing their own hook, and a smoke test of the counting script. On top of those come shellcheck, a check that `plugin.json`, the README badges and CHANGELOG name the same version, and `claude plugin validate`.
+GitHub Actions repeats the checks on macOS and Linux for every push and pull request: manifest and issue-form syntax, the hooks' executable bits, both regression suites, twelve Korean documents passing their own hook, and a smoke test of the counting script. On top of those come shellcheck, a check that `plugin.json`, the README badges and CHANGELOG name the same version, and `claude plugin validate`.
 
 ## What it does not do
 
@@ -344,14 +342,15 @@ no em-dash interjections, no first/second enumerations, no translation-ese, no A
 
 - Contracts, terms of service, legal documents and official letters are out of scope; formality is their requirement. Code, logs, commands, quotations, proper nouns and English source text are left alone.
 - Spelling and spacing are not checked. Style only.
+- Polishing existing text is not done by this repository itself. The dependency plugin im-not-ai does it.
 
 ## Repository layout
 
 ```
 korean-writing/
 ├── .claude-plugin/
-│   ├── plugin.json                   manifest: name, version (the source of truth), four skill paths
-│   └── marketplace.json              marketplace catalog; carries no version
+│   ├── plugin.json                   manifest: name, version (the source of truth), three skill paths, the im-not-ai dependency
+│   └── marketplace.json              catalog: this plugin and the dependency plugin im-not-ai (pinned to a commit)
 ├── hooks/hooks.json                  registers SessionStart and PostToolUse, 10 s limit each
 ├── hooks-handlers/
 │   ├── always-on.md                  the nine reply rules injected once per session
@@ -362,11 +361,7 @@ korean-writing/
 │   ├── test_posttooluse.py           43 regression cases for the check hook; verifies reported counts
 │   └── test_sessionstart.py          20 regression cases for the always-on rules
 ├── SKILL.md                          the korean-writing skill
-├── references/
-│   ├── quick-rules.md                compressed rulebook for the first polishing pass, from im-not-ai
-│   └── taxonomy.md                   AI-tell taxonomy from im-not-ai: 10 categories, 84 items
 ├── skills/
-│   ├── humanize-korean/SKILL.md      the polish skill
 │   ├── korean-character-count/       the counting skill: SKILL.md, instruction.md, scripts/
 │   └── crafting-effective-readmes/   the README structure skill: 4 templates, 5 references
 ├── scripts/
@@ -391,13 +386,13 @@ korean-writing/
 
 ## Neighbors and where this plugin sits
 
-Korean prose-quality tools come in two layers: the ones that build the rulebook and the ones that attach the rules to a particular editor. This plugin is the latter. The taxonomy and the compressed rulebook are taken from im-not-ai as they are, and the way it attaches to Claude Code was built here.
+Korean prose-quality tools come in two layers: the ones that build the rulebook and the ones that attach the rules to a particular editor. This plugin is the latter. The rulebook side is im-not-ai, used as a dependency plugin as it is, and the way it attaches to Claude Code was built here.
 
-| Tool                                                 | What it is                                                                                                                                  | Relation to this plugin                                                                                                                                                                                       |
-| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [im-not-ai](https://github.com/epoko77-ai/im-not-ai) | A polishing skill that strips AI tells from existing Korean. A multi-call pipeline (diagnose, rewrite, finalize) that supports several CLIs | The taxonomy and the compressed rulebook are taken from it unchanged, and the polish procedure is a trimmed version of its single-call path. This plugin puts its weight on first drafts and ordinary replies |
-| [k-skill](https://github.com/NomaDamas/k-skill)      | A collection of skills for Korean users, from character counting to transit, weather and search                                             | The counting script came from there. Its spell-check skill sends text to an external server and was not taken                                                                                                 |
-| Spelling and spacing checkers                        | Check spelling                                                                                                                              | This plugin checks style only. They do not overlap; use both                                                                                                                                                  |
+| Tool                                                 | What it is                                                                                                                                  | Relation to this plugin                                                                                                                          |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [im-not-ai](https://github.com/epoko77-ai/im-not-ai) | A polishing skill that strips AI tells from existing Korean. A multi-call pipeline (diagnose, rewrite, finalize) that supports several CLIs | This plugin's dependency. All polishing goes to it, and this plugin puts its weight on first drafts, ordinary replies and the check at save time |
+| [k-skill](https://github.com/NomaDamas/k-skill)      | A collection of skills for Korean users, from character counting to transit, weather and search                                             | The counting script came from there. Its spell-check skill sends text to an external server and was not taken                                    |
+| Spelling and spacing checkers                        | Check spelling                                                                                                                              | This plugin checks style only. They do not overlap; use both                                                                                     |
 
 ## FAQ
 
@@ -429,14 +424,14 @@ It does not. The hooks run python3 regular expressions inside bash and the count
 <details>
 <summary><b>Does it flag contracts and terms of service?</b></summary>
 
-It does, which is why a single line at the top of the file, `<!-- korean-writing: ignore -->`, takes that file out of the check. Text where formality is the requirement is an exception in the skill rules as well. This repository's own taxonomy, a deliberate collection of bad examples, carries the same marker.
+It does, which is why a single line at the top of the file, `<!-- korean-writing: ignore -->`, takes that file out of the check. Text where formality is the requirement is an exception in the skill rules as well.
 
 </details>
 
 <details>
 <summary><b>How many tokens does it cost?</b></summary>
 
-The always-on cost is the four skill descriptions, about 290 tokens, plus the reply rules injected once per session, about 660. The rules figure comes from keeping the plugin installed, switching only the always-on rules off and on, and subtracting total input tokens from `claude -p`: 12,364 off, 13,026 on. The value only holds still with MCP tool definitions and user settings excluded. The rules land in the prompt cache and are not resent every turn. Skill bodies load only on writing requests, and the hook never calls an LLM.
+The always-on cost is this plugin's three skill descriptions, about 200 tokens, plus the reply rules injected once per session, about 660, plus the dependency plugin im-not-ai's skill description, about 230, and its nine agent descriptions, about 900. The rules figure comes from keeping the plugin installed, switching only the always-on rules off and on, and subtracting total input tokens from `claude -p`: 12,364 off, 13,026 on. The value only holds still with MCP tool definitions and user settings excluded. The rules land in the prompt cache and are not resent every turn. Skill bodies load only on writing requests, and the hook never calls an LLM.
 
 Evidence: D2 and F7 in [`EVALUATION.md`](./EVALUATION.md).
 
@@ -445,7 +440,7 @@ Evidence: D2 and F7 in [`EVALUATION.md`](./EVALUATION.md).
 <details>
 <summary><b>I installed it but the skills do not show up.</b></summary>
 
-First check that `claude plugin list` reports `korean-writing` as `enabled`. If the repository is symlinked into `~/.claude/skills/` and also installed from the marketplace, remove one of the two. The skill list only changes in a new session.
+First check that `claude plugin list` reports both `korean-writing` and im-not-ai's `humanize-korean` as `enabled`. If the latter is missing, run `claude plugin install korean-writing` again. If the repository is symlinked into `~/.claude/skills/` and also installed from the marketplace, remove one of the two. The skill list only changes in a new session.
 
 </details>
 
@@ -494,12 +489,9 @@ scripts/release.sh 1.1.0 --push
 
 ## Sources and license
 
-| File                                 | From                                                                                                                                          | Changed                                                            |
-| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| `references/taxonomy.md`             | [im-not-ai](https://github.com/epoko77-ai/im-not-ai)'s `skills/humanize-korean/references/ai-tell-taxonomy.md`, commit `9747f03` (2026-09-06) | One line at the top that exempts the file from the hook            |
-| `references/quick-rules.md`          | im-not-ai's `skills/humanize-korean/references/quick-rules.md`, same commit                                                                   | One line at the top that exempts the file from the hook            |
-| `skills/humanize-korean/SKILL.md`    | im-not-ai's procedure and iron rules                                                                                                          | Rewritten in this repository for a single pass                     |
-| `skills/korean-character-count/`     | [k-skill](https://github.com/NomaDamas/k-skill)                                                                                               | Script unchanged, run path in the instructions, SKILL.md rewritten |
-| `skills/crafting-effective-readmes/` | [agent-skills](https://github.com/joshuadavidthomas/agent-skills)' `crafting-effective-readmes/`, commit `516dee7` (2026-07-20)               | One line in `style-guide.md` that names the companion skills       |
+| File                                 | From                                                                                                                            | Changed                                                            |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| `skills/korean-character-count/`     | [k-skill](https://github.com/NomaDamas/k-skill)                                                                                 | Script unchanged, run path in the instructions, SKILL.md rewritten |
+| `skills/crafting-effective-readmes/` | [agent-skills](https://github.com/joshuadavidthomas/agent-skills)' `crafting-effective-readmes/`, commit `516dee7` (2026-07-20) | One line in `style-guide.md` that names the companion skills       |
 
-The rest was written in this repository: the `korean-writing` skill, the always-on rules, the whole check hook, the ground truth and the evaluation criteria. Every imported file is MIT-licensed and the original copyright notices are gathered in [`NOTICE.md`](./NOTICE.md). This repository is [MIT](./LICENSE) too.
+The rest was written in this repository: the `korean-writing` skill, the always-on rules, the whole check hook, the ground truth and the evaluation criteria. Every imported file is MIT-licensed and the original copyright notices are gathered in [`NOTICE.md`](./NOTICE.md). The polishing plugin im-not-ai is installed as a dependency rather than copied, so its copyright notice lives in its own repository. This repository is [MIT](./LICENSE) too.

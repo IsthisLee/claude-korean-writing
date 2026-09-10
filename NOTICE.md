@@ -1,18 +1,6 @@
 # NOTICE
 
-이 플러그인은 MIT 라이선스입니다([LICENSE](./LICENSE)). 아래 파일은 다른 MIT 프로젝트에서 가져왔고, 각 저작권 표시를 그대로 유지합니다. 허가 문구는 LICENSE의 MIT 본문과 같습니다.
-
-## im-not-ai (Humanize KR)
-
-    references/taxonomy.md                      skills/humanize-korean/references/ai-tell-taxonomy.md 그대로. 머리에 훅 제외 표시 한 줄을 더함
-    references/quick-rules.md                   skills/humanize-korean/references/quick-rules.md 그대로. 머리에 훅 제외 표시 한 줄을 더함
-    skills/humanize-korean/SKILL.md             원본 스킬의 절차와 철칙을 바탕으로 이 저장소에서 다시 씀
-
-    가져온 판: 커밋 9747f036cdc2 (2026-09-06)
-
-    MIT License
-    Copyright (c) 2026 epoko77-ai
-    https://github.com/epoko77-ai/im-not-ai
+이 플러그인은 MIT 라이선스입니다([LICENSE](./LICENSE)). 아래 파일은 다른 MIT 프로젝트에서 가져왔고, 각 저작권 표시를 그대로 유지합니다. 허가 문구는 LICENSE의 MIT 본문과 같습니다. 윤문을 맡는 im-not-ai(https://github.com/epoko77-ai/im-not-ai)는 파일을 복사하지 않고 플러그인 의존성으로 설치하므로 그 저작권 표시는 그 저장소에 있습니다.
 
 ## k-skill
 

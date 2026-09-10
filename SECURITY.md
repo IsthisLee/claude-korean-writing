@@ -61,7 +61,7 @@ grep -nE 'subprocess|os\.system|popen|exec\b' hooks-handlers/posttooluse.sh
 
 ## 범위 밖
 
-`references/taxonomy.md` 같은 규칙집은 실행되지 않는 문서입니다. 스킬 파일도 모델이 읽는 지시문이고 실행 코드가 아닙니다. 취약점 신고 대상은 실제로 실행되는 `hooks-handlers/` 와 `scripts/`, 그리고 `skills/korean-character-count/scripts/` 입니다.
+스킬 파일은 모델이 읽는 지시문이고 실행 코드가 아닙니다. 의존 플러그인 im-not-ai 는 별도 저장소의 코드이며 그쪽 보안 정책을 따릅니다. 이 문서의 약속은 이 저장소의 파일에만 해당합니다. 취약점 신고 대상은 실제로 실행되는 `hooks-handlers/` 와 `scripts/`, 그리고 `skills/korean-character-count/scripts/` 입니다.
 
 ---
 
@@ -128,4 +128,4 @@ Where `python3` is missing, the hook exits quietly without checking.
 
 ## Out of scope
 
-Rulebooks such as `references/taxonomy.md` are documents, not executables. Skill files are instructions the model reads, not code that runs. Vulnerability reports apply to `hooks-handlers/`, `scripts/`, and `skills/korean-character-count/scripts/`.
+Skill files are instructions the model reads, not code that runs. The dependency plugin im-not-ai is code from a separate repository and is covered by that project's security policy; the promises in this document apply to the files in this repository only. Vulnerability reports apply to `hooks-handlers/`, `scripts/`, and `skills/korean-character-count/scripts/`.

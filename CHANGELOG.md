@@ -4,6 +4,15 @@
 
 ## [Unreleased]
 
+### 변경
+
+- **윤문을 im-not-ai 플러그인에 맡깁니다.** `plugin.json` 에 `dependencies: ["humanize-korean"]` 을 선언하고, `marketplace.json` 에 im-not-ai 저장소를 두 번째 항목으로 등록했습니다(커밋 `9747f036cdc2` 고정). `claude plugin install korean-writing` 한 번에 im-not-ai 2.3.2 가 같이 설치·활성화되고, korean-writing 이 켜져 있는 동안 im-not-ai 만 끄는 것은 막힙니다. 격리된 HOME 에서 확인했습니다. 세션마다 im-not-ai 의 스킬 설명 약 230 토큰과 에이전트 9종 설명 약 900 토큰이 더 듭니다. EVALUATION.md 의 D2 기준 1,000 토큰은 이 플러그인 자체 몫(약 860)에만 적용합니다
+- 이미 1.1.0 이하를 설치한 경우 `claude plugin install korean-writing` 을 다시 실행하면 의존성이 채워집니다
+
+### 제거
+
+- `humanize-korean` 스킬과 `references/taxonomy.md`·`references/quick-rules.md`. 1.1.0 에서 im-not-ai 원본으로 갈아 끼웠던 사본인데, 같은 이름의 스킬이 둘 뜨는 충돌과 원본이 바뀔 때마다 사본을 갱신하는 일을 없애려고 뺐습니다. 윤문 요청은 im-not-ai 의 스킬이 받습니다. 훅과 회귀 테스트는 그대로입니다
+
 ## [1.1.0] - 2026-09-10
 
 ### 추가

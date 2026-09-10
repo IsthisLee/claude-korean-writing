@@ -19,7 +19,6 @@
 # GitHub 언어 통계. 가져온 스킬과 규칙집 원문은 이 저장소가 쓴 코드가 아니다.
 skills/crafting-effective-readmes/** linguist-vendored
 skills/korean-character-count/scripts/** linguist-vendored
-references/taxonomy.md               linguist-generated
 docs/**                              linguist-documentation
 
 # 릴리스 아카이브(zip·tarball)에서 빼는 것. 쓰는 사람에게 필요 없다.
