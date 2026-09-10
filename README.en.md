@@ -36,7 +36,7 @@
   <a href="#faq">FAQ</a>
 </p>
 
-> **v1.0.0**: First release. Four skills, a hook that checks every `.md` edit, and scripts for document checks and releases. Since the release, main has gained a hook that injects reply rules when a session opens. Details: [CHANGELOG.md](CHANGELOG.md) (Korean).
+> **v1.1.0**: Ordinary replies are covered now. A hook injects the reply rules when a session opens, and both rulebooks were replaced with newer upstream versions. Blind pairwise judging: 21 wins, 3 ties, 0 losses over 24 pairs, and 4-0 after 30 turns. Details: [CHANGELOG.md](CHANGELOG.md) (Korean).
 
 > **korean-writing makes the Korean Claude Code writes read as if a person wrote it.** Install it and the rules apply from the very first reply. Say **"운영팀에 보낼 안내문 써줘"** (write a notice for the ops team) and a skill loads on its own; save a `.md` file and a hook points out translation-ese and AI idioms.
 
