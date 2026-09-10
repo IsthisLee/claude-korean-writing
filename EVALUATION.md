@@ -109,7 +109,7 @@ B1 대상: "슬랙 내 캐쥬얼하게 확인 요청드리려는데", "비개발
 | D5 주입 안전성      | 규칙 파일 없음·끄기 두 종 전부 exit 0                   | 통과                          |
 | C5 주입 효과        | 블라인드 21승 0패 3무 (24쌍)                            | 통과                          |
 | E1 이상 입력        | 5종 전부 exit 0                                         | 통과                          |
-| 회귀 테스트         | posttooluse 43/43, sessionstart 18/18                   | 통과                          |
+| 회귀 테스트         | posttooluse 43/43, sessionstart 20/20                   | 통과                          |
 
 2026-09-10 재측정. 이 머신에 이 플러그인과 무관하게 쌓인 한국어 `.md` 143개(한글 20자 이상)를 `scripts/check.sh` 로 통째로 넣었다. 걸린 60개 중 59개는 2026년에 Claude 가 쓴 문서(CLAUDE.md, 구현 로그, QA 보고서. 대부분 K1 줄표)이고, 사람이 쓴 문서는 1개다(외부에서 가져온 지식 정리 문서, K3·K8). 아래 10·11번을 고치기 전에는 사람이 쓴 문서 7개(4.9%)가 걸렸다.
 
@@ -157,7 +157,7 @@ C5 실험 자체의 한계는 그 절에 적어 두었다. 판정 모델과 생�
 
 ```bash
 python3 hooks-handlers/test_posttooluse.py     # 회귀 43건
-python3 hooks-handlers/test_sessionstart.py    # 상시 규칙 회귀 18건
+python3 hooks-handlers/test_sessionstart.py    # 상시 규칙 회귀 20건
 scripts/measure.sh ~/Documents                 # 실제 문서 뭉치의 오탐 측정
 ```
 

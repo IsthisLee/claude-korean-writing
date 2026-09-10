@@ -7,13 +7,13 @@
 ### 추가
 
 - **상시 규칙 주입.** 세션이 열릴 때 `hooks-handlers/always-on.md`(약 660토큰)를 한 번 넣는 SessionStart 훅을 넣었습니다. 스킬이 뜨지 않는 평소 답변을 맡습니다. 프롬프트 12개에 조건 2개와 표본 2개로 48건을 생성하고 순서를 바꿔 두 번씩 블라인드로 판정한 결과 24쌍에서 21승 3무 0패였습니다. 기술 오류만 따로 본 검사에서 심각한 오류는 양쪽 0건입니다. 근거는 EVALUATION.md 의 C5 에 있습니다
-- `hooks-handlers/test_sessionstart.py`: 주입 내용, 끄기 두 종, 규칙 파일이 없을 때의 안전 종료, 크기 상한을 보는 회귀 18건
+- `hooks-handlers/test_sessionstart.py`: 주입 내용, 끄기 두 종, 규칙 파일이 없을 때의 안전 종료, 크기 상한을 보는 회귀 20건
 - 상시 규칙만 끄는 환경변수 `KOREAN_WRITING_ALWAYS_ON_DISABLED=1`. `KOREAN_WRITING_HOOK_DISABLED=1` 은 그대로 훅 전체를 끕니다
 
 - 공개 저장소 문서: `CONTRIBUTING.md`(한국어·영어), `CODE_OF_CONDUCT.md`(Contributor Covenant 2.1 공식 한국어판), `SECURITY.md`(한국어·영어). SECURITY.md 에는 훅이 무엇을 읽고 무엇을 하지 않는지, 네트워크를 쓰지 않는다는 것을 직접 확인하는 명령 세 가지를 적었습니다
 - `CLAUDE.md`: 이 저장소에서 작업하는 Claude 를 위한 규칙. 기준선 명령, 네트워크 금지, 가져온 파일 취급, 버전 정본, 커밋 형식, 판정 기준을 바꿀 때의 실측 의무
 - `.claude/settings.json`: 기여자가 공유하는 프로젝트 설정. 검증 명령은 묻지 않고 허용하고, 가져온 파일과 `plugin.json` 편집은 확인을 받습니다
-- `.github/`: PR 양식, 이슈 양식 두 종(버그 신고, 판정 규칙 제안), 이슈 첫 화면의 보안·기여 안내 링크, `CODEOWNERS`, `dependabot.yml`
+- `.github/`: PR 양식, 이슈 양식 세 종(어색한 문장 제보, 버그 신고, 판정 규칙 제안), 이슈 첫 화면의 보안·기여 안내 링크, `CODEOWNERS`, `dependabot.yml`
 - `.gitattributes`: 셸 스크립트를 LF 로 고정합니다. CRLF 로 체크아웃되면 훅이 `bad interpreter` 로 죽습니다. 가져온 파일은 GitHub 언어 통계에서 뺍니다
 - `.editorconfig`
 - `docs/social-preview.png`(1280×640): 링크를 공유할 때 GitHub 이 보여주는 카드 이미지. 저장소 설정에서 올립니다
