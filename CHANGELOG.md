@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-09-10
+
 ### 추가
 
 - **상시 규칙 주입.** 세션이 열릴 때 `hooks-handlers/always-on.md`(약 660토큰)를 한 번 넣는 SessionStart 훅을 넣었습니다. 스킬이 뜨지 않는 평소 답변을 맡습니다. 프롬프트 12개에 조건 2개와 표본 2개로 48건을 생성하고 순서를 바꿔 두 번씩 블라인드로 판정한 결과 24쌍에서 21승 3무 0패였습니다. 기술 오류만 따로 본 검사에서 심각한 오류는 양쪽 0건입니다. 근거는 EVALUATION.md 의 C5 에 있습니다
@@ -55,5 +57,6 @@
 - README 한국어판·영어판, 훅 출력 데모 이미지(`docs/hook-output.svg`)
 - 제3자 고지(`NOTICE.md`): im-not-ai·claude-forge·k-skill·agent-toolkit 의 원 저작권 표시
 
-[Unreleased]: https://github.com/IsthisLee/claude-korean-writing/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/IsthisLee/claude-korean-writing/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/IsthisLee/claude-korean-writing/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/IsthisLee/claude-korean-writing/releases/tag/v1.0.0

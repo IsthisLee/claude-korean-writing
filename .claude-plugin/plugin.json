@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
   "name": "korean-writing",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Claude Code가 쓰는 모든 한국어의 품질을 맡는 플러그인. 평소 답변에 상시로 붙는 규칙, 처음 쓸 때 번역투·AI 관용구를 피하는 스킬, 이미 쓴 글을 다듬는 윤문 스킬, README의 절 구성을 잡는 스킬, .md 편집을 검사하는 훅, 글자 수 스크립트.",
   "author": {
     "name": "Isthis",
