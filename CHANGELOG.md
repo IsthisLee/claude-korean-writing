@@ -21,6 +21,7 @@
 
 ### 변경
 
+- **claude-forge 를 거치지 않습니다.** 규칙집 `references/taxonomy.md` 와 압축 룰북 `references/quick-rules.md` 를 원본인 im-not-ai(커밋 `9747f036cdc2`, 2026-09-06)에서 직접 가져왔습니다. 이전 판은 claude-forge 가 im-not-ai v2.0 에 항목을 더한 것과 forge 가 따로 만든 압축본이었습니다. 항목은 73개에서 84개가 됩니다. `humanize-korean` 스킬은 im-not-ai 의 절차와 철칙을 바탕으로 다시 썼고, 길이로 나누던 규칙(5,000자)을 없앴습니다. 승패 의인화·추상 구조어의 근거로 적혀 있던 출판사 편집부 일화는 forge 규칙집에서 온 것이라 빼고, 정답 데이터 G05·G06 을 근거로 적었습니다. 훅의 판정은 바뀌지 않았습니다(회귀 43/43). NOTICE.md 에서 claude-forge 항목을 뺐습니다
 - **상시 규칙을 넣으며 남겼던 세 가지를 전부 쟀습니다.** 서브에이전트에는 훅도 스킬도 전달되지 않아 플러그인 범위 밖으로 두고 쓰는 쪽 `CLAUDE.md` 에 넣도록 안내합니다. 긴 대화에서는 30턴을 쌓은 뒤에도 주입 조건이 네 쌍 모두 이깁니다. 규칙을 고쳤을 때의 회귀는 `docs/experiments/always-on/regress.sh` 로 봅니다. 근거는 EVALUATION.md 의 「상시 규칙을 넣으며 남겼던 것」에 있습니다
 - 실험 장비를 `docs/experiments/always-on/` 에 보존했습니다. 스크립트, 프롬프트 12개, 주입문 초안, 판정 기준과 결과 보고입니다. README 에 `--strict-mcp-config` 와 `--setting-sources ""` 를 빠뜨렸을 때 무슨 일이 생기는지 먼저 적었습니다
 

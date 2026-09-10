@@ -4,22 +4,15 @@
 
 ## im-not-ai (Humanize KR)
 
-    references/taxonomy.md                      claude-forge 를 거쳐 가져옴. Forge 판 470줄 중 406줄이 원문과 같음. 머리에 훅 제외 표시 한 줄을 더함
+    references/taxonomy.md                      skills/humanize-korean/references/ai-tell-taxonomy.md 그대로. 머리에 훅 제외 표시 한 줄을 더함
+    references/quick-rules.md                   skills/humanize-korean/references/quick-rules.md 그대로. 머리에 훅 제외 표시 한 줄을 더함
+    skills/humanize-korean/SKILL.md             원본 스킬의 절차와 철칙을 바탕으로 이 저장소에서 다시 씀
+
+    가져온 판: 커밋 9747f036cdc2 (2026-09-06)
 
     MIT License
     Copyright (c) 2026 epoko77-ai
     https://github.com/epoko77-ai/im-not-ai
-
-## claude-forge
-
-    references/taxonomy.md                      v2.1 추가분(D-8 승패 의인화, D-9 추상 구조어, J-3 S1 상향)
-    references/quick-rules.md                   없는 파일을 가리키던 경로 두 곳만 수정
-    skills/humanize-korean/SKILL.md             한국어로 옮기고 구조 정리
-    hooks-handlers/posttooluse.sh               발동 조건과 K1 정규식을 emdash-slop-guard 에서 가져옴
-
-    MIT License
-    Copyright (c) 2026 sangrokjung
-    https://github.com/sangrokjung/claude-forge
 
 ## k-skill
 
