@@ -19,7 +19,7 @@ import sys
 import tempfile
 
 HOOK = pathlib.Path(__file__).resolve().parent / "posttooluse.sh"
-CODES = ("K1", "K2", "K3", "K4", "K5", "K6", "K7", "K8")
+CODES = ("K1", "K2", "K3", "K4", "K5", "K6", "K7", "K8", "K9", "K10")
 FILLER = "이번 배포에서 고칠 곳이 나왔다. 담당자가 수강생을 옮기면 기록이 남는다. "
 FAILS = []
 
@@ -123,6 +123,24 @@ expect_clean(
     "| 축이 두 개다. 세 갈래다 | 기준이 두 개다. 세 가지다 |\n",
 )
 
+expect_clean("부정 대구 2회는 통과 (임계 3)", FILLER * 2 + "이것은 성능 문제가 아니라 설정 문제다. 고칠 곳은 코드가 아니라 문서다.")
+expect_clean(
+    "조건절 아니라면·아니라서는 대구가 아니다",
+    FILLER * 2 + "기준이 이번 주가 아니라면 날짜만 고친다. 원인이 설정이 아니라서 더 봐야 한다. "
+    "값이 숫자가 아니라면 그대로 둔다.",
+)
+expect_clean(
+    "연결어미 뒤 쉼표 5회는 통과 (임계 6, 비율 100%)",
+    FILLER * 2 + "훅을 더했고, 규칙을 바꿨고, 테스트를 돌렸고, 문서를 고쳤고, 배지를 올렸고, 태그를 달았다.",
+)
+expect_clean(
+    "연결어미 뒤 쉼표 6회여도 비율이 30% 미만이면 통과 (6/21 = 28.6%)",
+    FILLER + "훅을 더했고, 규칙을 바꿨고, 테스트를 돌렸고, 문서를 고쳤고, 배지를 올렸고, 태그를 달았고, 배포를 마쳤다. "
+    + "설정을 읽고 값을 채우고 결과를 남기고 로그를 쌓고 화면에 뿌리고 기록을 지우고 "
+    + "다시 읽고 다시 채우고 다시 남기고 다시 쌓고 다시 뿌리고 다시 지우고 "
+    + "마지막으로 검사하고 확인하고 정리하고 끝낸다.",
+)
+
 print("\n걸려야 하는 것 - 미탐 검사")
 expect_hit("K1 줄표 삽입구 4개", FILLER * 2 + "가 — 나. 다 — 라. 마 — 바. 사 — 아.", "K1")
 expect_hit(
@@ -173,6 +191,26 @@ expect_hit(
     "담당자가 로그를 가지고 있지 않아 원인을 확인하지 못했다. 다시 살펴봐야 한다.",
     "K8",
 )
+expect_hit(
+    "K9 부정 대구 3회",
+    FILLER * 2 + "이것은 성능 문제가 아니라 설정 문제다. 고칠 곳은 코드가 아니라 문서다. "
+    "필요한 것은 새 기능이 아니라 기준이다.",
+    "K9",
+    count=3,
+)
+expect_hit(
+    "K10 비율 46%도 걸린다 (6/13, 임계 30%)",
+    FILLER + "훅을 더했고, 규칙을 바꿨고, 테스트를 돌렸고, 문서를 고쳤고, 배지를 올렸고, 태그를 달았고, 배포를 마쳤다. "
+    "설정을 읽고 값을 채우고 결과를 남기고 로그를 쌓고 화면에 뿌리고 기록을 지우고 마지막으로 정리하고 끝낸다.",
+    "K10",
+    count=6,
+)
+expect_hit(
+    "K10 연결어미 뒤 쉼표 6회",
+    FILLER * 2 + "훅을 더했고, 규칙을 바꿨고, 테스트를 돌렸고, 문서를 고쳤고, 배지를 올렸고, 태그를 달았고, 배포를 마쳤다.",
+    "K10",
+    count=6,
+)
 
 EN = "This section explains how the release script works and what it checks. " * 8
 EN_DASH = "The plan — as agreed — is fine. Also — yes — done. " * 8
@@ -197,7 +235,24 @@ with open(_formal, "w", encoding="utf-8") as _f:
 expect_clean("파일 머리의 표시 (Edit 로 일부만 고칠 때)", BAD, path=_formal, tool="Edit", key="new_string")
 expect_clean("환경변수 KOREAN_WRITING_HOOK_DISABLED=1", BAD, env={"KOREAN_WRITING_HOOK_DISABLED": "1"})
 
-print("\n줄표 누적 - 이번 편집에 있으면 파일 전체 개수로 판정한다")
+# 표시는 줄 하나로 서 있을 때만 지시다. 이 기능을 설명하는 문서가 자기 검사를 건너뛰면 안 된다.
+expect_hit(
+    "본문이 표시 문자열을 인용해도 검사는 돈다",
+    "격식 문서면 파일 머리에 `<!-- korean-writing: ignore -->` 를 넣습니다.\n\n" + BAD,
+    "K4",
+)
+expect_hit(
+    "표 칸의 표시 인용도 끄지 않는다",
+    "| 범위 | 방법 |\n|---|---|\n| 파일 하나 | 파일 머리에 `<!-- korean-writing: ignore -->` |\n\n" + BAD,
+    "K4",
+)
+expect_hit(
+    "머리 10줄 밖의 표시는 끄지 않는다",
+    "\n".join(["첫 줄부터 열 줄을 채운다."] * 11) + "\n<!-- korean-writing: ignore -->\n" + BAD,
+    "K4",
+)
+
+print("\n누적 - 이번 편집에 있으면 파일 전체 개수로 판정한다 (K1 줄표, K10 연결어미 쉼표)")
 _dir = tempfile.mkdtemp()
 _acc = os.path.join(_dir, "acc.md")
 with open(_acc, "w", encoding="utf-8") as _f:
@@ -211,6 +266,25 @@ _one = os.path.join(_dir, "one.md")
 with open(_one, "w", encoding="utf-8") as _f:
     _f.write(FILLER * 3 + "가 — 나.\n")
 expect_clean("이번 편집 1개, 파일 전체 1개", FILLER * 3 + "가 — 나.", path=_one, tool="Edit", key="new_string")
+_cm = os.path.join(_dir, "comma.md")
+with open(_cm, "w", encoding="utf-8") as _f:
+    _f.write(FILLER * 2 + "훅을 더했고, 규칙을 바꿨고, 테스트를 돌렸고, 문서를 고쳤고, 배지를 올렸고, 로그를 남겼다.\n"
+             + FILLER + "태그를 달았고, 배포를 마쳤다.\n")
+expect_hit(
+    "K10 파일에 5회 있고 이번 편집이 1회를 더해 6회",
+    FILLER + "태그를 달았고, 배포를 마쳤다.",
+    "K10",
+    path=_cm, tool="Edit", key="new_string",
+)
+_cm2 = os.path.join(_dir, "comma2.md")
+with open(_cm2, "w", encoding="utf-8") as _f:
+    _f.write(FILLER * 2 + "훅을 더했고, 규칙을 바꿨고, 테스트를 돌렸고, 문서를 고쳤고, 배지를 올렸고, "
+             "태그를 달았고, 로그를 남겼고, 배포를 마쳤다.\n")
+expect_clean(
+    "K10 파일에 7회 있어도 이번 편집에 없으면 잡지 않는다",
+    FILLER * 3,
+    path=_cm2, tool="Edit", key="new_string",
+)
 
 print("\n형식")
 rc, out = run("결론적으로 축은 두 개고 갈래가 셋이며 레이어도 다르다. 혁신적인 변화다.")
