@@ -20,6 +20,7 @@
 set -uo pipefail
 BASE="$(cd "$(dirname "$0")" && pwd)"
 REPO="$(cd "$BASE/../../.." && pwd)"
+export KW_REPO="$REPO"
 OUT=${1:-"$BASE/run-$(date +%Y%m%d-%H%M%S)"}; shift 2>/dev/null || true
 IDS=("$@"); [ ${#IDS[@]} -gt 0 ] || IDS=(01 05 L1 L4)
 command -v claude >/dev/null 2>&1 || { echo "claude 가 없다" >&2; exit 2; }
