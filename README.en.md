@@ -9,8 +9,8 @@
 </p>
 
 <p align="center">
-  <strong>The Korean output quality plugin for Claude Code.</strong><br>
-  Catches problems as the text is written, polishes text that already exists, and checks every <code>.md</code> edit.
+  <strong>The plugin that owns every piece of Korean Claude Code writes.</strong><br>
+  Rides along in ordinary replies, catches problems as text is written, polishes text that already exists, and checks every <code>.md</code> edit.
 </p>
 
 <p align="center">
@@ -29,13 +29,14 @@
   <a href="#how-it-works">How it works</a> ·
   <a href="#file-layout">File layout</a> ·
   <a href="#what-the-hook-catches">What the hook catches</a> ·
+  <a href="#what-it-covers">What it covers</a> ·
   <a href="#verification">Verification</a> ·
   <a href="#faq">FAQ</a>
 </p>
 
 > **v1.0.0**: First release. Four skills (first draft, polish, character count, README structure), a hook that checks `.md` edits, and scripts for whole-document checks and releases. Details: [CHANGELOG.md](CHANGELOG.md) (Korean).
 
-> **korean-writing owns the quality of Claude Code's Korean output.** Say **"운영팀에 보낼 안내문 써줘"** (write a notice for the ops team) and the rules load on their own, so the text comes out as natural Korean from the first draft. Edit a `.md` file and a hook flags translation-ese and AI idioms. Nothing you write leaves your machine.
+> **korean-writing owns the quality of every piece of Korean Claude Code writes.** Install it and the rules ride along in ordinary replies. Say **"운영팀에 보낼 안내문 써줘"** (write a notice for the ops team) and the rules load on their own, so the text comes out as natural Korean from the first draft. Edit a `.md` file and a hook flags translation-ese and AI idioms. Nothing you write leaves your machine.
 
 ## Overview
 
@@ -50,10 +51,11 @@ Claude Code writes grammatical Korean. It still reads wrong, because the sentenc
 | 충돌하면 상위 문서가 **이깁니다**                                   | 충돌하면 상위 문서를 **따릅니다**                                  | "The upper document wins": a win/lose metaphor that an editor flagged as an AI tell |
 | 원인은 힙 부족이 아니라 **—** 실측해보니 **—** 설정이 안 먹혔습니다 | 원인은 힙 부족이 아니었습니다**.** 실측해보니 설정이 안 먹혔습니다 | An em-dash interjection. Korean punctuation does not do this                        |
 
-Nothing in the left column is ungrammatical. It is simply not what a person writing in Korean produces. This plugin attaches to the four points where such sentences leave Claude Code, plus one more for README structure.
+Nothing in the left column is ungrammatical. It is simply not what a person writing in Korean produces. This plugin attaches to the five points where such sentences leave Claude Code, plus one more for README structure.
 
 | Where                         | What attaches                      | What it does                                                                                                |
 | ----------------------------- | ---------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| Writing an ordinary reply     | SessionStart hook (always-on rules) | Injects a rule summary once when the session opens, covering replies where no skill loads                  |
 | Writing a first draft         | `korean-writing` skill             | Loads on requests for Slack messages, mail, notices, and reports, and applies the rules from the first line |
 | Fixing existing text          | `humanize-korean` skill            | Changes style only; facts and numbers stay untouched                                                        |
 | Editing a `.md` file          | PostToolUse hook                   | Scans what was just written for eight AI-tell patterns and reports them                                     |
@@ -109,7 +111,7 @@ To check existing documents in full, run `scripts/check.sh FILE...`. It applies 
 scripts/check.sh docs/*.md
 ```
 
-There are three ways to turn it off. To exempt one file, put `<!-- korean-writing: ignore -->` at the top; use this for documents where formality is the requirement, such as contracts. To silence a whole session, set `KOREAN_WRITING_HOOK_DISABLED=1`. To disable the plugin, run `claude plugin disable korean-writing`.
+There are three ways to turn it off. To exempt one file, put `<!-- korean-writing: ignore -->` at the top; use this for documents where formality is the requirement, such as contracts. To silence a whole session, set `KOREAN_WRITING_HOOK_DISABLED=1`; to drop only the always-on rules, set `KOREAN_WRITING_ALWAYS_ON_DISABLED=1`. To disable the plugin, run `claude plugin disable korean-writing`.
 
 ## How it works
 
@@ -211,12 +213,15 @@ korean-writing/
 │   │   ├── instruction.md            the counting contract: graphemes, line breaks, NEIS bytes
 │   │   └── scripts/korean_character_count.js   the counter, node:fs only
 │   └── crafting-effective-readmes/   README structure: 4 templates, 5 references
-├── hooks/hooks.json                  registers the PostToolUse hook after Edit, Write and MultiEdit, 10 s limit
+├── hooks/hooks.json                  registers both hooks: SessionStart and PostToolUse, 10 s limit each
 ├── hooks-handlers/
+│   ├── always-on.md                  the reply rules injected each session, about 660 tokens
+│   ├── sessionstart.sh               the injector: writes those rules to stdout
 │   ├── posttooluse.sh                the checker: python3 regular expressions K1 to K8
 │   ├── ground-truth.json             10 awkward sentences that were actually generated
 │   ├── clean.json                    5 clean sentences from the same context
-│   └── test_posttooluse.py           43 regression cases; verifies reported counts to catch mutations
+│   ├── test_posttooluse.py           43 regression cases; verifies reported counts to catch mutations
+│   └── test_sessionstart.py          18 regression cases: injected text, kill switches, safe exit
 ├── docs/                             banners (Korean and English, light and dark), hook output demo, social preview
 ├── scripts/
 │   ├── check.sh                      pushes whole files through the hook, for CI and pre-commit
@@ -269,13 +274,16 @@ Pass criteria and measurements are in [`EVALUATION.md`](./EVALUATION.md) (Korean
 | False positives on real documents | 1 / 143 (0.7%)   |
 | Correct classification            | 10 / 10          |
 | Mutations caught                  | 15 / 15          |
-| Regression tests                  | 43 / 43          |
+| Regression tests                  | 61 / 61          |
 | Network calls                     | 0                |
-| Always-on context cost            | about 270 tokens |
+| Always-on rules, blind pairwise   | 21 win 0 loss 3 tie |
+| Always-on context cost            | about 930 tokens |
 
 The ground truth is [`hooks-handlers/ground-truth.json`](./hooks-handlers/ground-truth.json): **ten awkward sentences that were actually generated, plus five clean sentences from the same context.** No synthetic examples.
 
 **False positives weigh more than misses.** A check that blocks normal work gets switched off.
+
+The always-on rules were measured on twelve prompts with two conditions and two samples, 48 generations in all, judged blind by the same model twice per pair with the order swapped. The injected condition won 21 of 24 pairs with 3 ties and no losses, and it won or tied on all twelve prompts. A separate check that ignored style and looked only for technical errors found no serious errors in either condition. Details are in [`EVALUATION.md`](./EVALUATION.md), item C5.
 
 A with/without comparison of the skill on four identical prompts is recorded in [`EVALUATION.md`](./EVALUATION.md), item C4. On claude-opus-5 as of 2026-09-10 both conditions passed the hook, so the generation-time effect could not be separated on that sample; the hook is the safety net that stays when the model changes.
 
@@ -283,6 +291,7 @@ Mutation testing injects defects into the hook and confirms the regression suite
 
 ```bash
 python3 hooks-handlers/test_posttooluse.py
+python3 hooks-handlers/test_sessionstart.py
 ```
 
 GitHub Actions runs the same checks on every push and pull request (`.github/workflows/validate.yml`): the regression suite, JSON and YAML syntax for the manifests and issue forms, the hook's executable bit, thirteen Korean documents passing their own hook, and a character-count smoke test, all **on both macOS and Linux**. Three more jobs run shellcheck, verify the version is written the same way everywhere, and run `claude plugin validate`.
@@ -294,6 +303,20 @@ GitHub Actions runs the same checks on every push and pull request (`.github/wor
 | [claude-forge](https://github.com/sangrokjung/claude-forge) | A full Claude Code framework: agents, commands, hooks, rules. Its Korean prose guardrails are one part of it    | This plugin is that part, extracted. If you installed Forge in full with `install.sh`, you already have the same hook and polish skill and do not need this. Running both duplicates the em-dash check |
 | [k-skill](https://github.com/NomaDamas/k-skill)             | A collection of 100+ skills for Korean users, from character counting and spell checking to transit and weather | Only the character-count skill was taken. The spell checker sends text to an external server, so it was left out; install it from k-skill if you need it, knowing that                                 |
 | Spelling and spacing checkers                               | Check spelling                                                                                                  | This plugin checks style only. The two do not overlap, so use both                                                                                                                                     |
+
+## What it covers
+
+Here is what "every piece of Korean" means, spelled out.
+
+| Where                                          | What owns it            | Status                                                        |
+| ---------------------------------------------- | ----------------------- | ------------------------------------------------------------- |
+| Ordinary chat replies                          | SessionStart rules      | Covered                                                       |
+| Slack, mail, reports, commit messages, READMEs | `korean-writing` skill  | Covered                                                       |
+| Polishing text that already exists             | `humanize-korean` skill | Covered                                                       |
+| `.md` file edits                               | PostToolUse hook        | Covered; only what was just written                           |
+| Korean comments and strings inside code        | SessionStart rules      | Generation only; the hook reads `.md` and does not check them |
+| Korean written by subagents                    | SessionStart rules      | Unverified; whether the injection propagates was not measured |
+| Text leaving through a tool, such as Slack     | SessionStart rules      | Generation only; nothing inspects it at send time             |
 
 ## Out of scope
 
@@ -334,14 +357,14 @@ Regular expressions catch known patterns. New kinds of awkwardness have to be fo
 <details>
 <summary><b>Q4. What if it flags something wrongly?</b></summary>
 
-**A.** For formal documents (contracts, terms, legal), put `<!-- korean-writing: ignore -->` at the top of the file; that file is never flagged again. To silence a whole session, set `KOREAN_WRITING_HOOK_DISABLED=1`. If the pattern itself is wrong, add the sentence to `hooks-handlers/test_posttooluse.py` as a false-positive case and fix the hook (see Development). To turn the hook off entirely: `claude plugin disable korean-writing`.
+**A.** For formal documents (contracts, terms, legal), put `<!-- korean-writing: ignore -->` at the top of the file; that file is never flagged again. To silence a whole session, set `KOREAN_WRITING_HOOK_DISABLED=1`; to drop only the always-on rules, set `KOREAN_WRITING_ALWAYS_ON_DISABLED=1`. If the pattern itself is wrong, add the sentence to `hooks-handlers/test_posttooluse.py` as a false-positive case and fix the hook (see Development). To turn the hook off entirely: `claude plugin disable korean-writing`.
 
 </details>
 
 <details>
 <summary><b>Q5. How many tokens does it cost?</b></summary>
 
-**A.** The only always-on cost is the four skill descriptions, about 270 tokens as reported by `/context`. Skill bodies load only on writing requests, and the hook is regular expressions with no LLM call. A Stop hook that re-reviews every reply was deliberately left out for the same reason.
+**A.** The always-on cost is the four skill descriptions (about 270 tokens as reported by `/context`) plus the reply rules (659 tokens), about 930 in total. Against a session-start context of roughly ten thousand tokens that is a 6 to 7 percent increase. The rules go in once per session and land in the prompt cache, so they are not re-paid on every turn; the measured per-turn cost went from 0.0029 to 0.0031 dollars. Skill bodies load only on writing requests, and the hook is regular expressions with no LLM call. A Stop hook that re-reviews every reply was deliberately left out for the same reason.
 
 </details>
 
@@ -365,6 +388,7 @@ git clone https://github.com/IsthisLee/claude-korean-writing.git
 ln -s "$PWD/claude-korean-writing" ~/.claude/skills/korean-writing
 claude plugin list                            # should show loaded
 python3 hooks-handlers/test_posttooluse.py    # 43 regression cases
+python3 hooks-handlers/test_sessionstart.py   # 18 regression cases
 ```
 
 Adding a pattern touches three places:

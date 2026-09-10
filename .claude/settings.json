@@ -3,6 +3,7 @@
   "permissions": {
     "allow": [
       "Bash(python3 hooks-handlers/test_posttooluse.py)",
+      "Bash(python3 hooks-handlers/test_sessionstart.py)",
       "Bash(scripts/check.sh:*)",
       "Bash(scripts/measure.sh:*)",
       "Bash(node skills/korean-character-count/scripts/korean_character_count.js:*)",

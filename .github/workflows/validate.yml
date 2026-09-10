@@ -53,14 +53,16 @@ jobs:
 
       - name: 훅 실행 비트 (git 모드 100755)
         run: |
-          for f in hooks-handlers/posttooluse.sh scripts/check.sh scripts/measure.sh scripts/release.sh; do
+          for f in hooks-handlers/posttooluse.sh hooks-handlers/sessionstart.sh scripts/check.sh scripts/measure.sh scripts/release.sh; do
             mode=$(git ls-files -s "$f" | cut -d' ' -f1)
             [ "$mode" = "100755" ] || { echo "::error file=$f::git 모드가 $mode 다. 실행되려면 100755 여야 한다. git update-index --chmod=+x $f"; exit 1; }
             echo "OK: $f $mode"
           done
 
       - name: 훅 회귀 테스트
-        run: python3 hooks-handlers/test_posttooluse.py
+        run: |
+          python3 hooks-handlers/test_posttooluse.py
+          python3 hooks-handlers/test_sessionstart.py
 
       - name: 한국어 문서가 자기 훅을 통과하는가
         run: |
@@ -84,7 +86,7 @@ jobs:
             sudo apt-get update -qq && sudo apt-get install -y -qq shellcheck
           fi
           shellcheck --version
-          shellcheck hooks-handlers/posttooluse.sh scripts/check.sh scripts/measure.sh scripts/release.sh
+          shellcheck hooks-handlers/posttooluse.sh hooks-handlers/sessionstart.sh scripts/check.sh scripts/measure.sh scripts/release.sh
 
   version:
     # 버전의 정본은 plugin.json 이다. README 배지와 CHANGELOG 가 따라오지 않으면 막는다.
