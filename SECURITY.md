@@ -16,7 +16,7 @@
 1. [Security → Report a vulnerability](https://github.com/IsthisLee/claude-korean-writing/security/advisories/new) 로 비공개 신고
 2. 메일 `rjsgmldnwn@gmail.com`
 
-받은 날부터 영업일 기준 5일 안에 접수 여부를 알려 드립니다. 수정이 필요하면 패치와 함께 권고문을 공개하고, 신고자가 원하면 이름을 올립니다.
+받은 날부터 영업일 기준 5일 안에 접수 여부를 알려 드립니다. 수정이 필요하면 패치와 함께 권고문을 공개하고 신고자가 원하면 이름을 올립니다.
 
 ## 이 플러그인이 하는 일
 
@@ -26,13 +26,13 @@
 | --------------- | ---------------------------------------------------------------------------------------- |
 | 실행 시점       | `Edit` · `Write` · `MultiEdit` 직후 (PostToolUse)                                          |
 | 실행하는 것     | `hooks-handlers/posttooluse.sh` 안의 bash 와 python3. 그 밖의 프로그램을 부르지 않습니다  |
-| 읽는 것         | 편집한 내용, 그리고 줄표를 셀 때 편집한 `.md` 파일 자체                                   |
+| 읽는 것         | 편집한 내용, 그리고 줄표와 연결어미 쉼표를 셀 때 편집한 `.md` 파일 자체                   |
 | 쓰는 것         | 없습니다. 파일을 고치거나 만들지 않습니다                                                 |
 | 네트워크        | 쓰지 않습니다. 원문은 이 컴퓨터 밖으로 나가지 않습니다                                    |
 | 외부 의존성     | 없습니다. 표준 라이브러리만 씁니다                                                        |
 | 결과            | stderr 에 걸린 항목을 적고 종료 코드 2 로 끝냅니다. 편집을 되돌리지 않습니다              |
 
-네트워크를 쓰지 않는다는 것은 직접 확인할 수 있습니다. 스크립트는 173줄입니다. 아래 세 명령 모두 아무것도 출력하지 않아야 정상입니다.
+네트워크를 쓰지 않는다는 것은 직접 확인할 수 있습니다. 스크립트는 234줄입니다. 아래 세 명령 모두 아무것도 출력하지 않아야 정상입니다.
 
 ```bash
 # 1. 파이썬이 불러오는 모듈. sys, json, re, os 한 줄만 나옵니다
@@ -45,7 +45,7 @@ grep -nE 'curl|wget|urllib|requests|socket|urlopen|http\.client|import ssl' hook
 grep -nE 'subprocess|os\.system|popen|exec\b' hooks-handlers/posttooluse.sh scripts/*.py skills/humanize-korean/references/*.py
 ```
 
-`https?://` 라는 문자열이 스크립트 안에 한 번 나옵니다. 검사하기 전에 본문에서 링크 주소를 지우는 정규식이고, 어디에 접속하는 코드가 아닙니다.
+`https?://` 라는 문자열이 스크립트 안에 한 번 나옵니다. 검사하기 전에 본문에서 링크 주소를 지우는 정규식이고 어디에 접속하는 코드가 아닙니다.
 
 ## 끄는 방법
 
@@ -61,7 +61,7 @@ grep -nE 'subprocess|os\.system|popen|exec\b' hooks-handlers/posttooluse.sh scri
 
 ## 범위 밖
 
-스킬 파일은 모델이 읽는 지시문이고 실행 코드가 아닙니다. 윤문 파이프라인의 파이썬 스크립트(`scripts/*.py`, `skills/humanize-korean/references/*.py`, im-not-ai 에서 내장)는 윤문 요청이 있을 때만 돌고, 작업 폴더의 `_workspace/` 에 입력과 결과 파일을 쓰며, 네트워크를 쓰지 않습니다. 이 문서의 약속은 이 파일들에도 해당합니다. 취약점 신고 대상은 실제로 실행되는 `hooks-handlers/` 와 `scripts/`, 그리고 `skills/korean-character-count/scripts/` 입니다.
+스킬 파일은 모델이 읽는 지시문이고 실행 코드가 아닙니다. 윤문 파이프라인의 파이썬 스크립트(`scripts/*.py`, `skills/humanize-korean/references/*.py`, im-not-ai 에서 내장)는 윤문 요청이 있을 때만 돌고 작업 폴더의 `_workspace/` 에 입력과 결과 파일을 쓰며 네트워크를 쓰지 않습니다. 이 문서의 약속은 이 파일들에도 해당합니다. 취약점 신고 대상은 실제로 실행되는 `hooks-handlers/` 와 `scripts/`, 그리고 `skills/korean-character-count/scripts/` 입니다.
 
 ---
 
@@ -95,13 +95,13 @@ Installing it means a shell script runs automatically every time you edit a `.md
 | ----------------- | ----------------------------------------------------------------------------- |
 | When it runs      | Right after `Edit` / `Write` / `MultiEdit` (PostToolUse)                        |
 | What it executes  | bash and python3 inside `hooks-handlers/posttooluse.sh`, nothing else           |
-| What it reads     | The edited content, plus the edited `.md` file itself when counting em dashes   |
+| What it reads     | The edited content, plus the edited `.md` file when counting em dashes and commas after connective endings |
 | What it writes    | Nothing. It never modifies or creates files                                    |
 | Network           | None. Your text never leaves your machine                                      |
 | Dependencies      | None. Standard library only                                                    |
 | Output            | Writes findings to stderr, exits 2. It never reverts your edit                  |
 
-You can verify the network claim yourself. The script is 173 lines. All three commands below should print nothing:
+You can verify the network claim yourself. The script is 234 lines. All three commands below should print nothing:
 
 ```bash
 # 1. Python imports. Prints one line: sys, json, re, os

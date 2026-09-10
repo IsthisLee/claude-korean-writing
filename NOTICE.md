@@ -1,6 +1,6 @@
 # NOTICE
 
-이 플러그인은 MIT 라이선스입니다([LICENSE](./LICENSE)). 아래 파일은 다른 MIT 프로젝트에서 가져왔고, 각 저작권 표시를 그대로 유지합니다. 허가 문구는 LICENSE의 MIT 본문과 같습니다.
+이 플러그인은 MIT 라이선스입니다([LICENSE](./LICENSE)). 아래 파일은 다른 MIT 프로젝트에서 가져왔고 각 저작권 표시를 그대로 유지합니다. 허가 문구는 LICENSE의 MIT 본문과 같습니다.
 
 ## im-not-ai (Humanize KR)
 

@@ -40,7 +40,7 @@
 
 ## What kind of plugin is this
 
-Claude Code's Korean is grammatically fine. It still reads wrong: word order carried over from English, metaphors that arrived through English, and stock phrases that land in the same spot of every document. When 143 real documents were run through the hook, 59 of the 60 flagged were written by Claude, most of them for em-dash interjections.
+Claude Code's Korean is grammatically fine. It still reads wrong: word order carried over from English, metaphors that arrived through English, and stock phrases that land in the same spot of every document. When 205 Korean documents that had accumulated on one machine were run through the hook, 85 were flagged and only one of those was written before 2024. The rest are 2026 files written by Claude, most of them for em-dash interjections.
 
 Patching this with a prompt means pasting that prompt into every session, and asking for a cleanup afterwards is already too late: a finished draft is built on translation-ese, and polishing rarely gets it out. So the four places where Korean comes out each get an owner of their own. Installing turns on all four at once, and there is nothing to remember to call.
 
@@ -64,7 +64,7 @@ Four sentences from the ground truth show what the rules are after, before and a
 | Before (as Claude Code wrote it)                                                                                | After (fixed by the rules)                                                                             | What was wrong                                                                                                                  |
 | --------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
 | 규칙이 충돌하면 상위 문서가 **이깁니다**. 둘 다 값이 있을 때는 텍스트가 **이기고** 강의실 참조는 무시됩니다.    | 규칙이 충돌하면 상위 문서를 따릅니다. 둘 다 값이 있을 때는 텍스트가 우선하고 강의실 참조는 무시됩니다. | "The upper document wins": documents and settings made to compete like people. D-5 in im-not-ai's taxonomy                      |
-| 원인은 힙 부족이 아니었습니다 **—** 실측해보니 **—** 설정이 아예 먹히지 않았습니다.                             | 원인은 힙 부족이 아니었습니다. 실측해 보니 설정이 아예 먹히지 않았습니다.                              | An em-dash interjection, English punctuation copied into Korean. Most of the 60 files flagged among 143 real documents hit this |
+| 원인은 힙 부족이 아니었습니다 **—** 실측해보니 **—** 설정이 아예 먹히지 않았습니다.                             | 원인은 힙 부족이 아니었습니다. 실측해 보니 설정이 아예 먹히지 않았습니다.                              | An em-dash interjection, English punctuation copied into Korean. 74 of the 85 flagged files hit this |
 | 여기서 갈리는 **축은** 프로젝트 전용 여부가 아니라 성격입니다. 두 문제는 **결이** 다르고 **레이어도** 다릅니다. | 여기서 갈리는 기준은 프로젝트 전용 여부가 아니라 성격입니다. 두 문제는 성격이 다른 별개의 문제입니다.  | "Axis," "grain," "layer": structure described through metaphor                                                                  |
 | 시험용 장비가 몇 초 만에 **쓰러졌습니다**. **일으켜 세우면** 또 쓰러지기를 스무 분 넘게 반복했습니다.           | 시험용 장비가 몇 초 만에 멈췄습니다. 다시 켜면 또 멈추기를 스무 분 넘게 반복했습니다.                  | Equipment "falling over" and being "stood back up": an English metaphor translated literally                                    |
 
@@ -186,7 +186,7 @@ Here is what the plugin ships with.
 | Agents         | 3            | vendored from im-not-ai: diagnosis, rewrite and final review for the polishing pipeline                                                                                                                            |
 | Rulebook       | 84 items     | im-not-ai's taxonomy: 10 categories, each item with a severity and a fix                                                                                                                                           |
 | Ground truth   | 15 sentences | 10 violations Claude Code actually generated, 5 clean sentences from the same context                                                                                                                              |
-| Regression     | 75 cases     | 55 for the check hook, 20 for the always-on rules                                                                                                                                                                  |
+| Regression     | 79 cases     | 55 for the check hook, 24 for the always-on rules                                                                                                                                                                  |
 | Scripts        | 4            | character count, whole-file check, false-positive measurement, release                                                                                                                                             |
 | Network        | none         | the hooks are bash and python3 regular expressions; the counter uses `node:fs`                                                                                                                                     |
 
@@ -194,7 +194,7 @@ Here is what the plugin ships with.
 
 Most of the Korean Claude Code produces in a day is neither a file nor a writing request. It is the ordinary reply, and neither the skills nor the check hook reach it. The SessionStart hook fills that gap. When a session starts or resumes, after `/clear`, and after the context is compacted, it injects `hooks-handlers/always-on.md` once. It injects after compaction too, because the rules must survive when the front of the context is cut away.
 
-There are nine items. Answer in polite form as usual; keep people or organizations as subjects; drop metaphors that came through English and just describe; no em-dash interjections, no firstly-secondly enumeration, no emoji; no translation-ese and no AI idioms; vary sentence length and keep one register; leave formality and facts alone and do not touch code, quotations or proper nouns; on a writing request, load the `korean-writing` skill first.
+There are ten items. Answer in polite form as usual; keep people or organizations as subjects; drop metaphors that came through English and just describe; no comma after a connective ending and no chained `A가 아니라 B` antithesis; no em-dash interjections, no firstly-secondly enumeration, no emoji; no translation-ese and no AI idioms; vary sentence length and keep one register; leave formality and facts alone and do not touch code, quotations or proper nouns; on a writing request, load the `korean-writing` skill first.
 
 The file is 1.5 KB and 402 Hangul characters, 726 tokens. It lands in the prompt cache, so there is no per-turn cost of resending it. It blocks nothing: with the rules file missing or unreadable the exit code is still 0. Twenty-two regression checks look at the injected content, whether all ten items are still there, the 420-Hangul ceiling, both off switches, and the safe exit.
 
@@ -208,9 +208,9 @@ Six principles sit underneath. Write clean from the start. Strip only the machin
 
 The rules themselves are the generation-time subset of im-not-ai's 84-item taxonomy. The two that separate human from AI prose most sharply in that taxonomy's own measurements come first: do not chain the negated antithesis `A가 아니라 B다` (density 9.2x human, 18x against personal blogs), and do not put a comma after a connective ending such as `~하고,` (KatFish measured 4.1% for humans against 19.8% for AI).
 
-The rest divide into sentence, ending and formatting. In a sentence: keep people or organizations as subjects; do not lean on all-purpose verbs; use only metaphors Korean actually uses; do not explain structure through metaphor; do not frame things as winning and losing; use a pronoun only when there is an antecedent to carry; do not stack particles; do not pile modifiers in front of a noun; cut back on 것 constructions; keep one register to the end; do not run the same sentence ending past four sentences; vary sentence length. At the ending: no summary lexicon, no `~하는 이유다` inversion, no `향후`, no `과제도 남아 있다`. Stop where the content stops. In formatting: at most two em-dash interjections, bullets only for real lists, no mechanical enumeration, no colon subtitles in headings, emoji only for a Slack greeting.
+First comes "deliver only what was asked": no word-count report, no follow-up offer, no `here is the ...` preamble, no horizontal rule splitting the body. That was the first thing judges marked the skill down for in the long-form measurement. The rest divide into sentence, rhythm, ending and formatting. In a sentence: keep people or organizations as subjects; do not lean on all-purpose verbs; use only metaphors Korean actually uses; do not explain structure through metaphor; do not frame things as winning and losing; use a pronoun only when there is an antecedent to carry; do not stack particles; do not pile modifiers in front of a noun; cut back on 것 constructions; keep one register to the end; do not run the same sentence ending past four sentences; vary sentence length. For rhythm: put one sentence of about 100 characters in every paragraph, and vary the length of the sentence that closes each paragraph. In formatting, prose carries no section headings. Cutting sentences short to satisfy the other rules trades one marker for another, because uniform sentence length is itself an item in the taxonomy. At the ending: no summary lexicon, no `~하는 이유다` inversion, no `향후`, no `과제도 남아 있다`. Stop where the content stops. In formatting: at most two em-dash interjections, bullets only for real lists, no mechanical enumeration, no colon subtitles in headings, emoji only for a Slack greeting.
 
-Before sending, seven things are checked: three or more negated antitheses; a comma after a connective ending; three or more em-dashes; a last paragraph that closes on a summary formula; `축`, `갈래`, `결` and `레이어` three or more times combined; a sentence where an object acts like a person; anything that snags when read aloud. The last one weighs most. Contracts, terms, legal documents and official letters sit outside the rule because stiffness is their requirement, and code, logs, commands, quotations, proper nouns and English source text are left untouched.
+Before sending, eleven things are checked: three or more negated antitheses; a comma after a connective ending; three or more em-dashes; a last paragraph that closes on a summary formula; `축`, `갈래`, `결` and `레이어` three or more times combined; a sentence where an object acts like a person; whether each paragraph has one long sentence; anything that snags when read aloud. The last one weighs most. Contracts, terms, legal documents and official letters sit outside the rule because stiffness is their requirement, and code, logs, commands, quotations, proper nouns and English source text are left untouched.
 
 ### Polishing: im-not-ai, vendored
 
@@ -303,16 +303,16 @@ Thresholds are one step above the rulebook's. Where the rulebook allows one per 
 
 **No rule changes without numbers.** Adding or removing a pattern, or moving a threshold, needs a result from real documents. Thirteen such changes are on record in [`EVALUATION.md`](./EVALUATION.md). The win/lose threshold went from one to two so that a single occurrence per document is allowed. "죽다" (to die) left the personification rule because "the server died" is everyday developer speech. Dropping the counts for `~에 대해` and `~를 통해` from the translation-ese rule removed a check that, on real documents, only ever flagged human writing.
 
-**Flagging a sound sentence is worse than missing one.** The pass criteria are ordered that way: zero false positives on clean sentences comes first, ten out of ten detections second. Across 143 real documents, one human-written file was flagged.
+**Flagging a sound sentence is worse than missing one.** The pass criteria are ordered that way: zero false positives on clean sentences comes first, ten out of ten detections second. Across 205 real documents, one file written before 2024 was flagged.
 
 **No contact with the outside.** What the hook reads and never does is in [SECURITY.md](./SECURITY.md), together with three `grep` commands that let you check for yourself.
 
 **What is always loaded stays small.** Ordinarily only the always-on rules, four skill descriptions and three agent descriptions enter the context, and the large files open when their job comes up.
 
 ```
-hooks-handlers/always-on.md     1.4 KB   once per session
-SKILL.md                        8.3 KB   on writing requests
-skills/humanize-korean/SKILL.md 29.2 KB   on polish requests
+hooks-handlers/always-on.md         1.5 KB   once per session
+SKILL.md                           21 KB   on writing requests
+skills/humanize-korean/SKILL.md    28 KB   on polish requests
 skills/humanize-korean/references/ 384 KB   only the documents a polish needs
 ```
 
@@ -326,16 +326,17 @@ The pass criteria and the measurements are in [`EVALUATION.md`](./EVALUATION.md)
 | ---------------------------------- | ------------------------------------------------------------------------------- |
 | Violations detected                | 10 / 10                                                                         |
 | False positives on clean sentences | 0 / 5                                                                           |
-| False positives on real documents  | 1 / 143 (0.7%)                                                                  |
+| False positives on real documents  | 1 / 205 (0.5%)                                                                  |
 | Correct code on detected items     | 10 / 10                                                                         |
 | Writing-request triggers           | 5 / 5, with 0 / 5 misfires on code work                                         |
-| Mutation testing                   | 15 / 15 injected defects caught                                                 |
+| Mutation testing                   | 23 / 23 injected defects caught                                                 |
 | Always-on rules, blind pairs       | 21 won, 0 lost, 3 tied out of 24                                                |
-| Always-on context cost             | about 1,450 tokens (rules 726 + four skill descriptions 430 + three agents 297) |
+| Skill vs im-not-ai polished text   | 49 won, 0 lost out of 56 blind pairs                                            |
+| Always-on context cost             | about 1,450 tokens in an isolated HOME (rules 726 + four skill descriptions 430 + three agents 297) |
 | Network calls                      | 0                                                                               |
-| Regression tests                   | 75 / 75                                                                         |
+| Regression tests                   | 79 / 79                                                                         |
 
-False positives on real documents were measured on 143 Korean `.md` files that had accumulated on one machine, unrelated to this plugin. Fed through the hook whole, 60 were flagged: 59 were implementation logs, QA reports and CLAUDE.md files that Claude wrote in 2026, and one was written by a person. The same measurement before the rule changes flagged seven human-written files, 4.9%.
+False positives on real documents were measured on 205 Korean `.md` files that had accumulated on one machine, unrelated to this plugin. Fed through the hook whole, 85 were flagged. Human-written and Claude-written files were separated by file modification year, a coarse proxy whose limits are recorded in `EVALUATION.md`: of the 32 files written before 2024, one was flagged. The same measurement before the rule changes flagged seven human-written files, 4.9%.
 
 The always-on rules were measured on twelve prompts such as explaining a function, diagnosing an error and reviewing a PR. Forty-eight replies were generated with and without the injection, and the same model was asked blind, twice per pair with the order swapped, which one read better. The injected side won 21 of 24 pairs and tied 3, and won or tied on all twelve prompts. A separate check of technical errors alone, style set aside, found no serious error on either side.
 
@@ -345,12 +346,12 @@ The same checks run locally with these commands.
 
 ```bash
 python3 hooks-handlers/test_posttooluse.py     # check hook regression, 55 cases
-python3 hooks-handlers/test_sessionstart.py    # always-on rules regression, 20 cases
+python3 hooks-handlers/test_sessionstart.py    # always-on rules regression, 24 cases
 scripts/check.sh README.md CLAUDE.md           # do the documents pass their own hook
 scripts/measure.sh ~/Documents                 # false positives over real documents
 ```
 
-GitHub Actions repeats the checks on macOS and Linux for every push and pull request: manifest and issue-form syntax, the hooks' executable bits, both regression suites, thirteen Korean documents passing their own hook, a smoke test of the counting script, and compilation plus a run check of the vendored polishing scripts. On top of those come shellcheck, a check that `plugin.json`, the README badges and CHANGELOG name the same version, and `claude plugin validate`.
+GitHub Actions repeats the checks on macOS and Linux for every push and pull request: manifest and issue-form syntax, the hooks' executable bits, both regression suites, fourteen Korean documents passing their own hook, a smoke test of the counting script, and compilation plus a run check of the vendored polishing scripts. On top of those come shellcheck, a check that `plugin.json`, the README badges and CHANGELOG name the same version, and `claude plugin validate`.
 
 ## What it does not do
 
@@ -361,13 +362,15 @@ GitHub Actions repeats the checks on macOS and Linux for every push and pull req
 
 ```markdown
 When answering in Korean or writing Korean prose, follow the korean-writing rules:
+no chained `A가 아니라 B` antithesis, no comma after a connective ending,
 no personified objects, no calqued metaphors, no abstract structure words,
 no em-dash interjections, no first/second enumerations, no translation-ese, no AI idioms.
+Deliver only what was asked: no word-count report, no follow-up offer.
 ```
 
 - Contracts, terms of service, legal documents and official letters are out of scope; formality is their requirement. Code, logs, commands, quotations, proper nouns and English source text are left alone.
 - Spelling and spacing are not checked. Style only.
-- The polishing pipeline was not written here; it is im-not-ai's, vendored as it is. Its quality rests on that project's measurements.
+- The polishing pipeline was not written here; it is im-not-ai's, vendored as it is. Its own quality rests on that project's measurements; what this repository measured is that text written from the start under the skill holds up against text that pipeline polished (49 won, 0 lost out of 56 blind pairs).
 
 ## Repository layout
 
@@ -384,7 +387,7 @@ korean-writing/
 │   ├── ground-truth.json             10 awkward sentences that were actually generated
 │   ├── clean.json                    5 clean sentences from the same context
 │   ├── test_posttooluse.py           55 regression cases for the check hook; verifies reported counts
-│   └── test_sessionstart.py          20 regression cases for the always-on rules
+│   └── test_sessionstart.py          24 regression cases for the always-on rules
 ├── agents/                           vendored from im-not-ai: the pipeline's three agents (diagnosis, rewrite, final review)
 ├── SKILL.md                          the korean-writing skill
 ├── skills/
@@ -398,7 +401,12 @@ korean-writing/
 │   ├── measure.sh                    false-positive measurement over a corpus
 │   ├── release.sh                    version, CHANGELOG, badges, tag, release
 │   └── *.py                          vendored from im-not-ai: the nine polishing scripts
-├── docs/                             banners (Korean and English, light and dark), hook output demo, social preview
+├── docs/
+│   ├── (banners in Korean and English, light and dark; hook output demo; social preview)
+│   ├── samples/                      always-on before/after transcripts, a polishing run log
+│   └── experiments/
+│       ├── always-on/                blind judging and the regression gate for the always-on rules
+│       └── skill-vs-imnotai/         the blind gate for skill output against im-not-ai
 ├── .github/                          CI workflow, three issue forms, PR template, CODEOWNERS, dependabot
 ├── .claude/settings.json             shared project settings for contributors
 ├── .gitattributes                    pins shell scripts to LF
@@ -477,7 +485,7 @@ First check that `claude plugin list` reports `korean-writing` as `enabled`. If 
 <details>
 <summary><b>Does 10/10 detection mean it catches everything?</b></summary>
 
-That is not what it means. The regular expressions were written by looking at those ten sentences, so catching them is expected, and the number exists to show that a rule change broke nothing. The number to watch is the false-positive rate: across 143 real documents, one human-written file was flagged. The patterns catch the ten known markers and nothing new.
+That is not what it means. The regular expressions were written by looking at those ten sentences, so catching them is expected, and the number exists to show that a rule change broke nothing. The number to watch is the false-positive rate: across 205 real documents, one file written before 2024 was flagged. The patterns catch the ten known markers and nothing new.
 
 Evidence: A1 to A3 and the 2026-09-10 re-measurement in [`EVALUATION.md`](./EVALUATION.md), and [`hooks-handlers/ground-truth.json`](./hooks-handlers/ground-truth.json).
 
