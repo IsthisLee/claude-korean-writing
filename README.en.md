@@ -149,17 +149,19 @@ Talk to Claude Code as usual; the skills load from the request. These lines can 
 이번 배포 QA 보고서를 배포-QA.md 로 써줘.                       (write this release's QA report to 배포-QA.md)
 ```
 
-To call a skill directly, use its slash name.
+Here is what loads on its own, when, and what to type to call it by name.
 
-| Ask for                              | Direct call                                    |
-| ------------------------------------ | ---------------------------------------------- |
-| Text written well from the start     | `/korean-writing`                              |
-| Translation-ese removed from a draft | `/korean-writing:humanize [text or file path]` |
-| A second pass on the last polish     | `/korean-writing:humanize-redo [instruction]`  |
-| A character count                    | `/korean-writing:korean-character-count`       |
-| A README                             | `/korean-writing:crafting-effective-readmes`   |
+| What                             | Runs on its own when                                          | Direct call                                                      |
+| -------------------------------- | ------------------------------------------------------------- | ---------------------------------------------------------------- |
+| Always-on rules                  | Session start, resume, `/clear`, context compaction           | Nothing to call; already in place when the session opens         |
+| The `korean-writing` skill       | A writing request: Slack, mail, a report, a README, a commit  | `/korean-writing`                                                |
+| Polishing                        | "AI 티 없애줘", "번역투 고쳐줘" and similar requests           | `/korean-writing:humanize [text or file path]`                   |
+| A second polishing pass          | Never on its own; it has to be called by name                 | `/korean-writing:humanize-redo [instruction]`                    |
+| The check hook                   | Right after `Edit`, `Write` or `MultiEdit` touches a `.md`    | Nothing to call; for existing files use `scripts/check.sh FILE...` |
+| Character counting               | "500자 이내로", "글자 수 세줘" and similar requests            | `/korean-writing:korean-character-count`                         |
+| README structure                 | A request to write or revise a README                         | `/korean-writing:crafting-effective-readmes`                     |
 
-Ordinary replies have nothing to call, because the rules are in place the moment the session opens.
+The two hooks have no name to call: they run when their condition is met and stay quiet otherwise. Four of the six skills load from the request; the two polishing entry points (`humanize`, `humanize-redo`) carry `disable-model-invocation`, so they only run when typed, and in exchange they cost nothing in always-on context. If you installed the plugin, `/korean-writing:korean-writing` reaches the same skill; the short form is fine.
 
 Hand a draft to the polish skill and the fixed text comes back with a one-line status: an estimated change rate and a grade from A to D. Below it, three to six of the main edits are shown side by side, before and after. If more than half the text changed, you get that fact instead of a result. A text changed by half is a rewrite, not a polish.
 
@@ -341,6 +343,23 @@ False positives on real documents were measured on 205 Korean `.md` files that h
 The always-on rules were measured on twelve prompts such as explaining a function, diagnosing an error and reviewing a PR. Forty-eight replies were generated with and without the injection, and the same model was asked blind, twice per pair with the order swapped, which one read better. The injected side won 21 of 24 pairs and tied 3, and won or tied on all twelve prompts. A separate check of technical errors alone, style set aside, found no serious error on either side.
 
 The skill itself was compared with and without on four identical prompts. On claude-opus-5 as of 2026-09-10 all seven valid samples passed the hook, so this sample could not separate the generation-time effect. That result is recorded as is.
+
+### What each place costs
+
+**The quality figures use different yardsticks and cannot be ranked against each other.** The always-on rules are measured against themselves, injection on versus off; the skill is measured against im-not-ai's polished output; the check hook is measured by detection and false-positive rates. Tokens and time are the only figures that compare across places.
+
+| Place                      | Always-on tokens        | Extra when it runs             | Time                                     | Quality evidence                                        |
+| -------------------------- | ----------------------- | ------------------------------ | ---------------------------------------- | ------------------------------------------------------- |
+| Always-on rules            | **726**, once a session | None                           | None                                     | 21 won, 0 lost, 3 tied out of 24 blind pairs            |
+| The `korean-writing` skill | 70 for the description  | About 10,100 for the body      | One reply                                | 49 won, 0 lost out of 56 blind pairs against im-not-ai  |
+| Polishing                  | 230 plus 773 for agents | About 14,100 per call, 1 to 3  | Fast 130s $0.64, strict 451s $1.64       | Rests on im-not-ai's own measurements; change-rate gates at 30% and 50% |
+| The check hook             | **0**                   | 0; it never calls an LLM       | 35 to 43 ms                              | 10/10 violations, 0/5 false positives, 1 of 32 pre-2024 files |
+
+Everything always in context adds up to about 1,930 tokens on this machine and about 1,450 in an isolated HOME. The gap comes from `/context` estimating the three agents at 773 in one environment and 297 in the other for the same files; the only figure measured by switching it off and on is the 726 for the rules themselves. A writing request adds the 10,100-token body on top, for roughly 12,000. The rules go into the prompt cache, so they are not paid again each turn.
+
+The checking side spends no tokens at all. The hook runs a python3 regex inside bash, so only latency remains: 35.3 ms on 730 Korean characters and 42.5 ms on the whole 35,643-character README, each the median of ten runs. The hook registration allows 10 seconds; the largest document uses under 0.5% of that. `scripts/check.sh` covers fourteen documents in 1.01 seconds.
+
+Polishing barely touches text that is already clean. A 280-character deployment notice went through the fast path, which removed three commas after connective endings and stopped there: 1.1% changed, grade A. A 200-character paragraph packed with AI tells escalated to the strict three-call path: 39% changed, grade A-. The method and the originals are in section G of [`EVALUATION.md`](./EVALUATION.md) (Korean).
 
 The same checks run locally with these commands.
 
