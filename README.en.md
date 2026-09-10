@@ -161,12 +161,13 @@ Talk to Claude Code as usual; the skills load from the request. These lines can 
 
 To call a skill directly, use its slash name.
 
-| Ask for                              | Direct call                                    |
-| ------------------------------------ | ---------------------------------------------- |
-| Text written well from the start     | `/korean-writing`                              |
-| Translation-ese removed from a draft | `/humanize-korean:humanize-korean` (im-not-ai) |
-| A character count                    | `/korean-writing:korean-character-count`       |
-| A README                             | `/korean-writing:crafting-effective-readmes`   |
+| Ask for                              | Direct call                                                 |
+| ------------------------------------ | ----------------------------------------------------------- |
+| Text written well from the start     | `/korean-writing`                                           |
+| Translation-ese removed from a draft | `/humanize-korean:humanize [text or file path]` (im-not-ai) |
+| A second pass on the last polish     | `/humanize-korean:humanize-redo [instruction]` (im-not-ai)  |
+| A character count                    | `/korean-writing:korean-character-count`                    |
+| A README                             | `/korean-writing:crafting-effective-readmes`                |
 
 Ordinary replies have nothing to call, because the rules are in place the moment the session opens.
 
@@ -219,7 +220,7 @@ Before sending, only four things are checked: three or more em-dashes; `ì¶•`, `ê
 
 ### Polishing: the im-not-ai dependency plugin
 
-Touching up text that already exists is not done here. [im-not-ai](https://github.com/epoko77-ai/im-not-ai)'s `humanize-korean` plugin does the same job far more thoroughly, so it is declared as a dependency: installing this plugin installs and enables it too. Say "remove the AI tells" or "fix the translation-ese" and that skill loads.
+Touching up text that already exists is not done here. [im-not-ai](https://github.com/epoko77-ai/im-not-ai)'s `humanize-korean` plugin does the same job far more thoroughly, so it is declared as a dependency: installing this plugin installs and enables it too. Say "remove the AI tells" or "fix the translation-ese" and that skill loads. To call it directly, use `/humanize-korean:humanize`; `/humanize-korean:humanize-redo` reworks the last result. Both are slash-only skills, so they do not enter the everyday context.
 
 im-not-ai picks a path by the state of the text. A well-written text gets one call; an ordinary AI draft gets two, diagnosis and rewrite; a severe case, or one that needs verification evidence, gets three: diagnosis, rewrite and final review. A script measures the change rate, warns above 30% and discards the result above 50%. Its taxonomy has 84 items in 10 categories, validated against a baseline of 532 human-written texts. It creates a `_workspace/` folder in the working directory and runs Python scripts.
 

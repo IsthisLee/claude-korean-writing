@@ -161,12 +161,13 @@ claude plugin install korean-writing
 
 직접 부르려면 슬래시 이름을 씁니다.
 
-| 부탁                         | 직접 부를 때                                   |
-| ---------------------------- | ---------------------------------------------- |
-| 글을 처음부터 쓰기           | `/korean-writing`                              |
-| 써 둔 글에서 번역투 걷어내기 | `/humanize-korean:humanize-korean` (im-not-ai) |
-| 글자 수 세기                 | `/korean-writing:korean-character-count`       |
-| README 쓰기                  | `/korean-writing:crafting-effective-readmes`   |
+| 부탁                           | 직접 부를 때                                                |
+| ------------------------------ | ----------------------------------------------------------- |
+| 글을 처음부터 쓰기             | `/korean-writing`                                           |
+| 써 둔 글에서 번역투 걷어내기   | `/humanize-korean:humanize [글 또는 파일 경로]` (im-not-ai) |
+| 방금 윤문한 결과를 다시 다듬기 | `/humanize-korean:humanize-redo [지시]` (im-not-ai)         |
+| 글자 수 세기                   | `/korean-writing:korean-character-count`                    |
+| README 쓰기                    | `/korean-writing:crafting-effective-readmes`                |
 
 평소 답변에는 부를 이름이 없습니다. 세션이 열리는 순간 규칙이 먼저 들어가 있기 때문입니다.
 
@@ -219,7 +220,7 @@ claude plugin install korean-writing
 
 ### 윤문: im-not-ai 의존 플러그인
 
-써 둔 글을 다듬는 일은 이 저장소가 직접 하지 않습니다. 같은 일을 훨씬 깊게 하는 [im-not-ai](https://github.com/epoko77-ai/im-not-ai)의 `humanize-korean` 플러그인을 의존성으로 선언해 두어서, 이 플러그인을 설치하면 함께 설치되고 활성화됩니다. "AI 티 없애줘", "번역투 고쳐줘"라고 하면 그쪽 스킬이 뜹니다.
+써 둔 글을 다듬는 일은 이 저장소가 직접 하지 않습니다. 같은 일을 훨씬 깊게 하는 [im-not-ai](https://github.com/epoko77-ai/im-not-ai)의 `humanize-korean` 플러그인을 의존성으로 선언해 두어서, 이 플러그인을 설치하면 함께 설치되고 활성화됩니다. "AI 티 없애줘", "번역투 고쳐줘"라고 하면 그쪽 스킬이 뜹니다. 직접 부르려면 `/humanize-korean:humanize`이고, 결과를 다시 다듬는 `/humanize-korean:humanize-redo`도 있습니다. 둘은 슬래시로만 부르는 스킬이라 평소 컨텍스트에는 들어가지 않습니다.
 
 im-not-ai는 글의 상태에 따라 경로를 고릅니다. 잘 쓴 글은 한 콜, 보통의 AI 초안은 진단과 윤문 두 콜, 중증이거나 검증 증적이 필요하면 진단·윤문·마무리 검토 세 콜입니다. 변경률은 스크립트가 재서 30%를 넘으면 경고하고 50%를 넘으면 결과를 버립니다. 규칙집은 10분류 84항목이고 사람이 쓴 글 532편을 기준선으로 검증돼 있습니다. 작업 폴더에 `_workspace/`를 만들고 파이썬 스크립트를 돌립니다.
 
