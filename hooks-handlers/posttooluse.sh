@@ -6,8 +6,10 @@
 #         미만이면 한글 비중 30% 이상인 줄만 모아 검사한다 (영어 문서 안의 한국어 문단)
 # 제외  : 코드블록(``` 과 ~~~), 인라인 코드, 링크 URL, 표 행, HTML 주석
 # 임계  : 스킬(korean-writing)의 권고보다 느슨하게 잡는다. 오탐으로 작업을 막지 않기 위해서다.
-# 줄표  : 이번 편집에 줄표 삽입구가 하나라도 있으면 파일 전체의 개수로 판정한다. 문단 하나씩 고치는
-#         동안 파일에 쌓이는 것을 잡기 위해서다. 이번 편집에 없으면 파일에 아무리 많아도 잡지 않는다.
+# 누적  : 줄표(K1)와 연결어미 뒤 쉼표(K10)는 이번 편집에 하나라도 있으면 파일 전체로 판정한다. 문단
+#         하나씩 고치는 동안 쌓이는 것을 잡기 위해서다. 이번 편집에 없으면 파일에 아무리 많아도 잡지 않는다.
+# 코드  : K1 줄표 · K2 추상 구조어 · K3 것 구문 · K4 AI 관용구 · K5 첫째둘째 · K6 승패 의인화
+#         K7 사물 의인화 · K8 번역투 · K9 부정 대구 · K10 연결어미 뒤 쉼표
 
 set -uo pipefail
 
@@ -51,14 +53,23 @@ raw = "\n".join(parts)
 if not raw:
     sys.exit(0)
 
-# 파일 단위 끄기. 이번에 쓴 부분이나 파일 머리에 표시가 있으면 검사하지 않는다.
+# 파일 단위 끄기. 문서 머리에 <!-- korean-writing: ignore --> 를 한 줄로 두면 검사하지 않는다.
 # 격식 문서(계약·약관)나 나쁜 예를 모아 둔 규칙집처럼 매번 걸리는 것이 맞지 않는 파일용이다.
-MARK = "korean-writing: ignore"
+#
+# 줄 하나로 선 표시만 지시로 본다. 예전에는 문자열이 어디에 있든 껐는데, 그러면 이 기능을
+# 설명하는 문서가 자기 검사를 통째로 건너뛴다. 이 저장소의 README·CLAUDE.md·CHANGELOG 등
+# 일곱 문서가 본문과 표에서 표시 문자열을 인용한 탓에 CI 의 자기 검사를 공허하게 통과했다.
+MARK_RE = re.compile(r"^[ \t]*<!--[ \t]*korean-writing:[ \t]*ignore[ \t]*-->[ \t]*$", re.M)
+MARK_HEAD_LINES = 10
+
+def marked(text):
+    return bool(MARK_RE.search("\n".join(text.split("\n")[:MARK_HEAD_LINES])))
+
 try:
     head = open(path, encoding="utf-8", errors="ignore").read(4000)
 except Exception:
     head = ""
-if MARK in raw or MARK in head:
+if marked(raw) or marked(head):
     sys.exit(0)
 
 def clean(text):
@@ -93,6 +104,21 @@ if body is None:
 
 hits = []
 
+# 파일 전체 본문. 문단 하나씩 고치는 동안 쌓이는 패턴(K1 줄표, K10 연결어미 쉼표)을 위해 한 번만 읽는다.
+# Write 는 이번 내용이 곧 파일 전체라 다시 읽지 않는다.
+_FILE_BODY = []
+
+def file_body():
+    if not _FILE_BODY:
+        fb = None
+        if tool != "Write":
+            try:
+                fb, _ = korean_body(open(path, encoding="utf-8", errors="ignore").read())
+            except Exception:
+                fb = None
+        _FILE_BODY.append(fb)
+    return _FILE_BODY[0]
+
 # K1 줄표 삽입구
 # 양쪽에 공백과 실제 문자가 있는 것만 센다. 표 셀을 가르는 줄표는 표 행 제외로 이미 빠져 있다.
 # 이번 편집분에 하나라도 있으면 파일 전체(같은 제외·한국어 규칙)의 개수로 판정한다. 실측 문서에서
@@ -100,13 +126,10 @@ hits = []
 DASH = r"[^|\s]\s[—–]\s[^|\s]"
 n = len(re.findall(DASH, body))
 n_file = n
-if n >= 1 and tool != "Write":
-    try:
-        fbody, _ = korean_body(open(path, encoding="utf-8", errors="ignore").read())
-        if fbody is not None:
-            n_file = max(n, len(re.findall(DASH, fbody)))
-    except Exception:
-        pass
+if n >= 1:
+    fbody = file_body()
+    if fbody is not None:
+        n_file = max(n, len(re.findall(DASH, fbody)))
 if n_file >= 4:
     what = f"줄표(—) 삽입구 {n}개" if n_file == n else f"줄표(—) 삽입구 이번 편집 {n}개, 파일 전체 {n_file}개"
     hits.append(("K1", what, "쉼표나 문장 분리로 바꾼다. 한국어에서 가장 강한 AI 티다"))
@@ -158,6 +181,44 @@ n_uy = len(re.findall(r"에\s*의해", body))
 if n_uy >= 2: tr.append(f"~에 의해 {n_uy}회")
 if tr:
     hits.append(("K8", " / ".join(tr), "능동으로 바꾸거나 조사를 구체화한다"))
+
+# K9 부정 대구 "A가 아니라 B" (im-not-ai taxonomy C-8)
+# 그 규칙집에서 실측 판별력이 가장 큰 항목이다. 사람 대비 밀도 9.2배, 개인 블로그 대비 18배이고
+# 세 모델과 세 과업 조건에서 모두 재현됐다. 규칙집의 임계는 2회지만 훅은 3회부터 잡는다.
+# 이 머신의 한국어 .md 205개 실측에서 3회 이상은 2023년 이전 문서 0/32, 2026년 문서 30/173 이다.
+# 정규식은 규칙집 구현(metrics_v2._ANTITHESIS_RE)을 따르되 조건절 "아니라면"·"아니라서"만 뺐다. 대구가
+# 아니라 가정이다. 생성물 실측에서 "일요일 기준이 아니라면"이 대구로 잡혔다. 문서 205개 판정은 그대로다.
+# 대안을 더 넓히는 쪽(것은 아니다·인가,)도 재 봤는데 2026년 적중이 하나 늘고 2회 임계에서 오탐이 하나 났다.
+m = re.findall(r"(?:가|이)\s*아니라(?![면서])|이기\s*이전에|되기\s*이전에|이기보다", body)
+if len(m) >= 3:
+    hits.append(("K9", f"부정 대구 {len(m)}회", "하나만 남기고 나머지는 그냥 단언한다. 예: A가 아니라 B다 → B다"))
+
+# K10 연결어미 뒤 쉼표 (im-not-ai taxonomy C-11)
+# 그 규칙집에서 단일 지표 분리도가 가장 큰 항목이다(KatFish ACL 2025, 에세이 사람 4.10% 대 AI 19.83%).
+# 한국어는 연결어미가 이미 호흡을 끊으므로 쉼표를 덧붙일 자리가 드문데, 영어 감각이 옮으면 자동으로 찍는다.
+# 개수만 보면 긴 문서가 불리하고 비율만 보면 짧은 문서가 불리해 둘 다 넘을 때만 잡는다.
+# 이 머신 실측에서 6회 이상이면서 30% 이상은 2023년 이전 문서 0/32, 2026년 문서 21/173 이다.
+# 줄표와 같은 이유로 파일 전체로 판정한다. 문단씩 고치는 동안 쌓이는 것이 이 패턴의 실제 모습이다.
+ENDING = r"(?:고|며|지만|면서|아서|어서)"
+
+def comma_ratio(t):
+    total = len(re.findall(ENDING + r"(?=[\s,\.!?、。]|$)", t))
+    return len(re.findall(ENDING + r"\s*,", t)), total
+
+n, total = comma_ratio(body)
+n_file, total_file = n, total
+if n >= 1:
+    fbody = file_body()
+    if fbody is not None:
+        fn, ft = comma_ratio(fbody)
+        if fn > n:
+            n_file, total_file = fn, ft
+if n_file >= 6 and total_file and n_file / total_file >= 0.30:
+    pct = round(n_file / total_file * 100)
+    what = f"연결어미 뒤 쉼표 {n_file}회 (연결어미의 {pct}%)"
+    if n_file != n:
+        what = f"연결어미 뒤 쉼표 이번 편집 {n}회, 파일 전체 {n_file}회 (연결어미의 {pct}%)"
+    hits.append(("K10", what, "쉼표를 지운다. 예: 훅을 더했고, 규칙집을 바꿨다 → 훅을 더했고 규칙집을 바꿨다"))
 
 if not hits:
     sys.exit(0)

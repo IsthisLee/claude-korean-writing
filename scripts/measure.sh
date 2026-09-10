@@ -30,7 +30,7 @@ for f in sorted(files):
     payload = json.dumps({"tool_name": "Write", "tool_input": {"file_path": os.path.abspath(f), "content": text}}, ensure_ascii=False)
     r = subprocess.run([hook], input=payload, capture_output=True, text=True)
     if r.returncode == 2:
-        found = re.findall(r"^\s+(K\d)\s+(.*?)\s+—", r.stderr, re.M)
+        found = re.findall(r"^\s+(K\d+)\s+(.*?)\s+—", r.stderr, re.M)
         for code, _ in found:
             codes[code] += 1
         hits.append((f, found))
