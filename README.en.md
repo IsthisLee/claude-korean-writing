@@ -271,7 +271,7 @@ references/taxonomy.md         66   KB   to look up one ambiguous item
 | Writing-request triggers           | 5 / 5, with 0 / 5 misfires on code work         |
 | Mutation testing                   | 15 / 15 injected defects caught                 |
 | Always-on rules, blind pairs       | 21 won, 0 lost, 3 tied out of 24                |
-| Always-on context cost             | about 950 tokens (descriptions 290 + rules 659) |
+| Always-on context cost             | about 950 tokens (descriptions 290 + rules 662) |
 | Network calls                      | 0                                               |
 | Regression tests                   | 63 / 63                                         |
 
@@ -385,7 +385,7 @@ Put `<!-- korean-writing: ignore -->` at the top of the file and that file is no
 <details>
 <summary><b>How many tokens does it cost?</b></summary>
 
-The always-on cost is the four skill descriptions, about 290 tokens, plus the reply rules injected once per session, about 660. The rules figure comes from running `claude -p` under identical conditions and subtracting total input tokens: 9,514 without the injection, 10,173 with it. The rules land in the prompt cache and are not resent every turn. Skill bodies load only on writing requests, and the hook never calls an LLM.
+The always-on cost is the four skill descriptions, about 290 tokens, plus the reply rules injected once per session, about 660. The rules figure comes from toggling the installed plugin with `KOREAN_WRITING_ALWAYS_ON_DISABLED=1` and subtracting total input tokens from `claude -p`: 12,364 off, 13,026 on. Against a session-start context of roughly ten thousand tokens that is about 5 percent. The rules land in the prompt cache and are not resent every turn. Skill bodies load only on writing requests, and the hook never calls an LLM.
 
 </details>
 
