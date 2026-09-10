@@ -296,7 +296,8 @@ GitHub Actions runs, on every push and pull request and on both macOS and Linux,
 
 - The check hook looks only at `.md` files. Korean comments and strings inside code, and replies that go straight out to Slack, are covered by the always-on rules and the skills at generation time, with no check afterwards.
 - The regular expressions catch eight known markers. New kinds of awkwardness have to be found by a person and added.
-- The always-on rules were measured on single turns. Whether the effect fades in long conversations, and whether the injection reaches subagent sessions, was not measured.
+- The always-on rules were measured on single turns. Whether the effect fades in long conversations was not measured.
+- **The injection does not reach subagents.** An equivalent SessionStart hook carrying an unguessable token was put in place and a subagent was asked about it twice; both times it reported not seeing it. Korean written by a subagent is currently outside the always-on rules.
 - Contracts, terms of service, legal documents and official letters are out of scope; formality is their requirement. Code, logs, commands, quotations, proper nouns and English source text are left alone.
 - Spelling and spacing are not checked. Style only.
 
