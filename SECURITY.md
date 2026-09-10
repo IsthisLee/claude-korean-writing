@@ -38,11 +38,11 @@
 # 1. 파이썬이 불러오는 모듈. sys, json, re, os 한 줄만 나옵니다
 grep -nE '^\s*(import|from) ' hooks-handlers/posttooluse.sh
 
-# 2. 네트워크 호출 — 출력 없음
-grep -nE 'curl|wget|urllib|requests|socket|urlopen|http\.client|ssl' hooks-handlers/posttooluse.sh
+# 2. 네트워크 호출 — 출력 없음 (훅과 내장 윤문 스크립트 모두)
+grep -nE 'curl|wget|urllib|requests|socket|urlopen|http\.client|import ssl' hooks-handlers/posttooluse.sh scripts/*.py skills/humanize-korean/references/*.py
 
 # 3. 외부 프로그램 실행 — 출력 없음
-grep -nE 'subprocess|os\.system|popen|exec\b' hooks-handlers/posttooluse.sh
+grep -nE 'subprocess|os\.system|popen|exec\b' hooks-handlers/posttooluse.sh scripts/*.py skills/humanize-korean/references/*.py
 ```
 
 `https?://` 라는 문자열이 스크립트 안에 한 번 나옵니다. 검사하기 전에 본문에서 링크 주소를 지우는 정규식이고, 어디에 접속하는 코드가 아닙니다.
@@ -61,7 +61,7 @@ grep -nE 'subprocess|os\.system|popen|exec\b' hooks-handlers/posttooluse.sh
 
 ## 범위 밖
 
-스킬 파일은 모델이 읽는 지시문이고 실행 코드가 아닙니다. 의존 플러그인 im-not-ai 는 별도 저장소의 코드이며 그쪽 보안 정책을 따릅니다. 이 문서의 약속은 이 저장소의 파일에만 해당합니다. 취약점 신고 대상은 실제로 실행되는 `hooks-handlers/` 와 `scripts/`, 그리고 `skills/korean-character-count/scripts/` 입니다.
+스킬 파일은 모델이 읽는 지시문이고 실행 코드가 아닙니다. 윤문 파이프라인의 파이썬 스크립트(`scripts/*.py`, `skills/humanize-korean/references/*.py`, im-not-ai 에서 내장)는 윤문 요청이 있을 때만 돌고, 작업 폴더의 `_workspace/` 에 입력과 결과 파일을 쓰며, 네트워크를 쓰지 않습니다. 이 문서의 약속은 이 파일들에도 해당합니다. 취약점 신고 대상은 실제로 실행되는 `hooks-handlers/` 와 `scripts/`, 그리고 `skills/korean-character-count/scripts/` 입니다.
 
 ---
 
@@ -107,8 +107,8 @@ You can verify the network claim yourself. The script is 173 lines. All three co
 # 1. Python imports. Prints one line: sys, json, re, os
 grep -nE '^\s*(import|from) ' hooks-handlers/posttooluse.sh
 
-# 2. Network calls - no output
-grep -nE 'curl|wget|urllib|requests|socket|urlopen|http\.client|ssl' hooks-handlers/posttooluse.sh
+# 2. Network calls - no output (the hook and the vendored polishing scripts)
+grep -nE 'curl|wget|urllib|requests|socket|urlopen|http\.client|import ssl' hooks-handlers/posttooluse.sh scripts/*.py skills/humanize-korean/references/*.py
 
 # 3. Spawning external programs - no output
 grep -nE 'subprocess|os\.system|popen|exec\b' hooks-handlers/posttooluse.sh
@@ -128,4 +128,4 @@ Where `python3` is missing, the hook exits quietly without checking.
 
 ## Out of scope
 
-Skill files are instructions the model reads, not code that runs. The dependency plugin im-not-ai is code from a separate repository and is covered by that project's security policy; the promises in this document apply to the files in this repository only. Vulnerability reports apply to `hooks-handlers/`, `scripts/`, and `skills/korean-character-count/scripts/`.
+Skill files are instructions the model reads, not code that runs. The polishing pipeline's Python scripts (`scripts/*.py` and `skills/humanize-korean/references/*.py`, vendored from im-not-ai) run only on a polish request, write input and result files under `_workspace/` in the working directory, and use no network. The promises in this document cover those files as well. Vulnerability reports apply to `hooks-handlers/`, `scripts/`, and `skills/korean-character-count/scripts/`.

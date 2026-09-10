@@ -4,7 +4,7 @@
 
 ## 이 저장소가 무엇인가
 
-Claude Code 가 쓰는 모든 한국어의 품질과 자연스러움을 맡는 플러그인입니다. 스킬 셋과 훅 둘(세션 시작의 상시 규칙 주입, 편집 뒤 검사), 검사·릴리스 스크립트, 그리고 윤문을 맡는 의존 플러그인 하나(im-not-ai 의 `humanize-korean`)로 이루어집니다. 구조와 사용법은 [README.md](README.md), 판정 기준은 [EVALUATION.md](EVALUATION.md) 에 있습니다.
+Claude Code 가 쓰는 모든 한국어의 품질과 자연스러움을 맡는 플러그인입니다. 이 저장소가 쓴 스킬 셋, im-not-ai 에서 내장한 윤문 스킬 셋과 에이전트 셋, 훅 둘(세션 시작의 상시 규칙 주입, 편집 뒤 검사), 검사·릴리스 스크립트로 이루어집니다. 구조와 사용법은 [README.md](README.md), 판정 기준은 [EVALUATION.md](EVALUATION.md) 에 있습니다.
 
 ## 먼저 돌린다
 
@@ -32,9 +32,9 @@ scripts/check.sh README.md CLAUDE.md           # 문서가 자기 훅을 통과�
 
 ## 건드리지 않는 것
 
-`skills/crafting-effective-readmes/**` 와 `skills/korean-character-count/scripts/**` 는 다른 MIT 프로젝트에서 가져온 파일입니다. 출처와 수정 범위가 [NOTICE.md](NOTICE.md) 에 적혀 있습니다. 고쳐야 하면 NOTICE.md 의 해당 줄도 함께 고칩니다.
+`skills/humanize-korean/**`, `skills/humanize/**`, `skills/humanize-redo/**`, `agents/**`, `scripts/*.py`, `skills/crafting-effective-readmes/**`, `skills/korean-character-count/scripts/**` 는 다른 MIT 프로젝트에서 가져온 파일입니다. 출처와 수정 범위가 [NOTICE.md](NOTICE.md) 에 적혀 있습니다. 고쳐야 하면 NOTICE.md 의 해당 줄도 함께 고칩니다.
 
-윤문 플러그인 im-not-ai 는 복사하지 않습니다. `marketplace.json` 의 항목이 그 저장소의 커밋을 가리키고, `plugin.json` 의 `dependencies` 가 설치를 끌어옵니다. 새 판을 받으려면 `marketplace.json` 의 `sha` 를 올리고 README 의 im-not-ai 설명이 그 판과 맞는지 다시 봅니다.
+윤문 파이프라인은 im-not-ai 의 런타임 부분집합을 그대로 내장한 것입니다. 새 판을 받으려면 원본 저장소를 그 커밋으로 받아 같은 경로에 복사하고, NOTICE.md 에 적힌 한 줄 수정(트리거 문구)을 다시 적용한 뒤, `python3 -m py_compile scripts/*.py` 와 격리된 HOME 에서 `/korean-writing:humanize` 실행으로 확인하고 NOTICE.md 의 커밋을 올립니다. 스크립트는 `scripts/` 와 `skills/humanize-korean/references/` 의 상대 위치로 서로를 찾으므로 경로를 옮기지 않습니다.
 
 ## 버전
 

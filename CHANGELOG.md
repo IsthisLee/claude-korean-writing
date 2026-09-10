@@ -4,14 +4,25 @@
 
 ## [Unreleased]
 
+### 추가
+
+- **im-not-ai 의 윤문 파이프라인을 내장했습니다.** 커밋 `9747f036cdc2`(2026-09-06)의 런타임 부분집합을 그대로 넣었습니다. 스킬 셋(`humanize-korean`·`humanize`·`humanize-redo`), 에이전트 셋(진단·윤문·마무리 검토), 파이썬 스크립트 아홉, 규칙집과 참조 문서입니다. `/korean-writing:humanize` 와 `/korean-writing:humanize-redo` 로 부르고, "AI 티 없애줘" 같은 요청에는 `humanize-korean` 스킬이 뜹니다. 가져온 파일에서 고친 것은 스킬 설명의 트리거 문구 하나뿐입니다(NOTICE.md). 개발용 에이전트 여섯은 싣지 않았습니다
+- 격리된 HOME 에서 확인했습니다. 설치 뒤 `/humanize` 자동완성에 `/korean-writing:` 셋만 뜨고, `/korean-writing:humanize` 에 AI 티를 몰아넣은 200자 문단을 넣으니 세 콜이 끝까지 돌아 변경률 39%, 등급 A-, 자체검증 6/6 으로 끝났습니다(451초, 1.64달러). 기록은 `docs/samples/humanize-run.md` 에 있습니다
+- CI 에 내장 스크립트의 `py_compile` 과 `--help` 실행 확인 단계
+- `docs/samples/`: 같은 질문에 상시 규칙을 넣지 않은 답과 넣은 답의 원문(claude-sonnet-5). README 의 전후 발췌가 여기서 나왔습니다
+- README 머리에 무엇을 하는지 다섯 줄 목록을 두고, 정답 문장 넷을 전후 표로, 상시 규칙 주입 전후를 실제 답변 발췌로 보였습니다
+
 ### 변경
 
-- **윤문을 im-not-ai 플러그인에 맡깁니다.** `plugin.json` 에 `dependencies: ["humanize-korean"]` 을 선언하고, `marketplace.json` 에 im-not-ai 저장소를 두 번째 항목으로 등록했습니다(커밋 `9747f036cdc2` 고정). `claude plugin install korean-writing` 한 번에 im-not-ai 2.3.2 가 같이 설치·활성화되고, korean-writing 이 켜져 있는 동안 im-not-ai 만 끄는 것은 막힙니다. 격리된 HOME 에서 확인했습니다. 세션마다 im-not-ai 의 스킬 설명 약 230 토큰과 에이전트 9종 설명 약 900 토큰이 더 듭니다. EVALUATION.md 의 D2 기준 1,000 토큰은 이 플러그인 자체 몫(약 860)에만 적용합니다
-- 이미 1.1.0 이하를 설치한 경우 `claude plugin install korean-writing` 을 다시 실행하면 의존성이 채워집니다
+- 상시 컨텍스트 비용은 약 1,390토큰(상시 규칙 662, 스킬 설명 넷 430, 에이전트 셋 297)입니다. EVALUATION.md 의 D2 예산을 1,000 에서 1,500 으로 올렸습니다
+- 윤문 스크립트는 Python 3.10 이상이 필요합니다. 검사 훅은 그대로 어느 python3 든 됩니다
+- SECURITY.md 의 확인 명령이 내장 스크립트까지 봅니다. 네트워크 호출과 외부 프로그램 실행은 없습니다
+- `crafting-effective-readmes` 스킬을 경유본 softaworks/agent-toolkit 대신 원본 joshuadavidthomas/agent-skills(커밋 `516dee7a422b`, 2026-07-20)에서 직접 가져왔습니다. 내용은 같고, 경유본에만 있던 스킬 폴더의 `README.md` 를 지웠습니다
+- 출판사 편집부 일화는 claude-forge 규칙집에만 있던 내용이라 SKILL.md·README·훅 주석에서 빼고, 정답 데이터 G05·G06 을 근거로 적었습니다. NOTICE.md 에서 claude-forge 항목을 뺐습니다
 
 ### 제거
 
-- `humanize-korean` 스킬과 `references/taxonomy.md`·`references/quick-rules.md`. 1.1.0 에서 im-not-ai 원본으로 갈아 끼웠던 사본인데, 같은 이름의 스킬이 둘 뜨는 충돌과 원본이 바뀔 때마다 사본을 갱신하는 일을 없애려고 뺐습니다. 윤문 요청은 im-not-ai 의 스킬이 받습니다. 훅과 회귀 테스트는 그대로입니다
+- 이 저장소가 쓰던 `humanize-korean` 스킬과 `references/taxonomy.md`·`references/quick-rules.md` 사본. im-not-ai 의 파이프라인이 규칙집째 들어오면서 필요 없어졌습니다
 
 ## [1.1.0] - 2026-09-10
 

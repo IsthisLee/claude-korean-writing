@@ -64,6 +64,12 @@ jobs:
           python3 hooks-handlers/test_posttooluse.py
           python3 hooks-handlers/test_sessionstart.py
 
+      - name: 내장 윤문 스크립트 컴파일·스모크
+        run: |
+          python3 -m py_compile scripts/*.py skills/humanize-korean/references/*.py
+          python3 scripts/prepare_monolith_input.py --help > /dev/null
+          python3 scripts/verify_gates.py --help > /dev/null
+
       - name: 한국어 문서가 자기 훅을 통과하는가
         run: |
           scripts/check.sh README.md SKILL.md \

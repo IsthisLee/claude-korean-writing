@@ -86,7 +86,7 @@ docs: 스킬 유무 비교 기록
 
 ## 가져온 파일
 
-`skills/crafting-effective-readmes/**` 와 `skills/korean-character-count/scripts/**` 는 다른 MIT 프로젝트에서 가져왔습니다. 윤문 플러그인 im-not-ai 는 복사하지 않고 `plugin.json` 의 의존성으로 설치합니다. 고쳐야 한다면 [NOTICE.md](NOTICE.md) 의 수정 범위도 함께 고쳐 주세요. 원 저작자의 저작권 표시는 지우지 않습니다.
+`skills/humanize-korean/**`, `skills/humanize/**`, `skills/humanize-redo/**`, `agents/**`, `scripts/*.py`(im-not-ai), `skills/crafting-effective-readmes/**`, `skills/korean-character-count/scripts/**` 는 다른 MIT 프로젝트에서 가져왔습니다. 고쳐야 한다면 [NOTICE.md](NOTICE.md) 의 수정 범위도 함께 고쳐 주세요. 원 저작자의 저작권 표시는 지우지 않습니다.
 
 ## 규칙과 라이선스
 

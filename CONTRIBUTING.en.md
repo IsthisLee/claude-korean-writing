@@ -86,7 +86,7 @@ Leave version numbers alone. `.claude-plugin/plugin.json` is the single source o
 
 ## Vendored files
 
-`skills/crafting-effective-readmes/**` and `skills/korean-character-count/scripts/**` come from other MIT projects. The polishing plugin im-not-ai is not copied; it is installed as a dependency declared in `plugin.json`. If you change one, update the corresponding entry in [NOTICE.md](NOTICE.md) too, and never remove an upstream copyright notice.
+`skills/humanize-korean/**`, `skills/humanize/**`, `skills/humanize-redo/**`, `agents/**`, `scripts/*.py` (im-not-ai), `skills/crafting-effective-readmes/**` and `skills/korean-character-count/scripts/**` come from other MIT projects. If you change one, update the corresponding entry in [NOTICE.md](NOTICE.md) too, and never remove an upstream copyright notice.
 
 ## Conduct and license
 

@@ -2,7 +2,7 @@
   "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
   "name": "korean-writing",
   "version": "1.1.0",
-  "description": "Claude Code가 쓰는 모든 한국어의 품질을 맡는 플러그인. 평소 답변에 상시로 붙는 규칙, 처음 쓸 때 번역투·AI 관용구를 피하는 스킬, README의 절 구성을 잡는 스킬, .md 편집을 검사하는 훅, 글자 수 스크립트. 이미 쓴 글의 윤문은 의존 플러그인 im-not-ai(humanize-korean)가 맡는다.",
+  "description": "Claude Code가 쓰는 모든 한국어의 품질을 맡는 플러그인. 평소 답변에 상시로 붙는 규칙, 처음 쓸 때 번역투·AI 관용구를 피하는 스킬, 이미 쓴 글을 다듬는 윤문 파이프라인(im-not-ai 내장), README의 절 구성을 잡는 스킬, .md 편집을 검사하는 훅, 글자 수 스크립트.",
   "author": {
     "name": "Isthis",
     "email": "rjsgmldnwn@gmail.com"
@@ -10,7 +10,10 @@
   "skills": [
     "./",
     "./skills/korean-character-count",
-    "./skills/crafting-effective-readmes"
+    "./skills/crafting-effective-readmes",
+    "./skills/humanize-korean",
+    "./skills/humanize",
+    "./skills/humanize-redo"
   ],
   "keywords": [
     "korean",
@@ -22,8 +25,5 @@
     "readme",
     "documentation"
   ],
-  "repository": "https://github.com/IsthisLee/claude-korean-writing",
-  "dependencies": [
-    "humanize-korean"
-  ]
+  "repository": "https://github.com/IsthisLee/claude-korean-writing"
 }
