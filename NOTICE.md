@@ -24,15 +24,11 @@
     Copyright (c) 2026
     https://github.com/NomaDamas/k-skill
 
-## agent-toolkit (crafting-effective-readmes)
+## agent-skills (crafting-effective-readmes)
 
-    skills/crafting-effective-readmes/**        style-guide.md 와 README.md 의 관련 스킬 한 줄만 수정
+    skills/crafting-effective-readmes/**        crafting-effective-readmes/ 그대로. style-guide.md 의 관련 스킬 한 줄만 수정
 
-    MIT License
-    Copyright (c) 2026 Leonardo Flores
-    https://github.com/softaworks/agent-toolkit
-
-원 저작은 agent-skills 입니다.
+    가져온 판: 커밋 516dee7a422b (2026-07-20)
 
     MIT License
     Copyright (c) 2025 Josh Thomas

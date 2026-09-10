@@ -495,12 +495,12 @@ scripts/release.sh 1.1.0 --push
 
 ## Sources and license
 
-| File                                 | From                                                                                                                                              | Changed                                                            |
-| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| `references/taxonomy.md`             | [im-not-ai](https://github.com/epoko77-ai/im-not-ai)'s `skills/humanize-korean/references/ai-tell-taxonomy.md`, commit `9747f03` (2026-09-06)     | One line at the top that exempts the file from the hook            |
-| `references/quick-rules.md`          | im-not-ai's `skills/humanize-korean/references/quick-rules.md`, same commit                                                                       | One line at the top that exempts the file from the hook            |
-| `skills/humanize-korean/SKILL.md`    | im-not-ai's procedure and iron rules                                                                                                              | Rewritten in this repository for a single pass                     |
-| `skills/korean-character-count/`     | [k-skill](https://github.com/NomaDamas/k-skill)                                                                                                   | Script unchanged, run path in the instructions, SKILL.md rewritten |
-| `skills/crafting-effective-readmes/` | [agent-toolkit](https://github.com/softaworks/agent-toolkit), whose original is [agent-skills](https://github.com/joshuadavidthomas/agent-skills) | One line each that names the companion skill                       |
+| File                                 | From                                                                                                                                          | Changed                                                            |
+| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| `references/taxonomy.md`             | [im-not-ai](https://github.com/epoko77-ai/im-not-ai)'s `skills/humanize-korean/references/ai-tell-taxonomy.md`, commit `9747f03` (2026-09-06) | One line at the top that exempts the file from the hook            |
+| `references/quick-rules.md`          | im-not-ai's `skills/humanize-korean/references/quick-rules.md`, same commit                                                                   | One line at the top that exempts the file from the hook            |
+| `skills/humanize-korean/SKILL.md`    | im-not-ai's procedure and iron rules                                                                                                          | Rewritten in this repository for a single pass                     |
+| `skills/korean-character-count/`     | [k-skill](https://github.com/NomaDamas/k-skill)                                                                                               | Script unchanged, run path in the instructions, SKILL.md rewritten |
+| `skills/crafting-effective-readmes/` | [agent-skills](https://github.com/joshuadavidthomas/agent-skills)' `crafting-effective-readmes/`, commit `516dee7` (2026-07-20)               | One line in `style-guide.md` that names the companion skills       |
 
 The rest was written in this repository: the `korean-writing` skill, the always-on rules, the whole check hook, the ground truth and the evaluation criteria. Every imported file is MIT-licensed and the original copyright notices are gathered in [`NOTICE.md`](./NOTICE.md). This repository is [MIT](./LICENSE) too.

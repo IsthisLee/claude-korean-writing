@@ -10,4 +10,4 @@
 
 ## Prose Quality
 
-Prose quality is handled by the parent plugin: write Korean prose with the `korean-writing` skill from the start, and polish existing text with `humanize-korean`. (Upstream pointed to `writing-clearly-and-concisely`, which is not part of this plugin.)
+Prose quality is handled by the parent plugin: write Korean prose with the `korean-writing` skill from the start, and polish existing text with `humanize-korean`. (Upstream points to a `writing` skill that is not part of this plugin.)

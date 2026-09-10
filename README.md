@@ -503,6 +503,6 @@ scripts/release.sh 1.1.0 --push
 | `references/quick-rules.md`          | im-not-ai의 `skills/humanize-korean/references/quick-rules.md`, 같은 커밋                                                                   | 머리에 훅 제외 표시 한 줄                                   |
 | `skills/humanize-korean/SKILL.md`    | im-not-ai의 절차와 철칙                                                                                                                     | 단일 패스에 맞춰 이 저장소에서 다시 씀                      |
 | `skills/korean-character-count/`     | [k-skill](https://github.com/NomaDamas/k-skill)                                                                                             | 스크립트는 그대로, 설명서는 실행 경로만, SKILL.md는 다시 씀 |
-| `skills/crafting-effective-readmes/` | [agent-toolkit](https://github.com/softaworks/agent-toolkit). 원 저작은 [agent-skills](https://github.com/joshuadavidthomas/agent-skills)   | 관련 스킬을 가리키는 한 줄씩                                |
+| `skills/crafting-effective-readmes/` | [agent-skills](https://github.com/joshuadavidthomas/agent-skills)의 `crafting-effective-readmes/`, 커밋 `516dee7` (2026-07-20)              | `style-guide.md`에서 관련 스킬을 가리키는 한 줄             |
 
 나머지는 이 저장소에서 썼습니다. `korean-writing` 스킬, 상시 규칙, 검사 훅 전체, 정답 데이터, 검증 기준이 그것입니다. 가져온 파일의 라이선스는 전부 MIT이고 원 저작권 표시는 [`NOTICE.md`](./NOTICE.md)에 모아 두었습니다. 이 저장소의 라이선스도 [MIT](./LICENSE)입니다.
