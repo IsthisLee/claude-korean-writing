@@ -1,6 +1,6 @@
 {
   "name": "claude-korean-writing",
-  "description": "Claude Code가 쓰는 모든 한국어의 품질을 맡는 플러그인",
+  "description": "Claude Code가 쓰는 모든 한국어를 맡는 플러그인",
   "owner": {
     "name": "Isthis",
     "email": "rjsgmldnwn@gmail.com"
@@ -8,7 +8,7 @@
   "plugins": [
     {
       "name": "korean-writing",
-      "description": "Claude Code가 쓰는 모든 한국어의 품질을 맡는 플러그인. 평소 답변에 상시로 붙는 규칙, 처음 쓸 때 번역투·AI 관용구를 피하는 스킬, 이미 쓴 글을 다듬는 윤문 파이프라인(im-not-ai 내장), README의 절 구성을 잡는 스킬, .md 편집을 검사하는 훅, 글자 수 스크립트.",
+      "description": "Claude Code가 쓰는 모든 한국어를 맡는 플러그인. 평소 답변, 새로 쓰는 글, 이미 쓴 글, 저장하는 .md. 한국어가 나오는 네 자리에 상시 규칙 주입 훅, 작성 스킬, 윤문 파이프라인(im-not-ai 내장), 검사 훅이 하나씩 붙습니다. 글자 수 스크립트와 README 절 구성 스킬이 더 있습니다.",
       "source": "./",
       "author": {
         "name": "Isthis",

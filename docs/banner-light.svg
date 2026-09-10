@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="240" viewBox="0 0 1200 240" font-family="-apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', Helvetica, Arial, sans-serif">
 <rect width="1200" height="240" rx="14" fill="#f6f8fa"/>
 <text x="40" y="92" font-size="56" font-weight="700" fill="#1f2328" font-family="SF Mono, Menlo, Consolas, monospace">korean-writing</text>
-<text x="40" y="140" font-size="22" fill="#57606a">Claude Code가 쓰는 한국어의 품질을 맡습니다</text>
-<rect x="40" y="176" width="70" height="34" rx="17" fill="#e7ecf1"/><text x="75.0" y="199" text-anchor="middle" font-size="15" fill="#7a4b00">생성</text><rect x="122" y="176" width="70" height="34" rx="17" fill="#e7ecf1"/><text x="157.0" y="199" text-anchor="middle" font-size="15" fill="#7a4b00">윤문</text><rect x="204" y="176" width="70" height="34" rx="17" fill="#e7ecf1"/><text x="239.0" y="199" text-anchor="middle" font-size="15" fill="#7a4b00">검사</text><rect x="286" y="176" width="110" height="34" rx="17" fill="#e7ecf1"/><text x="341.0" y="199" text-anchor="middle" font-size="15" fill="#7a4b00">글자 수</text>
+<text x="40" y="140" font-size="22" fill="#57606a">Claude Code가 쓰는 모든 한국어가 사람이 쓴 것처럼 나옵니다</text>
+<rect x="40" y="176" width="70" height="34" rx="17" fill="#e7ecf1"/><text x="75.0" y="199" text-anchor="middle" font-size="15" fill="#7a4b00">답변</text><rect x="122" y="176" width="70" height="34" rx="17" fill="#e7ecf1"/><text x="157.0" y="199" text-anchor="middle" font-size="15" fill="#7a4b00">생성</text><rect x="204" y="176" width="70" height="34" rx="17" fill="#e7ecf1"/><text x="239.0" y="199" text-anchor="middle" font-size="15" fill="#7a4b00">윤문</text><rect x="286" y="176" width="70" height="34" rx="17" fill="#e7ecf1"/><text x="321.0" y="199" text-anchor="middle" font-size="15" fill="#7a4b00">검사</text>
 <text x="40" y="228" font-size="13" fill="#57606a">Claude Code plugin · MIT · 외부 전송 없음</text>
 </svg>
