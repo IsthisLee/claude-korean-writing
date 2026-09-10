@@ -1,0 +1,11 @@
+이 PR 리뷰해줘. 문제 있으면 짚어줘.
+
+```ts
+export async function markAllRead(userId: string) {
+  const items = await db.notification.findMany({ where: { userId, read: false } });
+  for (let i = 0; i <= items.length; i++) {
+    db.notification.update({ where: { id: items[i].id }, data: { read: true } });
+  }
+  return items.length;
+}
+```

@@ -1,0 +1,27 @@
+이 함수 리팩터링하고 싶은데 어디부터 손대면 좋을지 알려줘.
+
+```js
+function calcPrice(item, user) {
+  let price = item.price;
+  if (user) {
+    if (user.grade === 'vip') {
+      if (item.category === 'book') {
+        price = price * 0.8;
+      } else {
+        price = price * 0.9;
+      }
+    } else if (user.grade === 'gold') {
+      if (item.category === 'book') {
+        price = price * 0.9;
+      } else {
+        price = price * 0.95;
+      }
+    }
+    if (user.coupon) {
+      price = price - user.coupon.amount;
+      if (price < 0) price = 0;
+    }
+  }
+  return Math.round(price);
+}
+```

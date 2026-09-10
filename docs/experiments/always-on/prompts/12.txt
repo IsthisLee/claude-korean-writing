@@ -1,0 +1,15 @@
+rebase 하다가 이렇게 됐는데 지금 뭘 해야 해?
+
+```
+$ git status
+interactive rebase in progress; onto 4f2a9c1
+Last commands done (2 commands done):
+   pick 8d1e3b2 feat: 알림 읽음 처리
+   pick c07a4d5 fix: 알림 카운트
+Next command to do (1 remaining command):
+   pick e91b0f7 chore: 타입 정리
+You are currently rebasing branch 'feat/notif' on '4f2a9c1'.
+
+Unmerged paths:
+  both modified:   src/notification/service.ts
+```

@@ -1,0 +1,15 @@
+이 diff 가 뭘 바꾼 건지 설명해줘.
+
+```diff
+-  const users = await db.user.findMany();
+-  const result = [];
+-  for (const u of users) {
+-    const orders = await db.order.findMany({ where: { userId: u.id } });
+-    result.push({ ...u, orderCount: orders.length });
+-  }
+-  return result;
++  const users = await db.user.findMany({
++    include: { _count: { select: { orders: true } } },
++  });
++  return users.map((u) => ({ ...u, orderCount: u._count.orders }));
+```

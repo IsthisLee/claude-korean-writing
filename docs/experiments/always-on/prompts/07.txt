@@ -1,0 +1,17 @@
+목록 스크롤이 버벅여. 이 컴포넌트에서 원인이 될 만한 거 찾아줘.
+
+```tsx
+function TodoList({ todos, onToggle }) {
+  const [filter, setFilter] = useState('all');
+  const visible = todos.filter(t => filter === 'all' ? true : filter === 'done' ? t.done : !t.done);
+  return (
+    <ul>
+      {visible.map((t, i) => (
+        <li key={i} onClick={() => onToggle(t.id)} style={{ color: t.done ? 'gray' : 'black' }}>
+          <TodoItem todo={t} formatter={new Intl.DateTimeFormat('ko-KR')} />
+        </li>
+      ))}
+    </ul>
+  );
+}
+```

@@ -1,0 +1,21 @@
+테스트가 왜 실패하는지 봐줘.
+
+```
+● formatDate › formats ISO string in KST
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "2026-03-01 09:00"
+    Received: "2026-03-01 00:00"
+
+      12 |   it('formats ISO string in KST', () => {
+    > 13 |     expect(formatDate('2026-03-01T00:00:00Z')).toBe('2026-03-01 09:00');
+```
+
+```ts
+export function formatDate(iso: string) {
+  const d = new Date(iso);
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())} ${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}`;
+}
+```

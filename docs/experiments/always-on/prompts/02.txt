@@ -1,0 +1,15 @@
+서버 띄우니까 이렇게 죽어. 뭐가 문제고 어떻게 고쳐?
+
+```
+> node dist/server.js
+Connecting to postgres at 127.0.0.1:5432 ...
+Error: connect ECONNREFUSED 127.0.0.1:5432
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1555:16)
+  errno: -61,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 5432
+```
+
+docker-compose.yml 에는 postgres 서비스가 있고 `docker compose ps` 하면 db 컨테이너가 Up 이야. .env 는 DATABASE_URL=postgres://app:app@db:5432/app 이야.

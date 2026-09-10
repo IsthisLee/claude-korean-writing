@@ -1,0 +1,1 @@
+{"hooks":{"SessionStart":[{"matcher":"startup|resume|clear|compact","hooks":[{"type":"command","command":"cat /private/tmp/claude-501/-Users-isthis-Documents-personal-claude-plugins-korean-writing/d671f1ee-44a2-41bf-8ed2-e53dc9ec1dca/scratchpad/exp/inject.md"}]}]}}

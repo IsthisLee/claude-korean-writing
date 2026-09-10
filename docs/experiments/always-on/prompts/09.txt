@@ -1,0 +1,12 @@
+새벽 배치가 매번 3시쯤 멈춰. 로그 보고 원인 추정해줘.
+
+```
+02:58:11 INFO  batch start, 48,213 rows
+02:59:40 INFO  processed 12,000
+03:00:02 WARN  pool: waiting for connection (active=20, idle=0, queued=37)
+03:00:32 WARN  pool: waiting for connection (active=20, idle=0, queued=112)
+03:01:02 ERROR pool: timeout acquiring connection after 60000ms
+03:01:02 ERROR batch failed at row 13,402: PoolTimeoutError
+```
+
+DB 커넥션 풀 max 는 20 이고, 3시에 리포트 생성 크론이 따로 돌아.
