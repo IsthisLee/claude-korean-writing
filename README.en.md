@@ -333,7 +333,14 @@ GitHub Actions repeats the checks on macOS and Linux for every push and pull req
 
 - The check hook looks only at `.md` files. Korean comments and strings inside code, and replies that go straight out to Slack, are covered by the always-on rules and the skills at generation time, with no check afterwards.
 - The regular expressions catch eight known markers. New kinds of awkwardness have to be found by a person and added.
-- The always-on rules were measured on single turns. Whether the effect fades in long conversations was not measured. The session-start injection was confirmed not to reach subagents, and how to fill that gap is not yet decided.
+- The always-on rules were measured on single turns. Whether the effect fades in long conversations is being measured now.
+- **Subagents are outside what this plugin can reach.** The session-start injection, a subagent-start hook's output, and the skill list were each confirmed not to reach a subagent. The one thing that does reach them is `CLAUDE.md`. To cover subagents, put a line like this in your own `CLAUDE.md`.
+
+```markdown
+When answering in Korean or writing Korean prose, follow the korean-writing rules:
+no personified objects, no calqued metaphors, no abstract structure words,
+no em-dash interjections, no first/second enumerations, no translation-ese, no AI idioms.
+```
 - Contracts, terms of service, legal documents and official letters are out of scope; formality is their requirement. Code, logs, commands, quotations, proper nouns and English source text are left alone.
 - Spelling and spacing are not checked. Style only.
 

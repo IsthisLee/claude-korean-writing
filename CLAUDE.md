@@ -28,6 +28,8 @@ scripts/check.sh README.md CLAUDE.md           # 문서가 자기 훅을 통과�
 
 **한국어 글 작성 요청에는 이 저장소의 규칙을 씁니다.** 커밋 메시지, README, 이슈 답변, 작업 메모처럼 남에게 보내든 안에 남기든 모두 해당합니다. 규칙은 [SKILL.md](SKILL.md) 에 있습니다. 자기 규칙을 어기는 저장소는 설득력이 없습니다.
 
+**서브에이전트도 같은 규칙을 씁니다.** 이 저장소의 훅과 스킬은 서브에이전트에 전달되지 않습니다(실측: 세션 시작 훅 주입, 서브에이전트 시작 훅 출력, 스킬 목록 셋 다 안 감). 전달되는 것은 이 파일뿐이므로 여기 적습니다. 한국어로 답하거나 한국어 글을 쓸 때 사물 의인화, 영어 직역 비유, 축·갈래·결·레이어, 줄표 삽입구, 첫째·둘째 병렬, 번역투, AI 관용구를 쓰지 않습니다. 자세한 규칙은 [SKILL.md](SKILL.md) 에 있습니다.
+
 ## 건드리지 않는 것
 
 `references/taxonomy.md` 와 `references/quick-rules.md`, `skills/crafting-effective-readmes/**`, `skills/korean-character-count/scripts/**` 는 다른 MIT 프로젝트에서 가져온 파일입니다. 출처와 수정 범위가 [NOTICE.md](NOTICE.md) 에 적혀 있습니다. 고쳐야 하면 NOTICE.md 의 해당 줄도 함께 고칩니다.
