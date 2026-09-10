@@ -38,6 +38,7 @@
 - 상시 컨텍스트 비용은 약 1,450토큰(상시 규칙 726, 스킬 설명 넷 430, 에이전트 셋 297)입니다. 이 가운데 상시 규칙 726 만 껐다 켜서 잰 값이고 나머지는 `/context` 의 추정입니다. 그 추정이 환경에 따라 흔들린다는 것을 확인해 EVALUATION.md 에 적었습니다. 같은 에이전트 파일이 격리 HOME 에서 297, 실제 사용 환경에서 773 으로 잡힙니다
 - 윤문 스크립트는 Python 3.10 이상이 필요합니다. 검사 훅은 그대로 어느 python3 든 됩니다
 - SECURITY.md 의 확인 명령이 내장 스크립트까지 봅니다. 네트워크 호출과 외부 프로그램 실행은 없습니다
+- 실험 문서 `docs/experiments/skill-vs-imnotai/README.md` 의 결과 줄이 1차 판정(41쌍 22승 19패)에서 멈춰 있어 2차 판정 56쌍 49승 0패까지 적었습니다
 - `crafting-effective-readmes` 스킬을 경유본 softaworks/agent-toolkit 대신 원본 joshuadavidthomas/agent-skills(커밋 `516dee7a422b`, 2026-07-20)에서 직접 가져왔습니다. 내용은 같고 경유본에만 있던 스킬 폴더의 `README.md` 를 지웠습니다
 - 출판사 편집부 일화는 claude-forge 규칙집에만 있던 내용이라 SKILL.md·README·훅 주석에서 빼고 정답 데이터 G05·G06 을 근거로 적었습니다. NOTICE.md 에서 claude-forge 항목을 뺐습니다
 
