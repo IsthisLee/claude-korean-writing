@@ -43,7 +43,9 @@ for id in "${IDS[@]}"; do
     > "$OUT/gen/skill_$id.md" 2>/dev/null < /dev/null
   claude -p "$(cat "$q")" --model "$MODEL" "${COMMON[@]}" \
     > "$OUT/gen/plain_$id.md" 2>/dev/null < /dev/null
-  [ -s "$OUT/gen/skill_$id.md" ] && [ -s "$OUT/gen/plain_$id.md" ] || { echo "생성 실패: $id" >&2; exit 1; }
+  if [ ! -s "$OUT/gen/skill_$id.md" ] || [ ! -s "$OUT/gen/plain_$id.md" ]; then
+    echo "생성 실패: $id" >&2; exit 1
+  fi
 
   echo "  윤문 $id"
   run="$OUT/work/$id"; mkdir -p "$run"; cp "$OUT/gen/plain_$id.md" "$run/01_input.txt"
