@@ -31,8 +31,13 @@ SYS="$WORK/sys.txt"
 } > "$SYS"
 
 # 함정 둘을 여기서 막는다. README 의 「먼저 읽을 것」 참고.
+#
+# 모델은 KW_REGRESS_MODEL 로 바꿀 수 있다. 기본은 claude-fable-5-1 이고 지난 판정도 그것으로 냈다.
+# 그 모델의 사용량이 떨어지면 생성물 자리에 안내 문구가 들어와 여덟 건이 통째로 무효가 된다.
+# 실제로 2026-09-11 에 그렇게 멈췄다. 모델을 바꿔 돌린 결과는 지난 판정과 곧바로 견주지 않는다.
+MODEL="${KW_REGRESS_MODEL:-claude-fable-5-1}"
 COMMON=(--no-session-persistence --strict-mcp-config --setting-sources ""
-        --model claude-fable-5-1 --effort xhigh --tools "" --output-format json)
+        --model "$MODEL" --effort xhigh --tools "" --output-format json)
 
 settings_for() { # settings_for <규칙파일> <출력경로>
   python3 - "$1" "$2" <<'PY'
@@ -51,6 +56,7 @@ settings_for "$NEW" "$WORK/cfg/new.json"
 echo "옛 규칙: $OLD"
 echo "새 규칙: $NEW"
 echo "프롬프트: ${IDS[*]}"
+echo "모델: $MODEL"
 
 for id in "${IDS[@]}"; do
   p="$BASE/prompts/$id.txt"

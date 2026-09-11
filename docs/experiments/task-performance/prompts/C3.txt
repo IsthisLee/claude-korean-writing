@@ -1,0 +1,1 @@
+Our payment webhook sometimes fires twice for the same order. Explain the standard way to make the handler idempotent. Answer in English.

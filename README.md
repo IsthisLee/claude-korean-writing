@@ -9,14 +9,16 @@
 </p>
 
 <p align="center">
-  <strong>Claude Code가 작성하는 모든 한국어가 사람이 쓴 것처럼 나오게 하는 플러그인입니다.</strong><br>
-  평소 답변, 새로 쓰는 글, 이미 쓴 글, 저장하는 <code>.md</code>파일까지.<br>
-  Claude Code가 작성하는 모든 한국어를 플러그인 하나가 담당합니다.<br>
-  설치는 두 줄, 설정할 것은 없습니다. 원문은 외부로 벗어나지 않습니다.
+  <strong>Claude Code가 쓰는 한국어를 쓸 때 막고 저장할 때 잡는 플러그인입니다.</strong><br>
+  새 글은 첫 줄부터 규칙대로 쓰고 <code>.md</code>로 저장하면 그 턴 안에서 AI 티를 짚어 Claude에게 돌려줍니다.<br>
+  이미 쓴 글은 내장한 <a href="https://github.com/epoko77-ai/im-not-ai">im-not-ai</a>로 다듬습니다.<br>
+  설치는 두 줄이고 설정할 것은 없습니다. 원문은 이 컴퓨터를 벗어나지 않습니다.
 </p>
 
 <p align="center">
   <a href="https://github.com/IsthisLee/claude-korean-writing/actions/workflows/validate.yml"><img alt="Validate" src="https://github.com/IsthisLee/claude-korean-writing/actions/workflows/validate.yml/badge.svg?branch=main"></a>
+  <a href="https://github.com/IsthisLee/claude-korean-writing/actions/workflows/codeql.yml"><img alt="CodeQL" src="https://github.com/IsthisLee/claude-korean-writing/actions/workflows/codeql.yml/badge.svg?branch=main"></a>
+  <a href="https://scorecard.dev/viewer/?uri=github.com/IsthisLee/claude-korean-writing"><img alt="OpenSSF Scorecard" src="https://api.securityscorecards.dev/projects/github.com/IsthisLee/claude-korean-writing/badge"></a>
   <img alt="MIT" src="https://img.shields.io/badge/license-MIT-blue.svg">
   <img alt="Claude Code Plugin" src="https://img.shields.io/badge/Claude%20Code-plugin-8A2BE2">
   <img alt="version" src="https://img.shields.io/badge/version-1.1.0-lightgrey">
@@ -27,6 +29,7 @@
 
 <p align="center">
   <a href="#어떤-플러그인인가">소개</a> ·
+  <a href="#다른-도구와-무엇이-다른가">다른 도구와 비교</a> ·
   <a href="#실제로-보면">실제로 보면</a> ·
   <a href="#3분-안에-해-보기">3분 시작</a> ·
   <a href="#설치">설치</a> ·
@@ -37,24 +40,39 @@
   <a href="#자주-묻는-질문">FAQ</a>
 </p>
 
-> **v1.1.0**: 평소 답변까지 맡습니다. 세션이 열릴 때 답변용 규칙을 넣는 훅을 더했고 규칙집 둘을 원본의 새 판으로 갈아 끼웠습니다. 블라인드 판정 24쌍에서 21승 3무 0패, 30턴 뒤에도 4승 0패입니다. 상세: [CHANGELOG.md](CHANGELOG.md)
+> **다음 판에서 바뀌는 것**: 평소 답변과 서브에이전트에 규칙을 넣던 훅 둘을 뺐습니다. 규칙을 넣은 답에서 기본값 같은 세부가 빠지는 것을 재서 확인했습니다([EVALUATION.md](EVALUATION.md) H13). v1.1.0 까지는 들어 있습니다. 상세: [CHANGELOG.md](CHANGELOG.md)
 
 ## 어떤 플러그인인가
 
 Claude Code의 한국어는 문법이 틀리지 않습니다. 그런데도 읽으면 눈에 걸립니다. 영어 문장을 그대로 옮긴 어순, 영어에서 건너온 비유, 어느 문서에서나 같은 자리에 나오는 상투구 때문입니다. 한 컴퓨터에 쌓여 있던 한국어 문서 205개를 훅에 넣으니 85개가 걸렸고 그중 2023년 이전에 쓰인 문서는 하나였습니다. 나머지는 2026년에 Claude가 쓴 것이고 대부분 줄표 삽입구였습니다.
 
-프롬프트로 그때그때 막으면 세션마다 다시 붙여야 하고 다 쓴 뒤에 고쳐 달라고 하면 이미 늦습니다. 완성된 글은 구조부터 번역투로 잡혀 있어서 나중에 손봐도 잘 빠지지 않습니다. 그래서 한국어가 나오는 자리를 네 곳으로 나누고 자리마다 하나씩 맡겼습니다. 설치하면 넷이 함께 켜지고 무엇을 언제 부를지 외울 일은 없습니다.
+프롬프트로 그때그때 막으면 세션마다 다시 붙여야 하고 다 쓴 뒤에 고쳐 달라고 하면 이미 늦습니다. 완성된 글은 구조부터 번역투로 잡혀 있어서 나중에 손봐도 잘 빠지지 않습니다. 그래서 글이 만들어지는 시점을 셋으로 나누고 시점마다 하나씩 맡겼습니다. 설치하면 셋이 함께 켜지고 무엇을 언제 부를지 외울 일은 없습니다.
 
-| 한국어가 나오는 자리                        | 무엇이 맡나                                       | 언제 움직이나                   | 규칙이 적힌 곳                    |
-| ------------------------------------------- | ------------------------------------------------- | ------------------------------- | --------------------------------- |
-| **평소 답변**<br>스킬도 파일도 아닌 대화    | SessionStart 훅이 답변 규칙 열 항목을 넣습니다    | 세션 시작·재개·`/clear`·압축    | `hooks-handlers/always-on.md`     |
-| **새로 쓰는 글**<br>슬랙·메일·보고서·README | `korean-writing` 스킬이 첫 줄부터 규칙대로 씁니다 | 써 달라는 요청이 오면           | `SKILL.md`                        |
-| **이미 쓴 글**<br>남이 준 초안, 예전 문서   | 윤문 파이프라인이 사실은 두고 문체만 고칩니다     | 다듬어 달라는 요청이 오면       | `skills/humanize-korean/SKILL.md` |
-| **저장하는 파일**<br>`.md`로 남는 것        | PostToolUse 훅이 방금 쓴 부분을 검사합니다        | `Edit`·`Write`·`MultiEdit` 직후 | `hooks-handlers/posttooluse.sh`   |
+| 시점                                        | 무엇이 맡나                                                                                 | 언제 움직이나                   | 규칙이 적힌 곳                           |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------- | ------------------------------- | ---------------------------------------- |
+| **쓸 때**<br>슬랙·메일·보고서·README       | `korean-writing` 스킬이 첫 줄부터 규칙대로 씁니다                                           | 써 달라는 요청이 오면           | `plugin/SKILL.md`                        |
+| **저장할 때**<br>`.md`로 남는 것            | PostToolUse 훅이 방금 쓴 부분을 검사하고 걸린 자리를 같은 턴에 Claude에게 돌려줍니다         | `Edit`·`Write`·`MultiEdit` 직후 | `plugin/hooks-handlers/posttooluse.sh`   |
+| **다 쓴 뒤**<br>남이 준 초안, 예전 문서     | 윤문 파이프라인이 사실은 두고 문체만 고칩니다                                               | 다듬어 달라는 요청이 오면       | `plugin/skills/humanize-korean/SKILL.md` |
 
 여기에 스킬 둘이 더 붙습니다. 글자 수는 모델의 어림 대신 스크립트가 세고 README는 절 구성을 잡는 스킬이 먼저 나섭니다.
 
-> 코드에 붙는 린터를 한국어 산문에 붙인 것과 같습니다. 다만 고쳐 주지는 않고 짚어만 줍니다. 고칠지는 사람이 정합니다.
+> 코드에 붙는 린터를 한국어 산문에 붙인 것과 같습니다. 걸린 자리는 그 턴 안에 Claude에게 돌아가므로 사람이 보기 전에 고쳐집니다. AI 티가 든 초안을 저장해 달라고 한 실측 3회에서 Claude는 매번 초안을 먼저 저장한 뒤 훅이 짚은 항목을 같은 턴에 모두 고쳤습니다. 플러그인 없이 돌린 3회는 초안 그대로 저장하고 끝났습니다([실험](./docs/experiments/hook-loop/)).
+
+## 다른 도구와 무엇이 다른가
+
+한국어를 자연스럽게 만드는 도구는 이미 여럿 있습니다. 가장 널리 쓰이는 것은 다 쓴 글을 고치는 윤문 도구이고 이 플러그인의 윤문도 그중 하나인 im-not-ai를 커밋째 고정해 내장한 것입니다. 이 플러그인이 더하는 것은 그 앞의 두 시점입니다. 글을 쓰는 순간과 Claude가 파일을 저장한 바로 그 턴입니다.
+
+| 도구                                                                  | 쓸 때                                                     | 저장할 때                                           | 다 쓴 뒤                             | 네트워크                                          |
+| --------------------------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------- | ------------------------------------ | ------------------------------------------------- |
+| **korean-writing**                                                    | 작성 스킬이 첫 줄부터 규칙대로 씀                          | 편집 직후 훅이 검사해 같은 턴에 Claude에게 돌려줌   | im-not-ai 내장                       | 쓰지 않음. CI가 막음                              |
+| [im-not-ai](https://github.com/epoko77-ai/im-not-ai)                  |                                                           |                                                     | 윤문 파이프라인(1~3콜)               | 쓰지 않음                                         |
+| [fluent-korean](https://github.com/snflkd/fluent-korean)              | output-style로 모든 답변에 적용. 목표는 뜻이 분명한 문장  |                                                     |                                      | 쓰지 않음                                         |
+| [patina](https://github.com/devswha/patina)                           |                                                           | 커밋할 때 pre-commit 훅이 Markdown에 점수를 매김    | 윤문(스킬·CLI·웹), 한·영·중·일       | 웹판은 서버에서 처리                              |
+| [k-skill](https://github.com/NomaDamas/k-skill) `korean-humanizer`    |                                                           |                                                     | 윤문                                 | 지침을 `npx`로 받음. 맞춤법 검사는 외부 검사기    |
+
+2026-09-11에 각 저장소를 열어 확인한 내용입니다. 빈칸은 그 시점을 맡는 기능을 찾지 못했다는 뜻입니다. 저장할 때의 검사는 patina에도 있지만 시점이 다릅니다. patina는 사람이 커밋할 때 걸리고 이 플러그인은 Claude가 파일을 고친 그 턴에 걸립니다. Claude Code는 PostToolUse 훅이 종료 코드 2로 끝나면 그 stderr를 Claude에게 보여 주고 같은 턴에 반응하게 합니다([hooks 문서](https://code.claude.com/docs/en/hooks)).
+
+fluent-korean과는 맡는 시점이 겹치지 않아 같이 설치해도 됩니다. 맞춤법과 띄어쓰기는 이 플러그인이 보지 않으니 맞춤법 검사기와도 겹치지 않습니다.
 
 ## 실제로 보면
 
@@ -69,24 +87,6 @@ Claude Code의 한국어는 문법이 틀리지 않습니다. 그런데도 읽�
 | 여기서 갈리는 **축은** 프로젝트 전용 여부가 아니라 성격입니다. 두 문제는 **결이** 다르고 **레이어도** 다릅니다. | 여기서 갈리는 기준은 프로젝트 전용 여부가 아니라 성격입니다. 두 문제는 성격이 다른 별개의 문제입니다.  | 구조를 비유로 말하는 추상 구조어                                               |
 | 시험용 장비가 몇 초 만에 **쓰러졌습니다**. **일으켜 세우면** 또 쓰러지기를 스무 분 넘게 반복했습니다.           | 시험용 장비가 몇 초 만에 멈췄습니다. 다시 켜면 또 멈추기를 스무 분 넘게 반복했습니다.                  | 영어 비유를 직역한 사물 의인화                                                 |
 
-### 평소 답변, 전과 후
-
-상시 규칙이 평소 답변을 어떻게 바꾸는지는 같은 질문을 주입 없이 한 번, 주입한 채로 한 번 물어 보면 됩니다. 아래는 claude-sonnet-5가 낸 두 답의 같은 대목입니다. 질문은 디바운스 훅을 설명해 달라는 것이었습니다. 원문 전체와 질문은 [docs/samples/](./docs/samples/)에 있습니다. 표본 하나의 예시이고 효과의 측정은 「검증」 절의 블라인드 판정입니다.
-
-**주입 없음**
-
-> **cleanup이 왜 필요한가**
->
-> React는 의존성(`[value, delay]`)이 바뀔 때마다 "다음 effect 실행 직전" 또는 "컴포넌트 언마운트 시"에 이전 effect가 반환한 cleanup 함수를 호출합니다. 만약 `clearTimeout(id)`가 없다면:
->
-> - 사용자가 "r" → "re" → "rea" → "reac" 처럼 빠르게 타이핑할 때마다 `setTimeout`이 계속 쌓입니다.
-
-**주입 있음**
-
-> 여기서 cleanup(`return () => clearTimeout(id)`)이 없으면 문제가 생깁니다. 이전 이펙트가 걸어둔 타이머가 그대로 살아 있다가, 새 타이머보다 먼저 만료되어 **이미 지나간 옛날 값**으로 `setDebounced`를 호출해버립니다.
-
-주입 없는 답에는 굵은 소제목 2개와 화살표 나열 3개가 있고 주입한 답에는 둘 다 없습니다. 사실 내용은 두 답이 같습니다.
-
 ### 저장할 때 뜨는 화면
 
 `.md` 파일을 고쳤을 때 Claude Code 화면에 나오는 모습입니다. 화면 틀은 그린 것이고 노란 줄부터는 훅이 실제로 낸 출력 그대로입니다.
@@ -99,8 +99,11 @@ Claude Code의 한국어는 문법이 틀리지 않습니다. 그런데도 읽�
 [korean-writing] 배포-지연.md 에 AI 티 패턴이 있다. 편집은 그대로 두었으니 확인하고 고쳐라.
   K1  줄표(—) 삽입구 4개 — 쉼표나 문장 분리로 바꾼다. 한국어에서 가장 강한 AI 티다
   K6  승패 의인화 2회 — 우선한다·따른다·앞선다 로 직결한다
+  걸린 표현만 고친다. 수치·개수·조건·유보 표현과 걸리지 않은 문장은 그대로 둔다.
   교정 규칙은 korean-writing 스킬에 있다. 격식 문서(계약·약관·법률)면 파일 머리에 <!-- korean-writing: ignore --> 를 넣으면 다시 알리지 않는다.
 ```
+
+이 출력은 Claude에게도 그대로 돌아갑니다. Claude Code는 종료 코드 2로 끝난 PostToolUse 훅의 stderr를 같은 턴에 Claude에게 보여 줍니다. [실험](./docs/experiments/hook-loop/)에서 Claude는 이 알림을 받고 걸린 항목을 그 턴 안에 고쳤습니다.
 
 ## 3분 안에 해 보기
 
@@ -113,7 +116,7 @@ Claude Code의 한국어는 문법이 틀리지 않습니다. 그런데도 읽�
    ```
    운영팀에 보낼 기능 변경 안내문 써줘.
    ```
-3. 그 글을 `.md` 파일로 저장해 달라고 합니다. 훅이 방금 쓴 부분을 검사하고 걸리는 것이 있으면 위와 같은 출력이 나옵니다. 없으면 아무 말도 하지 않습니다.
+3. 그 글을 `.md` 파일로 저장해 달라고 합니다. 훅이 방금 쓴 부분을 검사하고 걸리는 것이 있으면 위와 같은 출력이 나오고 Claude가 그 자리에서 고칩니다. 없으면 아무 말도 하지 않습니다.
 
 ## 설치
 
@@ -132,7 +135,7 @@ claude plugin install korean-writing
 | 필요한 것   | 어디에 쓰나                                                   | 없으면                                              |
 | ----------- | ------------------------------------------------------------- | --------------------------------------------------- |
 | Claude Code | 전부. 2.1.267에서 확인                                        |                                                     |
-| `bash`      | 훅 둘과 스크립트 셋                                           | 훅이 돌지 않습니다                                  |
+| `bash`      | 검사 훅과 스크립트                                           | 훅이 돌지 않습니다                                  |
 | `python3`   | 검사 훅의 판정과 윤문 파이프라인의 스크립트. 윤문은 3.10 이상 | 검사 없이 통과합니다. 윤문 스크립트는 돌지 않습니다 |
 | `node` 18+  | 글자 수 스크립트                                              | 그 스킬만 쓸 수 없습니다                            |
 
@@ -154,27 +157,26 @@ claude plugin install korean-writing
 
 | 무엇이                       | 저절로 도는 때                                            | 직접 부르는 명령                                               |
 | ---------------------------- | --------------------------------------------------------- | -------------------------------------------------------------- |
-| 상시 규칙                    | 세션 시작·재개·`/clear`·컨텍스트 압축                     | 없습니다. 세션이 열리는 순간 이미 들어가 있습니다              |
 | `korean-writing` 스킬        | 슬랙·메일·보고서·README·커밋 메시지 같은 글 작성 요청     | `/korean-writing`                                              |
 | 윤문                         | "AI 티 없애줘", "번역투 고쳐줘" 같은 요청                 | `/korean-writing:humanize [글 또는 파일 경로]`                 |
 | 2차 윤문                     | 뜨지 않습니다. 이름을 쳐야 돕니다                         | `/korean-writing:humanize-redo [지시]`                         |
-| 검사 훅                      | `.md` 를 `Edit`·`Write`·`MultiEdit` 로 고친 직후          | 없습니다. 써 둔 문서를 검사하려면 `scripts/check.sh 파일...`   |
+| 검사 훅                      | `.md` 를 `Edit`·`Write`·`MultiEdit` 로 고친 직후          | `/korean-writing:check 파일...`                                |
 | 글자 수                      | "500자 이내로", "글자 수 세줘" 같은 요청                  | `/korean-writing:korean-character-count`                       |
 | README 절 구성               | README 를 쓰거나 고쳐 달라는 요청                         | `/korean-writing:crafting-effective-readmes`                   |
 
-훅 둘은 부를 이름이 없습니다. 조건이 맞으면 저절로 돌고 아니면 돌지 않습니다. 스킬 여섯 가운데 넷은 요청을 보고 스스로 뜨고, 윤문 진입 둘(`humanize`, `humanize-redo`)은 `disable-model-invocation` 이 걸려 있어 이름을 쳐야만 돕니다. 그 대신 이 둘은 상시 컨텍스트를 한 토큰도 쓰지 않습니다. 플러그인으로 설치했으면 `/korean-writing:korean-writing` 도 같은 스킬을 부릅니다. 짧은 쪽으로 써도 됩니다.
+훅은 부를 이름이 없습니다. 조건이 맞으면 저절로 돌고 아니면 돌지 않습니다. 스킬 여섯 가운데 넷은 요청을 보고 스스로 뜨고, 윤문 진입 둘(`humanize`, `humanize-redo`)은 `disable-model-invocation` 이 걸려 있어 이름을 쳐야만 돕니다. 그 대신 이 둘은 상시 컨텍스트를 한 토큰도 쓰지 않습니다. 플러그인으로 설치했으면 `/korean-writing:korean-writing` 도 같은 스킬을 부릅니다. 짧은 쪽으로 써도 됩니다.
 
 윤문을 맡기면 고친 글 위에 한 줄 상태가 붙습니다. 변경률 추정과 A부터 D까지의 등급입니다. 그 아래에 주요 교정 서너 개에서 여섯 개를 전과 후로 나란히 보여 줍니다. 변경률이 절반을 넘으면 결과 대신 그 사실만 알립니다. 절반 넘게 바뀐 글은 윤문이 아니라 재작성입니다.
 
-써 둔 문서를 한꺼번에 검사하려면 `scripts/check.sh 파일...`을 씁니다. 훅과 같은 기준으로 보고 걸린 파일이 있으면 종료 코드 1을 냅니다. CI와 pre-commit에 그대로 씁니다.
+써 둔 문서를 검사하려면 `/korean-writing:check 파일...`을 씁니다. 훅과 같은 기준으로 보고 걸린 자리를 짚은 뒤 고칠지 묻습니다. 셸에서 바로 돌리려면 `plugin/scripts/check.sh 파일...`이고 걸린 파일이 있으면 종료 코드 1을 냅니다. `--all`을 주면 저장소가 쓴 `.md`를 전부 봅니다. CI와 pre-commit에 그대로 씁니다. pre-commit 훅은 `tools/install-git-hook.sh` 가 깔아 줍니다.
 
 끄는 방법은 범위에 따라 넷입니다.
 
 | 범위          | 방법                                                                                                     |
 | ------------- | -------------------------------------------------------------------------------------------------------- |
 | 파일 하나     | 파일 머리에 `<!-- korean-writing: ignore -->`. 계약서나 나쁜 예 모음처럼 매번 걸리는 게 맞지 않는 파일용 |
-| 세션 전체     | `KOREAN_WRITING_HOOK_DISABLED=1`. 훅 둘을 모두 끕니다                                                    |
-| 상시 규칙만   | `KOREAN_WRITING_ALWAYS_ON_DISABLED=1`                                                                    |
+| 세션 전체     | `KOREAN_WRITING_HOOK_DISABLED=1`. 검사 훅을 끕니다                                                    |
+| 검사만 계속 끄기 | 플러그인 설정의 `edit_check`. `/plugin` 에서 켜고 끕니다 |
 | 플러그인 전체 | `claude plugin disable korean-writing`                                                                   |
 
 ## 구성 요소
@@ -184,22 +186,14 @@ claude plugin install korean-writing
 | 구성        | 수     | 무엇                                                                                                                                                    |
 | ----------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 스킬        | 6      | 이 저장소 셋 `korean-writing`, `korean-character-count`, `crafting-effective-readmes`. im-not-ai 내장 셋 `humanize-korean`, `humanize`, `humanize-redo` |
-| 훅          | 2      | 세션 시작에 규칙 주입, `.md` 편집 직후 검사                                                                                                             |
+| 훅          | 1      | `.md` 편집 직후 검사 |
 | 검사 패턴   | 10     | `K1`~`K10`. 줄표, 추상 구조어, 것 구문, AI 관용구, 기계적 병렬, 승패 의인화, 사물 의인화, 번역투, 부정 대구, 연결어미 뒤 쉼표                           |
 | 에이전트    | 3      | im-not-ai 내장. 윤문 파이프라인의 진단·윤문·마무리 검토                                                                                                 |
 | 규칙집      | 84항목 | im-not-ai의 분류 체계. 10분류, 항목마다 심각도와 처방                                                                                                   |
 | 정답 데이터 | 15문장 | Claude Code가 실제로 생성한 위반 10건, 같은 맥락의 정상 5건                                                                                             |
-| 회귀 테스트 | 79건   | 검사 훅 55, 상시 규칙 24                                                                                                                                |
+| 회귀 테스트 | 62건   | 검사 훅 |
 | 스크립트    | 4 + 9  | 이 저장소 넷은 글자 수, 통째 검사, 오탐 측정, 릴리스. im-not-ai 내장 아홉은 윤문 파이프라인용                                                          |
 | 네트워크    | 없음   | 훅은 bash와 python3 정규식, 글자 수는 `node:fs`                                                                                                         |
-
-### 상시 규칙
-
-하루 동안 Claude Code가 내는 한국어의 대부분은 평소 답변입니다. 파일도 글 작성 요청도 아닙니다. 스킬도 검사 훅도 거기에는 닿지 않습니다. SessionStart 훅이 그 빈자리를 맡습니다. 세션이 시작하거나 재개될 때, `/clear`를 했을 때, 컨텍스트가 압축됐을 때 `hooks-handlers/always-on.md`를 한 번 컨텍스트에 넣습니다. 압축 뒤에도 넣는 것은 앞쪽이 잘려 나가도 규칙은 남아 있어야 하기 때문입니다.
-
-항목은 열입니다. 평소대로 존댓말로 답한다, 주어는 사람이나 조직으로 둔다, 영어에서 온 비유는 버리고 서술한다, 연결어미 뒤에 쉼표를 찍지 않고 `A가 아니라 B` 대구를 잇지 않는다, 줄표 삽입구와 첫째·둘째 병렬과 이모지를 쓰지 않는다, 번역투와 AI 관용구를 쓰지 않는다, 문장 길이를 섞고 한 문체로 간다, 격식과 사실은 그대로 두고 코드·인용·고유명사는 손대지 않는다, 글 작성 요청이면 `korean-writing` 스킬을 먼저 로드한다.
-
-파일은 1.5KB, 한글 402자이고 토큰으로 726입니다. 프롬프트 캐시에 들어가므로 턴마다 다시 내는 비용은 없습니다. 막는 일은 하지 않습니다. 규칙 파일이 없거나 읽을 수 없어도 종료 코드는 0입니다. 회귀 테스트 24건은 주입된 내용, 열 항목이 다 남아 있는지, 한글 420자 상한, 끄기 두 종, 안전 종료, 그리고 같은 규칙이 놓인 세 곳(`SKILL.md`·상시 규칙·`CLAUDE.md`)이 어긋나지 않았는지를 봅니다.
 
 ### korean-writing 스킬
 
@@ -234,12 +228,12 @@ im-not-ai는 글의 상태에 따라 경로를 고릅니다. 잘 쓴 글은 한 
 
 길이 제한이 걸린 글에 뜹니다. "500자 이내로", "글자 수 세줘", "자소서 분량 맞춰줘"가 신호입니다. 한국어 글자 수는 무엇을 세느냐에 따라 달라집니다. `각`은 한 글자인데 UTF-8로는 3바이트이고 자모를 조합한 글자는 눈에 한 글자여도 코드포인트로는 셋입니다. 그래서 모델의 어림 대신 스크립트가 셉니다.
 
-흔히 말하는 글자 수는 `characters`(grapheme cluster)입니다. 공백 제외를 명시한 폼이면 `characters_without_whitespace`, 교육행정시스템 양식이면 `--profile neis`의 `bytes_neis`, DB 컬럼 길이면 `bytes_utf8`을 씁니다. Node 18 이상이 필요하고 `node:fs` 외의 패키지는 쓰지 않습니다. 세는 규칙의 계약은 `skills/korean-character-count/instruction.md`에 있습니다.
+흔히 말하는 글자 수는 `characters`(grapheme cluster)입니다. 공백 제외를 명시한 폼이면 `characters_without_whitespace`, 교육행정시스템 양식이면 `--profile neis`의 `bytes_neis`, DB 컬럼 길이면 `bytes_utf8`을 씁니다. Node 18 이상이 필요하고 `node:fs` 외의 패키지는 쓰지 않습니다. 세는 규칙의 계약은 `plugin/skills/korean-character-count/instruction.md`에 있습니다.
 
 글자 수 스킬이 돌리는 스크립트의 실제 출력입니다. 이모지가 든 두 줄짜리 문장을 넣었습니다.
 
 ```
-$ node skills/korean-character-count/scripts/korean_character_count.js --text "옵션 변경은 어드민에서 바로 할 수 있습니다.
+$ node plugin/skills/korean-character-count/scripts/korean_character_count.js --text "옵션 변경은 어드민에서 바로 할 수 있습니다.
 정원이 찬 옵션은 회색으로 막힙니다 🙂" --format text
 profile: default
 characters: 47
@@ -265,16 +259,17 @@ README를 새로 만들거나 고쳐 달라고 하면 뜹니다. 먼저 작업�
 
 | 스크립트             | 하는 일                                                                                                                                                     |
 | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `scripts/check.sh`   | 파일을 통째로 훅에 넣어 검사합니다. 써 둔 문서를 점검하거나 CI·pre-commit에서 씁니다. 걸린 파일이 있으면 종료 코드 1                                        |
-| `scripts/measure.sh` | 디렉터리 아래 한국어 `.md`를 전부 훅에 넣어 걸린 파일과 코드별 수를 냅니다. 걸린 파일이 사람 글인지 Claude 글인지는 사람이 판단합니다                       |
-| `scripts/release.sh` | 버전 하나로 `plugin.json`, README 배지, CHANGELOG를 맞추고 커밋과 태그를 만듭니다. `--push`면 push와 GitHub 릴리스까지                                      |
-| `scripts/*.py`       | im-not-ai에서 내장한 윤문 파이프라인의 스크립트 아홉. 입력 준비와 경로 판정, 변경률 게이트, 서법 복원, 쉼표 역주입 제거, 청크 재조립. 윤문 요청 때만 돕니다 |
+| `plugin/scripts/check.sh`   | 파일을 통째로 훅에 넣어 검사합니다. 써 둔 문서를 점검하거나 CI·pre-commit에서 씁니다. 걸린 파일이 있으면 종료 코드 1                                        |
+| `tools/install-git-hook.sh` | 커밋 직전에 스테이지된 `.md` 를 같은 기준으로 검사하는 git 훅을 깝니다. 이미 다른 `pre-commit` 이 있으면 덮어쓰지 않고 넣을 두 줄만 알려 줍니다. `--uninstall` 로 지우고 `git commit --no-verify` 로 건너뜁니다 |
+| `tools/measure.sh` | 디렉터리 아래 한국어 `.md`를 전부 훅에 넣어 걸린 파일과 코드별 수를 냅니다. 걸린 파일이 사람 글인지 Claude 글인지는 사람이 판단합니다                       |
+| `tools/release.sh` | 버전 하나로 `plugin.json`, README 배지, CHANGELOG를 맞추고 커밋과 태그를 만듭니다. `--push`면 push와 GitHub 릴리스까지                                      |
+| `plugin/scripts/*.py`       | im-not-ai에서 내장한 윤문 파이프라인의 스크립트 아홉. 입력 준비와 경로 판정, 변경률 게이트, 서법 복원, 쉼표 역주입 제거, 청크 재조립. 윤문 요청 때만 돕니다 |
 
 ## 판정 규칙
 
 훅은 이 순서로 판정합니다.
 
-1. `Edit`, `Write`, `MultiEdit` 가운데 하나가 끝나면 Claude Code는 그 도구 입력을 JSON으로 만들어 `hooks-handlers/posttooluse.sh`의 stdin에 넣습니다.
+1. `Edit`, `Write`, `MultiEdit` 가운데 하나가 끝나면 Claude Code는 그 도구 입력을 JSON으로 만들어 `plugin/hooks-handlers/posttooluse.sh`의 stdin에 넣습니다.
 2. 환경변수 `KOREAN_WRITING_HOOK_DISABLED`가 1이면, 또는 `python3`를 찾지 못하면 아무것도 보지 않고 통과합니다.
 3. 경로가 `.md`가 아니면 통과합니다.
 4. 도구 입력에서 이번에 쓴 부분만 모읍니다. `content`, `new_string`, `edits[].new_string`입니다. 이번에 쓴 부분이나 파일의 앞 열 줄에 `<!-- korean-writing: ignore -->`가 줄 하나로 서 있으면 통과합니다. 문장이나 표 칸에서 이 문자열을 인용한 것은 지시로 보지 않습니다.
@@ -302,9 +297,9 @@ README를 새로 만들거나 고쳐 달라고 하면 뜹니다. 먼저 작업�
 
 ## 설계 원칙
 
-**처음 쓸 때 잡습니다.** 세션 시작에 규칙을 넣고 글 작성 요청마다 스킬을 붙이는 이유입니다. 다 쓴 뒤의 검사는 마지막 그물입니다. 그 둘을 빠져나온 문장을 받을 뿐 주된 수단은 아닙니다.
+**처음 쓸 때 잡습니다.** 글 작성 요청마다 스킬을 붙이는 이유입니다. 저장할 때의 검사는 그 뒤에 치는 그물입니다. 스킬을 빠져나온 문장을 받아 같은 턴에 Claude에게 돌려줍니다.
 
-**막지 않습니다.** 검사 훅은 알릴 뿐 편집을 되돌리지 않고 주입 훅은 어떤 상황에서도 종료 코드 0입니다. `python3`가 없는 컴퓨터에서는 검사를 건너뜁니다. 검사기가 작업을 막기 시작하면 사람은 검사기를 끕니다.
+**막지 않습니다.** 검사 훅은 알릴 뿐 편집을 되돌리지 않습니다. `python3`가 없는 컴퓨터에서는 검사를 건너뜁니다. 검사기가 작업을 막기 시작하면 사람은 검사기를 끕니다.
 
 **숫자 없이는 규칙을 바꾸지 않습니다.** 패턴 하나를 넣거나 빼거나 임계를 옮길 때마다 실제 문서에 돌린 결과가 있어야 합니다. 그렇게 바꾼 스물두 건의 기록이 [`EVALUATION.md`](./EVALUATION.md)에 있습니다. 승패 의인화는 한 문서 1회는 허용하기로 하고 훅 임계를 1에서 2로 올렸습니다. 사물 의인화에서 "죽다"를 뺀 것은 서버가 죽었다, 프로세스가 죽었다가 개발자의 일상어이기 때문입니다. 번역투에서 `~에 대해`와 `~를 통해`의 횟수를 빼니 실제 문서에서 사람이 쓴 글만 잡던 규칙이 사라졌습니다.
 
@@ -312,16 +307,15 @@ README를 새로 만들거나 고쳐 달라고 하면 뜹니다. 먼저 작업�
 
 **바깥과 통신하지 않습니다.** 훅이 무엇을 읽고 무엇을 하지 않는지는 [SECURITY.md](./SECURITY.md)에 있고 그것을 직접 확인하는 `grep` 명령 세 개도 거기 있습니다.
 
-**늘 읽히는 것은 작게 둡니다.** 평소에 컨텍스트에 들어가는 것은 상시 규칙과 스킬 설명 넷, 에이전트 설명 셋뿐이고 큰 파일은 그 일이 생겼을 때만 열립니다.
+**늘 읽히는 것은 작게 둡니다.** 평소에 컨텍스트에 들어가는 것은 스킬 설명 넷과 에이전트 설명 셋뿐이고 큰 파일은 그 일이 생겼을 때만 열립니다.
 
 ```
-hooks-handlers/always-on.md         1.5 KB   세션마다 한 번
-SKILL.md                           21 KB   글 작성 요청에
-skills/humanize-korean/SKILL.md    28 KB   윤문 요청에
-skills/humanize-korean/references/ 384 KB  윤문 중 필요한 문서만
+plugin/SKILL.md                    21 KB   글 작성 요청에
+plugin/skills/humanize-korean/SKILL.md    28 KB   윤문 요청에
+plugin/skills/humanize-korean/references/ 384 KB  윤문 중 필요한 문서만
 ```
 
-**가져온 파일은 가져온 대로 둡니다.** 윤문 파이프라인, README 스킬, 글자 수 스크립트는 다른 MIT 프로젝트의 것입니다. 어디서 어느 커밋을 가져왔고 어느 줄을 고쳤는지는 [`NOTICE.md`](./NOTICE.md)에 파일 단위로 적어 두었습니다.
+**가져온 파일은 가져온 대로 둡니다.** 윤문 파이프라인, README 스킬, 글자 수 스크립트는 다른 MIT 프로젝트의 것입니다. 어디서 어느 커밋을 가져왔고 어느 줄을 고쳤는지는 [`plugin/NOTICE.md`](./plugin/NOTICE.md)에 파일 단위로 적어 두었습니다.
 
 ## 검증
 
@@ -335,15 +329,13 @@ skills/humanize-korean/references/ 384 KB  윤문 중 필요한 문서만
 | 검출된 항목의 코드 정확도 | 10 / 10                                                           |
 | 글 작성 요청 트리거       | 5 / 5, 코드 작업 오매칭 0 / 5                                     |
 | 변이 테스트               | 심은 결함 23 / 23 검출                                            |
-| 상시 규칙 주입 효과       | 블라인드 24쌍에서 21승 0패 3무                                    |
 | 스킬 대 im-not-ai 윤문본  | 블라인드 56쌍에서 49승 0패                                        |
-| 상시 컨텍스트 비용        | 약 1,450토큰, 격리 HOME 기준 (상시 규칙 726 + 스킬 설명 넷 430 + 에이전트 셋 297) |
+| 훅 알림 뒤 같은 턴 교정   | 3 / 3, 플러그인 없이는 0 / 3 ([실험](./docs/experiments/hook-loop/)) |
+| 상시 컨텍스트 비용        | 약 730토큰, 격리 HOME 기준 (스킬 설명 넷 430 + 에이전트 셋 297) |
 | 외부 네트워크 호출        | 0                                                                 |
-| 회귀 테스트               | 79 / 79                                                           |
+| 회귀 테스트               | 62 / 62                                                           |
 
 실제 문서 오탐은 이 플러그인과 관계없이 한 컴퓨터에 쌓여 있던 한국어 `.md` 205개로 쟀습니다. 파일을 통째로 훅에 넣으니 85개가 걸렸습니다(K1 74, K9 28, K10 19, K8 10, K4 8, K3 5, K7 5, K5 4, K2 1). 사람이 쓴 글과 Claude가 쓴 글은 파일 수정 연도로 갈랐습니다. 2023년 이전에 쓰인 32개 중 걸린 것은 하나이고 나머지는 2026년 문서입니다. 연도는 거친 대리 지표라 그 한계를 `EVALUATION.md`에 적어 두었습니다. 규칙을 고치기 전 같은 측정에서는 사람이 쓴 문서 7개, 4.9%가 걸렸습니다.
-
-상시 규칙의 효과는 함수 설명, 에러 진단, PR 리뷰 같은 프롬프트 12개로 쟀습니다. 주입한 조건과 안 한 조건으로 48건을 만들고 같은 모델에게 순서를 바꿔 두 번씩 어느 쪽이 나은지 블라인드로 물었습니다. 24쌍에서 주입 쪽이 21승 3무였고 프롬프트 12개 전부에서 이기거나 비겼습니다. 문체를 빼고 기술적 오류만 따로 본 검사에서는 심각한 오류가 양쪽 다 없었습니다.
 
 스킬의 효과는 im-not-ai 윤문본과 직접 붙여 쟀습니다. 규칙 없이 쓴 글을 그쪽 파이프라인으로 윤문한 것과 스킬로 처음부터 쓴 글을, 어느 쪽이 어느 조건인지 모르는 판정자에게 순서를 바꿔 두 번씩 물었습니다. 단문 32쌍과 장문 24쌍을 합쳐 56쌍에서 49승 0패이고 진 쌍은 없습니다. 장문은 im-not-ai가 강한 자리라 정밀 3콜(진단·윤문·마무리)을 저장소의 실제 스크립트로 재현해 붙였습니다.
 
@@ -351,52 +343,44 @@ skills/humanize-korean/references/ 384 KB  윤문 중 필요한 문서만
 
 ### 자리별로 얼마가 드나
 
-**품질 숫자는 자리마다 잣대가 달라 서로 줄 세울 수 없습니다.** 상시 규칙은 주입을 켠 답과 끈 답을 자기끼리 붙인 값이고, 스킬은 im-not-ai 윤문본과 붙인 값이며, 검사 훅은 검출률과 오탐률입니다. 네 자리를 나란히 견줄 수 있는 것은 토큰과 시간뿐입니다.
+**품질 숫자는 자리마다 잣대가 달라 서로 줄 세울 수 없습니다.** 스킬은 im-not-ai 윤문본과 붙인 값이고 검사 훅은 검출률과 오탐률입니다. 세 자리를 나란히 견줄 수 있는 것은 토큰과 시간뿐입니다.
 
 | 자리                  | 상시 드는 토큰       | 부를 때 더 드는 것                | 걸리는 시간                            | 품질 근거                                       |
 | --------------------- | -------------------- | --------------------------------- | -------------------------------------- | ----------------------------------------------- |
-| 상시 규칙             | **726**, 세션당 한 번 | 없습니다                          | 없습니다                               | 주입 유무 블라인드 24쌍에서 21승 3무 0패        |
 | `korean-writing` 스킬 | 설명 70              | 본문 약 10,100                    | 답변 한 번                             | im-not-ai 윤문본과 블라인드 56쌍에서 49승 0패   |
 | 윤문                  | 설명 230, 에이전트 773 | 본문 약 14,100 에 콜 1~3회        | Fast 130초 0.64달러, 정밀 451초 1.64달러 | im-not-ai 의 실측. 변경률 30% 경고, 50% 폐기    |
 | 검사 훅               | **0**                | 0. LLM 을 부르지 않습니다         | 35~43ms                                | 위반 10/10, 정상 오탐 0/5, 2023년 이전 32개 중 1 |
 
-상시로 드는 것을 다 합치면 이 컴퓨터에서 약 1,930 토큰이고 격리된 HOME 에서는 약 1,450 입니다. 같은 파일인데 `/context` 의 에이전트 추정이 환경에 따라 773 과 297 로 갈리기 때문이고, 실제로 껐다 켜서 잰 값은 상시 규칙 726 하나뿐입니다. 글 작성 요청 한 번이면 여기에 스킬 본문 10,100 이 더해져 12,000 안팎이 됩니다. 상시 규칙은 프롬프트 캐시에 들어가므로 턴마다 다시 들지 않습니다.
+상시로 드는 것은 스킬 설명과 에이전트 설명뿐입니다. 격리된 HOME 에서 약 730 토큰이고 이 컴퓨터에서는 약 1,200 입니다. 같은 파일인데 `/context` 의 에이전트 추정이 환경에 따라 297 과 773 으로 갈리기 때문입니다. 글 작성 요청 한 번이면 여기에 스킬 본문 10,100 이 더해집니다.
 
-검사 쪽은 토큰을 쓰지 않습니다. 훅이 bash 안에서 python3 정규식을 돌릴 뿐이라 남는 것은 지연뿐이고, 한글 730자에서 35.3ms, README 전체 35,643자에서 42.5ms 입니다(각 10회 중앙값). 훅 등록의 제한 시간이 10초인데 가장 큰 문서가 그 0.5% 도 쓰지 않습니다. `scripts/check.sh` 로 문서 14종을 한 번에 보면 1.01초입니다.
+검사 쪽은 토큰을 쓰지 않습니다. 훅이 bash 안에서 python3 정규식을 돌릴 뿐이라 남는 것은 지연뿐이고, 한글 730자에서 35.3ms, README 전체 35,643자에서 42.5ms 입니다(각 10회 중앙값). 훅 등록의 제한 시간이 10초인데 가장 큰 문서가 그 0.5% 도 쓰지 않습니다. `plugin/scripts/check.sh --all` 로 문서 30종을 한 번에 보면 2.4초입니다.
 
 윤문은 입력이 이미 깨끗하면 거의 손대지 않습니다. 배포 공지 280자를 Fast 경로에 넣으니 연결어미 뒤 쉼표 3개만 고치고 변경률 1.1%, 등급 A 로 끝났습니다. AI 티를 몰아넣은 200자는 정밀 3콜로 올라가 변경률 39%, 등급 A- 였습니다. 재는 방법과 원문은 [`EVALUATION.md`](./EVALUATION.md) 의 G 절에 있습니다.
 
 로컬에서 같은 검사를 돌리는 명령입니다.
 
 ```bash
-python3 hooks-handlers/test_posttooluse.py     # 검사 훅 회귀 55건
-python3 hooks-handlers/test_sessionstart.py    # 상시 규칙 회귀 24건
-scripts/check.sh README.md CLAUDE.md           # 문서가 자기 훅을 통과하는가
-scripts/measure.sh ~/Documents                 # 실제 문서 뭉치의 오탐
+python3 tests/test_posttooluse.py     # 검사 훅 회귀 62건
+plugin/scripts/check.sh --all                         # 문서가 자기 훅을 통과하는가
+tools/measure.sh ~/Documents                 # 실제 문서 뭉치의 오탐
 ```
 
 규칙을 고쳤으면 릴리스 전에 블라인드 판정을 한 번 돌립니다. 정규식으로 센 표지 개수는 품질의 근거가 되지 못합니다. 표지를 표본당 1.95에서 0.25로 줄인 판이 판정에서는 옛 판을 이기지 못한 적이 있습니다.
 
 ```bash
 docs/experiments/skill-vs-imnotai/run.sh                  # 스킬 대 im-not-ai
-docs/experiments/always-on/regress.sh 옛.md 새.md          # 상시 규칙 회귀
+docs/experiments/hook-loop/run.sh                         # 훅이 짚은 자리를 같은 턴에 고치는지
+docs/experiments/detail-retention/run.sh                  # 규칙과 훅 안내가 원문의 세부를 떨어뜨리지 않는지
 ```
 
-GitHub Actions는 push와 PR마다 macOS와 Linux에서 같은 검사를 돌립니다. 매니페스트와 이슈 양식의 문법, 훅의 실행 비트, 회귀 테스트 둘, 한국어 문서 14종이 자기 훅을 통과하는지, 글자 수 스크립트의 스모크 테스트, 내장한 윤문 스크립트의 컴파일과 실행 확인입니다. 여기에 shellcheck, `plugin.json`과 README 배지와 CHANGELOG의 버전이 같은지, `claude plugin validate`가 더해집니다.
+GitHub Actions는 push와 PR마다 macOS와 Linux에서 같은 검사를 돌립니다. 매니페스트와 이슈 양식의 문법, 셸 스크립트의 실행 비트, `hooks.json` 이 가리키는 파일이 실제로 있고 실행되는지, 회귀 테스트, 저장소가 쓴 한국어 문서가 전부 자기 훅을 통과하는지, 글자 수 스크립트의 스모크 테스트, 내장한 윤문 스크립트의 컴파일과 실행 확인입니다. 여기에 shellcheck, `plugin.json`과 README 배지와 CHANGELOG의 버전이 같은지, `claude plugin validate`가 더해집니다.
 
 ## 하지 않는 것
 
-- 검사 훅은 `.md` 파일만 봅니다. 코드 안의 한국어 주석과 문자열, 슬랙으로 바로 나가는 답변은 생성 단계의 상시 규칙과 스킬이 맡고 사후 검사는 없습니다.
+- **평소 답변에는 규칙을 넣지 않습니다.** v1.1.0 까지는 세션을 열 때와 서브에이전트가 뜰 때 답변 규칙을 넣었습니다. 문체는 나아졌지만 답에서 기본값 같은 세부가 빠지는 것을 재서 확인하고 뺐습니다([`EVALUATION.md`](./EVALUATION.md) H13). 그래서 글 작성 요청이 아닌 대화의 문체는 이 플러그인이 맡지 않습니다.
+- 검사 훅은 `.md` 파일만 봅니다. 코드 안의 한국어 주석과 문자열, 슬랙으로 바로 나가는 답변은 글 작성 요청이면 스킬이 생성 단계에서 맡고 사후 검사는 없습니다.
 - 정규식은 알려진 패턴 열 종만 잡습니다. 새로운 어색함은 사람이 찾아 넣어야 합니다.
-- 상시 규칙은 30턴을 쌓은 뒤에도 효과가 남습니다. 컨텍스트 3만에서 4만 토큰 깊이에서 네 쌍을 블라인드로 판정해 네 쌍 모두 주입 쪽이 이겼습니다. 그보다 긴 대화는 재지 않았습니다.
-- **서브에이전트는 이 플러그인이 맡지 못합니다.** 세션 시작 훅은 서브에이전트를 위해 아예 돌지 않습니다(훅 실행 기록이 서브에이전트를 둘 띄워도 한 줄). 서브에이전트 시작 훅은 돌지만 출력이 서브에이전트 컨텍스트로 가지 않고 스킬 목록도 전달되지 않습니다. 전달되는 것은 `CLAUDE.md` 하나입니다. 서브에이전트까지 맡으려면 아래 한 줄을 쓰는 쪽 `CLAUDE.md` 에 넣으세요.
-
-```markdown
-한국어로 답하거나 한국어 글을 쓸 때는 korean-writing 규칙을 따른다.
-`A가 아니라 B` 대구 연쇄, 연결어미 뒤 쉼표, 사물 의인화, 영어 직역 비유,
-축·갈래·결·레이어, 줄표 삽입구, 첫째·둘째 병렬, 번역투, AI 관용구를 쓰지 않는다.
-요청받은 글만 내고 분량 보고나 후속 제안을 붙이지 않는다.
-```
+- 훅이 짚은 것만 고칩니다. 짚지 못한 표현은 남습니다. 예를 들어 K2 는 `결이 다르` 형태만 세서 「결입니다」 는 놓칩니다([실험](./docs/experiments/hook-loop/)).
 
 - 계약서, 약관, 법률 문서, 공문처럼 격식이 요건인 글은 대상이 아닙니다. 코드, 로그, 명령어, 직접 인용, 고유명사, 영어 원문도 손대지 않습니다.
 - 맞춤법과 띄어쓰기는 보지 않습니다. 문체만 봅니다.
@@ -404,40 +388,53 @@ GitHub Actions는 push와 PR마다 macOS와 Linux에서 같은 검사를 돌립�
 
 ## 저장소 구성
 
+저장소는 두 층입니다. **`plugin/` 만 설치한 사람의 기계로 복사됩니다.** 플러그인 설치는 폴더를 통째로 가져가고
+무엇을 빼는 수단이 없어서, 테스트와 실험과 CI 는 그 밖에 둡니다. 설치본은 53개 파일 590KB 입니다. CI 의 `설치본 경계` 작업이 이 선을 지킵니다.
+
 ```
 korean-writing/
-├── .claude-plugin/
-│   ├── plugin.json                   매니페스트. 이름, 버전(정본), 스킬 경로 여섯
-│   └── marketplace.json              마켓플레이스 카탈로그. 버전은 두지 않습니다
-├── hooks/hooks.json                  SessionStart 와 PostToolUse 등록. 각 10초 제한
-├── hooks-handlers/
-│   ├── always-on.md                  세션마다 주입되는 답변용 규칙 열 항목
-│   ├── sessionstart.sh               주입 본체. 언제나 exit 0
-│   ├── posttooluse.sh                검사 본체. bash 안의 python3 정규식 K1~K10
+│
+├── plugin/                           ── 설치본. 이 폴더만 남의 기계로 갑니다 ──
+│   ├── .claude-plugin/plugin.json    매니페스트. 이름, 버전(정본), 스킬 경로 여섯, 켜고 끄는 설정 하나
+│   ├── hooks/hooks.json              PostToolUse 등록. 10초 제한
+│   ├── hooks-handlers/
+│   │   └── posttooluse.sh            검사 본체. bash 안의 python3 정규식 K1~K10
+│   ├── SKILL.md                      korean-writing 스킬
+│   ├── commands/check.md             /korean-writing:check. 써 둔 문서를 훅과 같은 기준으로 검사
+│   ├── agents/                       im-not-ai 내장. 윤문 파이프라인의 에이전트 셋(진단·윤문·마무리 검토)
+│   ├── skills/
+│   │   ├── humanize-korean/          im-not-ai 내장. 윤문 본체 SKILL.md 와 references/(규칙집·룰북·참조 문서)
+│   │   ├── humanize/SKILL.md         /korean-writing:humanize 진입. 슬래시 전용
+│   │   ├── humanize-redo/SKILL.md    2차 윤문 진입. 슬래시 전용
+│   │   ├── korean-character-count/   글자 수 스킬. SKILL.md, instruction.md, scripts/
+│   │   └── crafting-effective-readmes/  README 구조 스킬. 템플릿 4종, 참고 문서 5종
+│   ├── scripts/
+│   │   ├── check.sh                  파일 통째 검사. --all 은 저장소가 쓴 .md 전부
+│   │   └── *.py                      im-not-ai 내장. 윤문 파이프라인 스크립트 아홉
+│   ├── NOTICE.md                     가져온 파일의 출처와 수정 범위
+│   └── LICENSE                       MIT
+│
+├── .claude-plugin/marketplace.json   ── 아래는 저장소에만 있습니다 ──
+│                                     마켓플레이스 카탈로그. source 가 ./plugin 을 가리킵니다
+├── tests/
+│   ├── test_posttooluse.py           검사 훅 회귀 62건. 보고 횟수까지 검증합니다
 │   ├── ground-truth.json             실제로 생성됐던 위반 문장 10건
-│   ├── clean.json                    같은 맥락의 정상 문장 5건
-│   ├── test_posttooluse.py           검사 훅 회귀 55건. 보고 횟수까지 검증합니다
-│   └── test_sessionstart.py          상시 규칙 회귀 24건
-├── agents/                           im-not-ai 내장. 윤문 파이프라인의 에이전트 셋(진단·윤문·마무리 검토)
-├── SKILL.md                          korean-writing 스킬
-├── skills/
-│   ├── humanize-korean/              im-not-ai 내장. 윤문 본체 SKILL.md 와 references/(규칙집·룰북·참조 문서)
-│   ├── humanize/SKILL.md             /korean-writing:humanize 진입. 슬래시 전용
-│   ├── humanize-redo/SKILL.md        2차 윤문 진입. 슬래시 전용
-│   ├── korean-character-count/       글자 수 스킬. SKILL.md, instruction.md, scripts/
-│   └── crafting-effective-readmes/   README 구조 스킬. 템플릿 4종, 참고 문서 5종
-├── scripts/
-│   ├── check.sh                      파일 통째 검사
+│   └── clean.json                    같은 맥락의 정상 문장 5건
+├── tools/
+│   ├── install-git-hook.sh           커밋 직전 검사용 pre-commit 훅 설치·제거
 │   ├── measure.sh                    실제 문서 뭉치 오탐 측정
-│   ├── release.sh                    버전·CHANGELOG·배지·태그·릴리스
-│   └── *.py                          im-not-ai 내장. 윤문 파이프라인 스크립트 아홉
+│   └── release.sh                    버전·마켓플레이스·배지·태그
 ├── docs/
 │   ├── (배너 한·영 밝음·어두움, 훅 출력 데모, 소셜 프리뷰)
-│   ├── samples/                      상시 규칙 주입 전후 원문, 윤문 실행 기록
+│   │                                 social-preview.png 은 같은 이름의 svg 를 rsvg-convert -w 1280 -h 640 로 렌더한 것입니다
+│   ├── samples/                      윤문 실행 기록
 │   └── experiments/
-│       ├── always-on/                상시 규칙 블라인드 판정과 회귀 게이트
-│       └── skill-vs-imnotai/         스킬 대 im-not-ai 블라인드 판정 게이트
-├── .github/                          CI 워크플로, 이슈 양식 3종, PR 양식, CODEOWNERS, dependabot
+│       ├── always-on/                v1.1.0 까지 넣던 답변 규칙의 블라인드 판정 기록
+│       ├── detail-retention/         규칙과 훅 안내가 원문의 세부를 떨어뜨리지 않는지(H13·I1)
+│       ├── hook-loop/                훅이 짚은 자리를 Claude 가 같은 턴에 고치는지
+│       ├── skill-vs-imnotai/         스킬 대 im-not-ai 블라인드 판정 게이트
+│       └── task-performance/         v1.1.0 까지 넣던 주입이 일을 방해했는지 본 기록
+├── .github/                          CI 워크플로 넷, 이슈 양식 3종, PR 양식, CODEOWNERS, dependabot, CI 전용 npm 도구
 ├── .claude/settings.json             기여자용 프로젝트 설정
 ├── .gitattributes                    셸 스크립트 LF 고정
 ├── .editorconfig
@@ -447,29 +444,19 @@ korean-writing/
 ├── CONTRIBUTING.md · .en.md          기여 안내
 ├── CODE_OF_CONDUCT.md                행동 강령
 ├── SECURITY.md                       보안 정책과 훅이 하는 일
-├── NOTICE.md                         가져온 파일의 출처와 수정 범위
+├── SUPPORT.md                        무엇을 어디에 물어보나
 ├── LICENSE                           MIT
 └── README.md · README.en.md
 ```
-
-## 이웃 도구와 이 플러그인의 자리
-
-한국어 산문 품질 도구는 두 층으로 놓입니다. 규칙집을 만드는 쪽과 그 규칙을 특정 편집기에 붙이는 쪽입니다. 이 플러그인은 뒤쪽입니다. 규칙집과 윤문 파이프라인은 im-not-ai의 것을 커밋을 고정해 그대로 내장했고 Claude Code에 붙이는 방식은 여기서 만들었습니다.
-
-| 도구                                                 | 무엇인가                                                                                                            | 이 플러그인과의 관계                                                                                                          |
-| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| [im-not-ai](https://github.com/epoko77-ai/im-not-ai) | 이미 쓴 한글에서 AI 티를 걷어내는 윤문 스킬. 진단·윤문·마무리를 나눈 다중 호출 파이프라인이고 여러 CLI를 지원합니다 | 윤문 파이프라인의 원본입니다. 커밋을 고정해 그대로 내장했고 이 플러그인은 처음 쓸 때와 평소 답변, 저장할 때의 검사를 더합니다 |
-| [k-skill](https://github.com/NomaDamas/k-skill)      | 한국인을 위한 스킬 모음. 글자 수부터 교통·날씨·검색까지                                                             | 글자 수 스크립트를 가져왔습니다. 맞춤법 검사 스킬은 원문을 외부 서버로 보내서 가져오지 않았습니다                             |
-| 맞춤법·띄어쓰기 검사기                               | 맞춤법을 봅니다                                                                                                     | 이 플러그인은 문체만 봅니다. 겹치지 않으니 같이 쓰면 됩니다                                                                   |
 
 ## 자주 묻는 질문
 
 <details>
 <summary><b>왜 검사 훅은 .md 파일만 보나요?</b></summary>
 
-훅은 파일 편집 도구가 끝난 뒤에 도구 입력을 받는 구조라 파일이 아닌 답변은 볼 수 없습니다. 답변은 세션 시작에 들어가는 상시 규칙과 글 작성 스킬이 생성 단계에서 맡습니다. 답변을 정규식으로 사후 검사하는 것도 재 봤는데, 평소 답변에서는 표본당 0.21건밖에 잡지 못해 감시 수단으로 쓰지 않습니다.
+훅은 파일 편집 도구가 끝난 뒤에 도구 입력을 받는 구조라 파일이 아닌 답변은 볼 수 없습니다. 글 작성 요청이면 스킬이 생성 단계에서 맡습니다. 답변을 정규식으로 사후 검사하는 것도 재 봤는데 평소 답변에서는 표본당 0.21건밖에 잡지 못해 감시 수단으로 쓰지 않습니다.
 
-근거: `hooks-handlers/sessionstart.sh` 머리 주석, [`EVALUATION.md`](./EVALUATION.md)의 N3.
+근거: [`EVALUATION.md`](./EVALUATION.md)의 N3.
 
 </details>
 
@@ -499,7 +486,7 @@ korean-writing/
 <details>
 <summary><b>토큰을 얼마나 쓰나요?</b></summary>
 
-상시로 드는 것은 스킬 설명 넷 약 430토큰(내장한 윤문 스킬 230 포함), 에이전트 셋 약 300토큰, 세션당 한 번 들어가는 상시 규칙 726토큰입니다. 상시 규칙은 설치된 플러그인을 그대로 두고 상시 규칙만 껐다 켜며 `claude -p`의 입력 토큰 총량을 뺀 값입니다. 끄면 25,944, 켜면 26,670이었습니다. MCP 도구 정의와 사용자 설정을 빼야 값이 고정됩니다. 규칙은 프롬프트 캐시에 들어가므로 턴마다 다시 낼 일이 없습니다. 스킬 본문은 글 작성 요청이 있을 때만 로드되고 훅은 LLM을 부르지 않습니다.
+상시로 드는 것은 스킬 설명 넷 약 430토큰(내장한 윤문 스킬 230 포함)과 에이전트 셋 약 300토큰입니다. 스킬 본문은 글 작성 요청이 있을 때만 로드되고 훅은 LLM을 부르지 않습니다. v1.1.0 에는 세션마다 816토큰을 쓰는 답변 규칙이 더 있었는데 H13 으로 뺐습니다.
 
 근거: [`EVALUATION.md`](./EVALUATION.md)의 D2와 F7.
 
@@ -517,7 +504,7 @@ korean-writing/
 
 그런 뜻이 아닙니다. 정규식은 그 열 문장을 보고 만들었으니 열 문장을 잡는 것은 당연하고 그 숫자는 규칙을 고치다 무엇을 깨뜨리지 않았는지 보는 회귀용입니다. 봐야 할 숫자는 오탐입니다. 실제 문서 205개 중 2023년 이전에 쓰인 글에서 걸린 것은 하나입니다. 정규식은 알려진 열 가지 패턴만 잡고 새로운 어색함은 잡지 못합니다.
 
-근거: [`EVALUATION.md`](./EVALUATION.md)의 A1~A3와 2026-09-10 재측정, [`hooks-handlers/ground-truth.json`](./hooks-handlers/ground-truth.json).
+근거: [`EVALUATION.md`](./EVALUATION.md)의 A1~A3와 2026-09-10 재측정, [`tests/ground-truth.json`](./tests/ground-truth.json).
 
 </details>
 
@@ -537,30 +524,39 @@ korean-writing/
 ```bash
 git clone https://github.com/IsthisLee/claude-korean-writing.git
 cd claude-korean-writing
-python3 hooks-handlers/test_posttooluse.py
-python3 hooks-handlers/test_sessionstart.py
-scripts/check.sh README.md CLAUDE.md
+python3 tests/test_posttooluse.py
+plugin/scripts/check.sh --all
 ```
 
-판정 규칙을 바꾸는 변경에는 `scripts/measure.sh`로 실제 문서에 돌린 숫자와 회귀 테스트가 같이 옵니다. 한국어 문서를 고쳤으면 `scripts/check.sh`를 통과시키고 README는 한국어판과 영어판을 함께 고칩니다. 커밋 제목은 Conventional Commits 형식의 한국어이고 버전 번호는 손대지 않습니다. 참여하는 사람은 [행동 강령](./CODE_OF_CONDUCT.md)을 따르고 보안 문제는 공개 이슈 대신 [SECURITY.md](./SECURITY.md)의 절차로 알립니다.
+판정 규칙을 바꾸는 변경에는 `tools/measure.sh`로 실제 문서에 돌린 숫자와 회귀 테스트가 같이 옵니다. 한국어 문서를 고쳤으면 `plugin/scripts/check.sh`를 통과시키고 README는 한국어판과 영어판을 함께 고칩니다. 커밋 제목은 Conventional Commits 형식의 한국어이고 버전 번호는 손대지 않습니다. 참여하는 사람은 [행동 강령](./CODE_OF_CONDUCT.md)을 따르고 보안 문제는 공개 이슈 대신 [SECURITY.md](./SECURITY.md)의 절차로 알립니다.
 
 ## 릴리스
 
-[SemVer](https://semver.org/lang/ko/)를 따르고 버전의 정본은 `.claude-plugin/plugin.json` 한 곳입니다. `marketplace.json`에는 버전을 적지 않습니다.
+[SemVer](https://semver.org/lang/ko/)를 따르고 버전의 정본은 `plugin/.claude-plugin/plugin.json` 한 곳입니다. `marketplace.json`의 두 자리는 릴리스 스크립트가 같은 값으로 맞추고 CI가 어긋남을 막습니다.
 
-릴리스는 `scripts/release.sh <버전>` 한 번입니다. 작업 트리가 깨끗한지와 버전 형식을 보고 CHANGELOG의 `[Unreleased]` 내용을 새 버전 절로 옮기고 두 README의 상단 인용구에 그 버전이 적혀 있는지 확인한 다음, `plugin.json`과 README 배지를 올리고 회귀 테스트와 `claude plugin validate`를 돌리고 커밋과 주석 태그를 만듭니다. `--push`를 붙이면 push와 GitHub 릴리스 생성까지 이어서 합니다.
+릴리스는 `tools/release.sh <버전>` 한 번입니다. 작업 트리가 깨끗한지와 버전 형식을 보고 CHANGELOG의 `[Unreleased]` 내용을 새 버전 절로 옮기고 두 README의 상단 인용구에 그 버전이 적혀 있는지 확인한 다음, `plugin.json`과 `marketplace.json`과 README 배지를 올리고 회귀 테스트와 `claude plugin validate --strict`를 돌리고 커밋과 주석 태그를 만듭니다. `--push`를 붙이면 push까지 합니다.
 
 ```bash
-scripts/release.sh 1.1.0
-scripts/release.sh 1.1.0 --push
+tools/release.sh 1.1.0
+tools/release.sh 1.1.0 --push
+```
+
+GitHub 릴리스 자체는 이 노트북에서 만들지 않습니다. 태그가 올라가면 [`release.yml`](.github/workflows/release.yml)이 받아서 만듭니다. 태그와 `plugin.json`의 버전이 같은지 보고, 노트를 CHANGELOG의 해당 절에서 그대로 읽고, `plugin/`만 담은 설치본 zip을 만들어 `claude plugin validate --strict`와 저장소의 회귀 테스트를 그 zip에 대고 돌린 다음, [출처 증명](https://docs.github.com/actions/security-guides/using-artifact-attestations-to-establish-provenance-for-builds)을 붙여 올립니다. 노트북에서 만들면 증명이 붙지 않아서 옮겼습니다.
+
+받은 zip은 설치하지 않고 한 세션만 띄워 볼 수 있습니다. 증명은 `gh` 로 확인합니다.
+
+```bash
+gh release download v1.1.0 -p '*.zip'
+gh attestation verify korean-writing-v1.1.0.zip -R IsthisLee/claude-korean-writing
+claude --plugin-url ./korean-writing-v1.1.0.zip
 ```
 
 ## 출처와 라이선스
 
 | 파일                                                                                              | 어디서                                                                                                                         | 고친 것                                                     |
 | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------- |
-| `skills/humanize-korean/`, `skills/humanize/`, `skills/humanize-redo/`, `agents/`, `scripts/*.py` | [im-not-ai](https://github.com/epoko77-ai/im-not-ai) 커밋 `9747f03` (2026-09-06)의 런타임 부분집합                             | 스킬 설명의 트리거 문구 하나                                |
-| `skills/korean-character-count/`                                                                  | [k-skill](https://github.com/NomaDamas/k-skill)                                                                                | 스크립트는 그대로, 설명서는 실행 경로만, SKILL.md는 다시 씀 |
-| `skills/crafting-effective-readmes/`                                                              | [agent-skills](https://github.com/joshuadavidthomas/agent-skills)의 `crafting-effective-readmes/`, 커밋 `516dee7` (2026-07-20) | `style-guide.md`에서 관련 스킬을 가리키는 한 줄             |
+| `plugin/skills/humanize-korean/`, `plugin/skills/humanize/`, `plugin/skills/humanize-redo/`, `plugin/agents/`, `plugin/scripts/*.py` | [im-not-ai](https://github.com/epoko77-ai/im-not-ai) 커밋 `9747f03` (2026-09-06)의 런타임 부분집합                             | 스킬 설명의 트리거 문구 하나                                |
+| `plugin/skills/korean-character-count/`                                                                  | [k-skill](https://github.com/NomaDamas/k-skill)                                                                                | 스크립트는 그대로, 설명서는 실행 경로만, SKILL.md는 다시 씀 |
+| `plugin/skills/crafting-effective-readmes/`                                                              | [agent-skills](https://github.com/joshuadavidthomas/agent-skills)의 `crafting-effective-readmes/`, 커밋 `516dee7` (2026-07-20) | `style-guide.md`에서 관련 스킬을 가리키는 한 줄             |
 
-나머지는 이 저장소에서 썼습니다. `korean-writing` 스킬, 상시 규칙, 검사 훅 전체, 정답 데이터, 검증 기준이 그것입니다. 가져온 파일의 라이선스는 전부 MIT이고 원 저작권 표시는 [`NOTICE.md`](./NOTICE.md)에 모아 두었습니다. 이 저장소의 라이선스도 [MIT](./LICENSE)입니다.
+나머지는 이 저장소에서 썼습니다. `korean-writing` 스킬, 검사 훅 전체, 정답 데이터, 검증 기준이 그것입니다. 가져온 파일의 라이선스는 전부 MIT이고 원 저작권 표시는 [`plugin/NOTICE.md`](./plugin/NOTICE.md)에 모아 두었습니다. 이 저장소의 라이선스도 [MIT](./LICENSE)입니다.

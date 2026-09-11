@@ -1,0 +1,14 @@
+아래 코드가 간헐적으로 KeyError 를 낸다. 원인이 되는 줄 번호 하나를 짚어라.
+
+1  cache = {}
+2  def get(key, loader):
+3      if key in cache:
+4          return cache[key]
+5      value = loader(key)
+6      if value is None:
+7          del cache[key]
+8          return None
+9      cache[key] = value
+10     return value
+
+도구를 쓸 수 없다. 추론만으로 답하고 마지막 줄에 ANSWER=<줄번호> 만 적어라.

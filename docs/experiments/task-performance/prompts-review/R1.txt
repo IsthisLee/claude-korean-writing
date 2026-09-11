@@ -1,0 +1,16 @@
+아래 파이썬 코드를 리뷰해라. 고칠 곳을 짚어라.
+
+```python
+import sqlite3
+
+def get_orders(db_path, user_id, status):
+    conn = sqlite3.connect(db_path)
+    cur = conn.cursor()
+    q = "SELECT * FROM orders WHERE user_id = '%s' AND status = '%s'" % (user_id, status)
+    cur.execute(q)
+    rows = cur.fetchall()
+    total = 0
+    for r in rows:
+        total += r[3]
+    return rows, total / len(rows)
+```

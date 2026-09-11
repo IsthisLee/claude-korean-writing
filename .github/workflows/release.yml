@@ -1,0 +1,147 @@
+name: Release
+
+# 태그를 밀면 여기서 릴리스가 난다. 노트북에서 `gh release create` 를 치던 자리다.
+# 사람 손이 닿는 곳은 태그 하나뿐이고, 노트와 첨부물은 저장소 안의 파일에서만 나온다.
+#
+# 작업을 둘로 나눈 이유는 권한이다. 설치본을 검증하려면 Claude Code CLI 를 받아 돌려야 하는데,
+# 그 자리에 릴리스 쓰기 권한과 증명 발급 권한이 같이 있으면 받아 온 코드가 그 권한을 쓴다.
+# build 는 읽기만 하고, publish 는 아무것도 설치하지 않고 build 가 넘긴 파일만 만진다.
+on:
+  push:
+    tags: ["v[0-9]+.[0-9]+.[0-9]+"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "다시 낼 태그 (예: v1.2.0)"
+        required: true
+
+permissions:
+  contents: read
+
+# ${{ }} 를 run: 안에 바로 쓰지 않는다. 값이 셸에 그대로 펼쳐지면
+# 태그 이름이 명령이 될 수 있다. env 로 넘겨 셸 변수로만 읽는다.
+env:
+  INPUT_TAG: ${{ github.event.inputs.tag || github.ref_name }}
+
+jobs:
+  build:
+    name: 설치본을 만들고 검증한다
+    runs-on: ubuntu-latest
+    # 읽기만 한다. 이 작업 안에서 받아 돌리는 npm 패키지에 줄 수 있는 것이 이것뿐이다.
+    permissions:
+      contents: read
+    outputs:
+      tag: ${{ steps.meta.outputs.tag }}
+      version: ${{ steps.meta.outputs.version }}
+      name: ${{ steps.meta.outputs.name }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: 태그와 plugin.json 이 같은 버전인가
+        id: meta
+        run: |
+          # 태그만 밀고 plugin.json 을 안 올린 릴리스가 가장 흔한 사고다.
+          case "$INPUT_TAG" in
+            v[0-9]*.[0-9]*.[0-9]*) ;;
+            *) echo "::error::태그 형식이 vMAJOR.MINOR.PATCH 가 아니다: $INPUT_TAG"; exit 1 ;;
+          esac
+          VER="${INPUT_TAG#v}"
+          MANIFEST=$(python3 -c "import json;print(json.load(open('plugin/.claude-plugin/plugin.json'))['version'])")
+          if [ "$VER" != "$MANIFEST" ]; then
+            echo "::error::태그 $INPUT_TAG 와 plugin.json $MANIFEST 이 다르다"
+            exit 1
+          fi
+          {
+            echo "tag=$INPUT_TAG"
+            echo "version=$VER"
+            echo "name=korean-writing-$INPUT_TAG"
+          } >> "$GITHUB_OUTPUT"
+          echo "태그 $INPUT_TAG · plugin.json $MANIFEST — 일치"
+
+      - name: CHANGELOG 에서 이 버전의 절을 꺼낸다
+        env:
+          VERSION: ${{ steps.meta.outputs.version }}
+        run: |
+          # 릴리스 노트를 손으로 다시 쓰면 CHANGELOG 와 갈라진다. 한 곳에서만 읽는다.
+          mkdir -p dist
+          python3 - "$VERSION" <<'PY' > dist/notes.md
+          import io, re, sys
+          ver = sys.argv[1]
+          s = io.open("CHANGELOG.md", encoding="utf-8").read()
+          m = re.search(rf"^## \[{re.escape(ver)}\][^\n]*\n(.*?)(?=^## \[|^\[|\Z)", s, re.M | re.S)
+          if not m or not m.group(1).strip():
+              print(f"::error::CHANGELOG.md 에 [{ver}] 절이 없거나 비어 있다", file=sys.stderr)
+              sys.exit(1)
+          print(m.group(1).strip())
+          PY
+          echo "노트 $(wc -l < dist/notes.md)줄"
+
+      - name: 설치본 zip 을 만든다
+        env:
+          NAME: ${{ steps.meta.outputs.name }}
+        run: |
+          # `claude --plugin-url <zip>` 으로 설치 없이 한 세션만 띄워 볼 수 있다.
+          # 담는 것은 plugin/ 하나다. 마켓플레이스로 설치할 때 복사되는 것과 같은 것이라야
+          # zip 으로 띄워 본 결과가 설치한 결과와 같다. `HEAD:plugin` 이 그 하위 트리만 낸다.
+          mkdir -p /tmp/stage
+          git archive --format=tar --prefix="$NAME/" HEAD:plugin | tar -xf - -C /tmp/stage
+          (cd /tmp/stage && zip -qr "$GITHUB_WORKSPACE/dist/$NAME.zip" "$NAME")
+          echo "설치본 $(find "/tmp/stage/$NAME" -type f | wc -l)개 파일"
+          ls -lh "dist/$NAME.zip"
+
+      - name: zip 이 실제로 유효한 플러그인인가
+        env:
+          NAME: ${{ steps.meta.outputs.name }}
+        run: |
+          # 매니페스트가 깨진 zip 을 릴리스에 붙이지 않는다.
+          # 잠금 파일에서 받는다. 그래도 남의 코드를 받아 돌리는 자리라 이 작업의 권한은 읽기뿐이다.
+          npm ci --prefix .github/tools --no-audit --no-fund
+          .github/tools/node_modules/.bin/claude plugin validate "/tmp/stage/$NAME" --strict
+          # 회귀 테스트는 설치본에 실리지 않는다. 저장소의 테스트를 풀어 놓은 설치본에 대고 돌린다.
+          KW_PLUGIN_ROOT="/tmp/stage/$NAME" python3 tests/test_posttooluse.py
+
+      - name: 검증을 마친 것만 다음 작업으로 넘긴다
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: release-${{ steps.meta.outputs.tag }}
+          path: dist/
+          if-no-files-found: error
+          retention-days: 7
+
+  publish:
+    name: GitHub 릴리스
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # 릴리스 생성
+      id-token: write # 아티팩트 출처 증명(attestation)
+      attestations: write
+    steps:
+      # 저장소를 받지 않는다. 이 작업이 만지는 것은 build 가 넘긴 파일뿐이다.
+      - name: 검증을 마친 산출물을 받는다
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: release-${{ needs.build.outputs.tag }}
+          path: dist
+
+      - name: 출처 증명
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: dist/${{ needs.build.outputs.name }}.zip
+
+      - name: 릴리스 생성
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ needs.build.outputs.tag }}
+          NAME: ${{ needs.build.outputs.name }}
+        run: |
+          gh release create "$TAG" \
+            --title "$TAG" \
+            --notes-file dist/notes.md \
+            --verify-tag \
+            "dist/$NAME.zip#설치본 zip (claude --plugin-url 로 바로 띄울 수 있습니다)"

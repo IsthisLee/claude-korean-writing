@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks-handlers/posttooluse.sh",
+            "timeout": 10,
+            "statusMessage": "한국어 검사"
+          }
+        ]
+      }
+    ]
+  }
+}

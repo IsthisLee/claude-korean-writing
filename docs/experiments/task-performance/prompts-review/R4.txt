@@ -1,0 +1,14 @@
+아래 파이썬 코드를 리뷰해라. 고칠 곳을 짚어라.
+
+```python
+import os, hashlib
+
+def save_upload(f, name):
+    path = os.path.join("/var/uploads", name)
+    data = f.read()
+    with open(path, "wb") as out:
+        out.write(data)
+    token = hashlib.md5(data).hexdigest()
+    os.chmod(path, 0o777)
+    return token
+```

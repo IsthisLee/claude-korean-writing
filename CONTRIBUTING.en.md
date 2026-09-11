@@ -13,7 +13,7 @@ So the most valuable contribution here is not code. It is a sentence.
 - Saw Claude write awkward Korean? Send it through [the report form](https://github.com/IsthisLee/claude-korean-writing/issues/new?template=awkward-sentence.yml). Paste the original, uncorrected.
 - Did the hook flag a perfectly normal sentence? Send that too. False positives are worse than misses, because they make people turn the checker off.
 
-Reported sentences become regression tests in `hooks-handlers/ground-truth.json` or `clean.json`.
+Reported sentences become regression tests in `tests/ground-truth.json` or `clean.json`.
 
 ## Getting started
 
@@ -23,8 +23,8 @@ There is no build step.
 git clone https://github.com/IsthisLee/claude-korean-writing
 cd claude-korean-writing
 
-python3 hooks-handlers/test_posttooluse.py       # hook regression tests
-scripts/check.sh README.en.md CONTRIBUTING.en.md # do the docs pass their own hook
+python3 tests/test_posttooluse.py       # hook regression tests
+plugin/scripts/check.sh README.en.md CONTRIBUTING.en.md # do the docs pass their own hook
 ```
 
 | Requirement | Used for                       | If missing                         |
@@ -37,10 +37,10 @@ CI runs on macOS and Linux. On Windows you need Git Bash or WSL.
 
 ## Changing a rule requires measurement
 
-If your change adds, removes, or retunes any of K1–K8 in `hooks-handlers/posttooluse.sh`, **include numbers.** Tuning by intuition grows the false-positive rate silently.
+If your change adds, removes, or retunes any of K1–K8 in `plugin/hooks-handlers/posttooluse.sh`, **include numbers.** Tuning by intuition grows the false-positive rate silently.
 
 ```bash
-scripts/measure.sh ~/some/docs ~/other/docs
+tools/measure.sh ~/some/docs ~/other/docs
 ```
 
 Point it at folders of Korean `.md` files. It reports how many files trip the hook and under which codes. A flagged file written by a human is a false positive; one written by Claude is a true catch. A person makes that call.
@@ -54,14 +54,14 @@ All 8 that stopped being flagged were written by humans in 2022-23
 
 This is how "죽다" was dropped from K7 and how counting `~에 대해` was dropped from K8. A rule with no discriminating power only catches human writing. See [EVALUATION.md](EVALUATION.md) for the details.
 
-**Ship a regression test with any behavior change.** Add the sentence that must pass and the sentence that must be caught to `hooks-handlers/test_posttooluse.py`. If an existing test fails, fix the code, not the test. If a requirement genuinely changed, say in one line what changed and why that test is now wrong.
+**Ship a regression test with any behavior change.** Add the sentence that must pass and the sentence that must be caught to `tests/test_posttooluse.py`. If an existing test fails, fix the code, not the test. If a requirement genuinely changed, say in one line what changed and why that test is now wrong.
 
 ## Changing the docs
 
 Korean documents in this repo have to satisfy the repo's own rules. A project that breaks its own rules is not convincing.
 
 ```bash
-scripts/check.sh path/to/file.md
+plugin/scripts/check.sh path/to/file.md
 ```
 
 For documents that deliberately quote bad examples, put `<!-- korean-writing: ignore -->` at the top of the file.
@@ -82,11 +82,11 @@ fix: 릴리스 태그 메시지에서 ### 헤딩이 주석으로 잘리던 문�
 docs: 스킬 유무 비교 기록
 ```
 
-Leave version numbers alone. `.claude-plugin/plugin.json` is the single source of truth, and `scripts/release.sh` syncs the README badges and CHANGELOG at release time.
+Leave version numbers alone. `plugin/.claude-plugin/plugin.json` is the single source of truth, and `tools/release.sh` syncs the README badges and CHANGELOG at release time.
 
 ## Vendored files
 
-`skills/humanize-korean/**`, `skills/humanize/**`, `skills/humanize-redo/**`, `agents/**`, `scripts/*.py` (im-not-ai), `skills/crafting-effective-readmes/**` and `skills/korean-character-count/scripts/**` come from other MIT projects. If you change one, update the corresponding entry in [NOTICE.md](NOTICE.md) too, and never remove an upstream copyright notice.
+`plugin/skills/humanize-korean/**`, `plugin/skills/humanize/**`, `plugin/skills/humanize-redo/**`, `plugin/agents/**`, `plugin/scripts/*.py` (im-not-ai), `plugin/skills/crafting-effective-readmes/**` and `plugin/skills/korean-character-count/scripts/**` come from other MIT projects. If you change one, update the corresponding entry in [plugin/NOTICE.md](plugin/NOTICE.md) too, and never remove an upstream copyright notice.
 
 ## Conduct and license
 

@@ -1,0 +1,9 @@
+아래 함수가 프로덕션에서 초당 몇 건까지 견딜지 알려줘.
+
+def handle(req):
+    user = db.get_user(req.user_id)
+    items = db.get_cart(user.id)
+    total = sum(i.price * i.qty for i in items)
+    return {"total": total}
+
+도구를 쓸 수 없다. 파일을 찾거나 명령을 돌리지 말고 위에 준 것만으로 바로 답하라.

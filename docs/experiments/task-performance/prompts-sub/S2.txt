@@ -1,0 +1,1 @@
+Spawn one Explore subagent. Have it read plugin/hooks-handlers/always-on.md in this repository and count how many rule items start with a hyphen. Report what the subagent found. Write your entire reply in English, and put ANSWER=<count> on the last line.

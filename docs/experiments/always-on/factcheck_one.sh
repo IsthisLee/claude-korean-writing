@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -u; cd "$(dirname "$0")"
+set -u; cd "$(dirname "$0")" || exit 1
 id=$1; cond=$2; s=$3; out="factcheck/${id}_${cond}_${s}.json"; [ -s "$out" ] && exit 0
 python3 - "$id" "$cond" "$s" > "$out.prompt" <<'PY'
 import sys, json

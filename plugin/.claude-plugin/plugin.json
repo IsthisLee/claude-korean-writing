@@ -1,0 +1,44 @@
+{
+  "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
+  "name": "korean-writing",
+  "version": "1.1.0",
+  "description": "Claude Code가 쓰는 한국어를 쓸 때 막고 저장할 때 잡는 린터. 작성 스킬이 첫 줄부터 규칙대로 씁니다. .md 를 저장하면 검사 훅이 AI 티를 짚어 같은 턴에 Claude 에게 돌려줍니다. 이미 쓴 글은 내장한 im-not-ai 로 다듬습니다. 네트워크를 쓰지 않습니다.",
+  "author": {
+    "name": "Isthis",
+    "email": "rjsgmldnwn@gmail.com"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/IsthisLee/claude-korean-writing#readme",
+  "repository": "https://github.com/IsthisLee/claude-korean-writing",
+  "skills": [
+    "./",
+    "./skills/korean-character-count",
+    "./skills/crafting-effective-readmes",
+    "./skills/humanize-korean",
+    "./skills/humanize",
+    "./skills/humanize-redo"
+  ],
+  "userConfig": {
+    "edit_check": {
+      "type": "boolean",
+      "title": ".md 편집 뒤 AI 티 검사",
+      "description": "한국어 비중이 높은 .md 를 편집하면 AI 티 패턴을 알립니다. 편집을 되돌리지는 않습니다.",
+      "default": true
+    }
+  },
+  "keywords": [
+    "korean",
+    "writing",
+    "prose",
+    "linter",
+    "lint",
+    "ai-writing",
+    "humanize",
+    "translationese",
+    "style",
+    "hooks",
+    "character-count",
+    "readme",
+    "documentation"
+  ]
+}

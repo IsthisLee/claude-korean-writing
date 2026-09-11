@@ -8,7 +8,7 @@
 #      다른 하나는 규칙 없이 쓴 뒤 im-not-ai 파이프라인으로 윤문한 것이다. 어느 쪽이
 #      어느 조건인지 모르는 판정자에게 순서를 바꿔 두 번 묻는다.
 # 경로: 단문(01~08)은 Fast Path 한 콜, 장문(L1~L6)은 정밀 3콜(진단·윤문·마무리)로 윤문한다.
-#      결합 입력은 저장소의 scripts/prepare_monolith_input.py 가 만든다.
+#      결합 입력은 저장소의 plugin/scripts/prepare_monolith_input.py 가 만든다.
 #
 # 사용  : run.sh [출력디렉터리] [프롬프트ID...]
 #         ID 를 안 주면 01 05 L1 L4 를 쓴다. 넷이 기본인 이유는 비용이다.
@@ -49,7 +49,7 @@ for id in "${IDS[@]}"; do
 
   echo "  윤문 $id"
   run="$OUT/work/$id"; mkdir -p "$run"; cp "$OUT/gen/plain_$id.md" "$run/01_input.txt"
-  python3 "$REPO/scripts/prepare_monolith_input.py" --run-dir "$run" --genre column >/dev/null 2>&1 || exit 1
+  python3 "$REPO/plugin/scripts/prepare_monolith_input.py" --run-dir "$run" --genre column >/dev/null 2>&1 || exit 1
   case "$id" in
     L*)  # 정밀 3콜
       claude -p "다음 결합 입력을 진단하라. 진단 본문만 출력한다.
@@ -57,7 +57,7 @@ for id in "${IDS[@]}"; do
 $(cat "$run/01_input_with_metrics.txt")" \
         --append-system-prompt "$(sys_of humanize-diagnostician.md ai-tell-taxonomy.md)" \
         --model "$MODEL" "${COMMON[@]}" > "$run/02_diagnosis.md" 2>/dev/null < /dev/null
-      python3 "$REPO/scripts/prepare_monolith_input.py" --run-dir "$run" --genre column \
+      python3 "$REPO/plugin/scripts/prepare_monolith_input.py" --run-dir "$run" --genre column \
         --diagnosis "$run/02_diagnosis.md" >/dev/null 2>&1 || exit 1 ;;
   esac
   claude -p "다음 결합 입력을 윤문하라. 본문만 출력한다. HUMANIZE-SUMMARY 블록은 붙이지 않는다.
@@ -80,7 +80,7 @@ $(cat "$run/05_rewritten.md")" \
   [ -s "$OUT/gen/imnotai_$id.md" ] || cp "$run/05_rewritten.md" "$OUT/gen/imnotai_$id.md"
   python3 - "$run/01_input.txt" "$OUT/gen/imnotai_$id.md" <<'PY'
 import sys, os
-sys.path.insert(0, os.path.join(os.environ["KW_REPO"], "skills/humanize-korean/references"))
+sys.path.insert(0, os.path.join(os.environ["KW_REPO"], "plugin/skills/humanize-korean/references"))
 import metrics_v2
 a = open(sys.argv[1], encoding="utf-8").read()
 b = open(sys.argv[2], encoding="utf-8").read()

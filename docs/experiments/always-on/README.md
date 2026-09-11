@@ -2,7 +2,9 @@
 
 # 상시 규칙 실험 장비
 
-`hooks-handlers/always-on.md` 를 세션마다 주입하는 것이 평소 답변의 한국어를 낫게 하는지 잰 장비입니다. 결과는 [`EVALUATION.md`](../../../EVALUATION.md) 의 C5 에 있고, 실행 기록과 판정 기준은 이 디렉터리의 `CRITERIA.md` 와 `REPORT.md` 에 있습니다.
+> 2026-09-11 에 상시 주입을 뺐다([EVALUATION.md](../../../EVALUATION.md) H13). 이 폴더는 그 전의 기록이다. 일부 스크립트와 설정은 지운 `sessionstart.sh` 를 가리켜 그대로는 돌지 않는다. `regress.sh` 는 규칙 파일을 직접 주입하므로 지금도 돈다.
+
+`plugin/hooks-handlers/always-on.md` 를 세션마다 주입하는 것이 평소 답변의 한국어를 낫게 하는지 잰 장비입니다. 결과는 [`EVALUATION.md`](../../../EVALUATION.md) 의 C5 에 있고, 실행 기록과 판정 기준은 이 디렉터리의 `CRITERIA.md` 와 `REPORT.md` 에 있습니다.
 
 규칙을 고칠 때 다시 돌리라고 남겨 둔 것입니다. 처음부터 만들면 아래 함정을 다시 밟습니다.
 

@@ -1,0 +1,42 @@
+name: Scorecard
+
+# OpenSSF Scorecard. 저장소가 공급망 관점에서 어떻게 관리되는지 점수로 낸다.
+# 이 플러그인은 "원문이 이 컴퓨터를 벗어나지 않는다" 를 약속으로 판다.
+# 약속을 남이 검증할 수 있게 하려면 저장소 관리 상태도 남이 볼 수 있어야 한다.
+#
+# 보는 것: 브랜치 보호, 리뷰 여부, CI 테스트, 액션 SHA 고정, 위험한 워크플로 패턴,
+#          릴리스 서명, 토큰 권한, 취약점 공개 절차.
+on:
+  branch_protection_rule:
+  schedule:
+    - cron: "27 5 * * 1" # 매주 월요일
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions: read-all
+
+jobs:
+  analysis:
+    name: 공급망 점수
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write # 결과를 Security 탭에 올린다
+      id-token: write # 점수의 출처 증명
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: 분석
+        uses: ossf/scorecard-action@2d1146689b8cda280b9bc96326124645441f03bc # v2.4.4
+        with:
+          results_file: results.sarif
+          results_format: sarif
+          # 점수를 공개 API 에 올린다. README 배지가 이 값을 읽는다.
+          publish_results: true
+
+      - name: Security 탭에 올린다
+        uses: github/codeql-action/upload-sarif@b96794f015dfd88f77b49b1c93e0fa7110f94c63 # v4.38.0
+        with:
+          sarif_file: results.sarif

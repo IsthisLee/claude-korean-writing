@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # usage: judge_one.sh <prompt_id> <sample> <order 1|2>   order1 = A first, order2 = B first
 set -u
-cd "$(dirname "$0")"
+cd "$(dirname "$0")" || exit 1
 id=$1; s=$2; o=$3
 out="judge/${id}_${s}_o${o}.json"
 [ -s "$out" ] && exit 0

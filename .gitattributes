@@ -17,16 +17,18 @@
 *.ico binary
 
 # GitHub 언어 통계. 가져온 스킬과 규칙집 원문은 이 저장소가 쓴 코드가 아니다.
-skills/crafting-effective-readmes/** linguist-vendored
-skills/korean-character-count/scripts/** linguist-vendored
-skills/humanize-korean/**            linguist-vendored
-skills/humanize/**                   linguist-vendored
-skills/humanize-redo/**              linguist-vendored
-agents/**                            linguist-vendored
-scripts/*.py                         linguist-vendored
-docs/**                              linguist-documentation
+# 경로는 plugin/ 아래다. 설치본에 실리는 것이 거기뿐이다.
+plugin/skills/crafting-effective-readmes/**   linguist-vendored
+plugin/skills/korean-character-count/scripts/** linguist-vendored
+plugin/skills/humanize-korean/**              linguist-vendored
+plugin/skills/humanize/**                     linguist-vendored
+plugin/skills/humanize-redo/**                linguist-vendored
+plugin/agents/**                              linguist-vendored
+plugin/scripts/*.py                           linguist-vendored
+docs/**                                       linguist-documentation
 
-# 릴리스 아카이브(zip·tarball)에서 빼는 것. 쓰는 사람에게 필요 없다.
+# 릴리스 zip 은 plugin/ 만 담으므로(`git archive HEAD:plugin`) 저장소 층은 애초에 안 들어간다.
+# GitHub 이 자동으로 만드는 소스 tarball 에서만 아래가 빠진다.
 .github/        export-ignore
 .gitattributes  export-ignore
 .gitignore      export-ignore

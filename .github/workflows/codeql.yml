@@ -1,0 +1,52 @@
+name: CodeQL
+
+# 정적 분석. 이 플러그인은 설치한 사람의 기계에서 훅으로 자동 실행되므로,
+# 여기 있는 파이썬과 자바스크립트는 남의 기계에서 남의 파일을 입력으로 받아 돈다.
+# 경로 조작이나 주입이 들어갈 자리를 사람 눈 대신 기계가 본다.
+#
+# actions 를 같이 보는 이유는 워크플로도 코드이기 때문이다. zizmor 와 겹치는 곳이
+# 있지만 보는 것이 달라 둘 다 둔다.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # 새 규칙이 생기면 코드를 안 건드려도 걸린다. 주 1회 다시 본다.
+    - cron: "31 4 * * 2"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    name: 분석 (${{ matrix.language }})
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write # 결과를 Security 탭에 올린다
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [actions, javascript-typescript, python]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: 초기화
+        uses: github/codeql-action/init@b96794f015dfd88f77b49b1c93e0fa7110f94c63 # v4.38.0
+        with:
+          languages: ${{ matrix.language }}
+          # 기본 질의에 보안 질의를 더한다. 기본값만 쓰면 품질 질의가 빠진다.
+          queries: security-extended
+
+      - name: 분석
+        uses: github/codeql-action/analyze@b96794f015dfd88f77b49b1c93e0fa7110f94c63 # v4.38.0
+        with:
+          category: /language:${{ matrix.language }}

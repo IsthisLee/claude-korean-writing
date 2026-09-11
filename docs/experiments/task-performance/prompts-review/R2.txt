@@ -1,0 +1,19 @@
+아래 파이썬 코드를 리뷰해라. 고칠 곳을 짚어라.
+
+```python
+import requests
+
+CACHE = {}
+
+def fetch_user(uid, retries=3):
+    if uid in CACHE:
+        return CACHE[uid]
+    for i in range(retries):
+        try:
+            r = requests.get("http://api.internal/users/" + str(uid))
+            CACHE[uid] = r.json()
+            return CACHE[uid]
+        except:
+            pass
+    return None
+```

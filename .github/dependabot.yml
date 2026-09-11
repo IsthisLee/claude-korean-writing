@@ -1,15 +1,45 @@
 version: 2
 updates:
-  # 이 저장소가 쓰는 외부 의존성은 GitHub Actions 뿐이다.
-  # 훅과 스킬은 표준 라이브러리만 쓰므로 패키지 매니저 생태계가 없다.
+  # 이 저장소가 쓰는 외부 의존성은 GitHub Actions 와 CI 전용 npm 도구뿐이다.
+  # 훅과 스킬은 표준 라이브러리만 쓰므로 설치본에는 의존성이 없다.
+  #
+  # 액션은 커밋 SHA 로 고정돼 있다(major 태그는 같은 이름이 다른 커밋을 가리킬 수 있다).
+  # Dependabot 은 SHA 핀도 갱신하고 옆의 `# v7.0.1` 주석까지 같이 고친다.
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
-      interval: monthly
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Asia/Seoul
+    # 올라온 지 얼마 안 된 판은 건너뛴다. 침해된 판이 배포됐다가 내려가는 창이
+    # 대체로 며칠이라, 그 창을 지나고 받는다(zizmor dependabot-cooldown).
+    cooldown:
+      default-days: 7
     commit-message:
       prefix: "chore"
     labels:
       - dependencies
+    open-pull-requests-limit: 5
     groups:
+      # 액션 갱신은 한 PR 로 묶는다. 갱신마다 PR 이 하나씩 열리면
+      # CI 를 그만큼 돌리고 리뷰가 흩어진다.
       actions:
         patterns: ["*"]
+
+  # CI 가 플러그인 매니페스트를 검사할 때 쓰는 Claude Code CLI.
+  # 잠금 파일에 tarball 의 sha512 까지 박혀 있어 올리는 것은 여기서만 일어난다.
+  - package-ecosystem: npm
+    directory: "/.github/tools"
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Asia/Seoul
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: "chore"
+    labels:
+      - dependencies
+    open-pull-requests-limit: 3

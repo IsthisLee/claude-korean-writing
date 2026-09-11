@@ -1,0 +1,10 @@
+아래 코드에서 두 번째 사용자부터 권한이 앞 사용자 것과 섞인다. 원인이 되는 줄 번호 하나를 짚어라.
+
+1  DEFAULT = {"read": True}
+2  def make_user(name, extra=None):
+3      perms = DEFAULT
+4      if extra:
+5          perms.update(extra)
+6      return {"name": name, "perms": perms}
+
+도구를 쓸 수 없다. 추론만으로 답하고 마지막 줄에 ANSWER=<줄번호> 만 적어라.
