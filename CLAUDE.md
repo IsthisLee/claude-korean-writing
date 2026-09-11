@@ -4,7 +4,7 @@
 
 ## 이 저장소가 무엇인가
 
-Claude Code 가 쓰는 한국어 글의 품질과 자연스러움을 맡는 플러그인입니다. 이 저장소가 쓴 스킬 셋, im-not-ai 에서 내장한 윤문 스킬 셋과 에이전트 셋, 편집 뒤 검사 훅 하나, 슬래시 명령 하나, 검사·릴리스 스크립트로 이루어집니다. 구조와 사용법은 [README.md](README.md), 판정 기준은 [EVALUATION.md](EVALUATION.md) 에 있습니다.
+Claude Code 가 쓰는 한국어 글의 품질과 자연스러움을 맡는 플러그인입니다. 이 저장소가 쓴 스킬 셋, im-not-ai 에서 내장한 윤문 스킬 셋과 에이전트 셋, 훅 둘(모델이 korean-writing 스킬을 부르기 전 확인, 편집 뒤 검사), 슬래시 명령 하나, 검사·릴리스 스크립트로 이루어집니다. 구조와 사용법은 [README.md](README.md), 판정 기준은 [EVALUATION.md](EVALUATION.md) 에 있습니다.
 
 ## 저장소는 두 층이다
 
@@ -49,6 +49,7 @@ find /tmp/kw-home/.claude/plugins/cache -type f | wc -l    # 설치본 파일 �
 
 ```bash
 python3 tests/test_posttooluse.py     # 검사 훅 회귀 테스트
+python3 tests/test_pretooluse.py      # 스킬 확인 훅 회귀 테스트
 plugin/scripts/check.sh --all         # 저장소가 쓴 .md 가 자기 훅을 통과하는가
 ```
 
@@ -59,6 +60,8 @@ plugin/scripts/check.sh --all         # 저장소가 쓴 .md 가 자기 훅을 �
 **훅은 편집을 되돌리지 않습니다.** 걸린 항목을 stderr 로 알리고 종료 코드 2 로 끝냅니다. 사람이 쓰던 작업을 막는 설계가 아닙니다.
 
 **평소 답변과 서브에이전트에는 규칙을 주입하지 않습니다.** 2026-09-11 에 두 주입을 뺐습니다. 문체 규칙을 주입하면 답변에서 기본값 같은 세부가 빠졌습니다. 규칙을 어휘 수준으로 줄이고 세부를 빼지 말라고 적어도 막지 못했고, 같은 길이의 중립 문장을 넣었을 때는 빠지지 않았습니다(EVALUATION.md H13). 주입을 되살리려면 그 측정을 다시 통과해야 합니다.
+
+**모델이 korean-writing 스킬을 스스로 부르기 전에 사용자에게 묻습니다.** `plugin/hooks-handlers/pretooluse-skill.sh` 가 이 스킬의 Skill 호출에 `permissionDecision: "ask"` 를 돌려줍니다. 스킬도 같은 문체 규칙집을 쓰고 세부를 빼는지는 아직 재지 않았기 때문입니다(EVALUATION.md J1). 이 확인을 없애려면 H13 과 같은 세부 보존 측정을 스킬에 먼저 돌립니다. 이 훅도 무엇을 막지 않고 입력을 못 읽으면 exit 0 으로 지나갑니다.
 
 **한국어 문서를 고쳤으면 `plugin/scripts/check.sh` 를 통과시킵니다.** CI 가 같은 검사를 돌리므로 여기서 걸리면 거기서도 걸립니다. 나쁜 예를 일부러 싣는 문서라면 파일 머리에 `<!-- korean-writing: ignore -->` 를 넣습니다.
 

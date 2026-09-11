@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### 추가
+
+- **모델이 `korean-writing` 스킬을 스스로 부르기 전에 적용할지 묻습니다.** 새 PreToolUse 훅 `pretooluse-skill.sh` 가 이 스킬의 `Skill` 호출에 `permissionDecision: "ask"` 를 돌려줍니다. 문체 규칙을 답변에 주입했을 때 세부가 빠진 것(`EVALUATION.md` H13)과 같은 규칙집을 쓰므로 세부를 잃으면 안 되는 문서라면 쓰기 전에 거절할 수 있게 했습니다. 거절하면 규칙 없이 씁니다. 헤드리스 실측에서 평범한 글 요청에 모델이 스스로 이 스킬을 부를 때 훅이 걸렸고 기본 모드와 bypass 모드 모두 확인 없이는 스킬이 돌지 않았습니다. 사용자가 `/korean-writing` 을 직접 친 실행은 훅에 걸리지 않았습니다. 대화형 세션의 확인 창은 공식 문서의 설명이고 직접 보지는 못했습니다. 다른 스킬과 도구는 그대로 지나가고 `KOREAN_WRITING_HOOK_DISABLED=1` 이면 묻지 않습니다. 회귀 테스트 20건을 `tests/test_pretooluse.py` 로 넣었습니다
+
 ## [1.2.0] - 2026-09-11
 
 ### 추가

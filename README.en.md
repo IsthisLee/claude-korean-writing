@@ -50,7 +50,7 @@ Patching this with a prompt means pasting that prompt into every session, and as
 
 | Moment                                                        | What covers it                                                                                           | When it runs                             | Where the rules live                     |
 | ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | ---------------------------------------- | ---------------------------------------- |
-| **While writing**<br>Slack, mail, reports, READMEs            | The `korean-writing` skill writes to the rules from the first line                                       | When you ask for text                    | `plugin/SKILL.md`                        |
+| **While writing**<br>Slack, mail, reports, READMEs            | The `korean-writing` skill writes to the rules from the first line; you are asked first when Claude calls it on its own                                       | When you ask for text                    | `plugin/SKILL.md`                        |
 | **On save**<br>anything that lands as `.md`                   | A PostToolUse hook checks what was just written and hands the findings back to Claude in the same turn   | Right after `Edit`, `Write`, `MultiEdit` | `plugin/hooks-handlers/posttooluse.sh`   |
 | **Afterwards**<br>someone else's draft, an old document       | The polishing pipeline fixes the style and leaves the facts alone                                        | When you ask for a touch-up              | `plugin/skills/humanize-korean/SKILL.md` |
 
@@ -112,7 +112,7 @@ This output goes back to Claude too. Claude Code shows the stderr of a PostToolU
    claude plugin marketplace add IsthisLee/claude-korean-writing
    claude plugin install korean-writing
    ```
-2. Open a new session and ask for any piece of text. The skill loads on its own.
+2. Open a new session and ask for any piece of text. A prompt asks whether to apply the `korean-writing` rules; allow it and the text follows them.
    ```
    운영팀에 보낼 옵션 변경 안내문 써줘. 슬랙에 캐주얼하게.
    ```
@@ -135,15 +135,15 @@ claude plugin install korean-writing
 | Needed      | Used by                                                                                      | Without it                                                          |
 | ----------- | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
 | Claude Code | Everything. Verified on 2.1.267                                                              |                                                                     |
-| `bash`      | The check hook and the scripts                                                             | The hooks do not run                                                |
-| `python3`   | The check hook's verdict and the polishing pipeline's scripts; polishing needs 3.10 or newer | The check passes without checking; the polishing scripts do not run |
+| `bash`      | Both hooks and the scripts                                                                 | The hooks do not run                                                |
+| `python3`   | Both hooks and the polishing pipeline's scripts; polishing needs 3.10 or newer | The check passes without checking and the skill loads without asking; the polishing scripts do not run |
 | `node` 18+  | The character-count script                                                                   | Only that skill is unavailable                                      |
 
 There are no packages to download. CI runs the same checks on macOS and Linux, and Windows needs Git Bash or WSL and has not been tried yet.
 
 ## How to ask
 
-Talk to Claude Code as usual; the skills load from the request. These lines can be pasted as they are.
+Talk to Claude Code as usual; the skills load from the request, and `korean-writing` asks before it applies. These lines can be pasted as they are.
 
 ```
 운영팀에 보낼 옵션 변경 안내문 써줘. 슬랙에 캐주얼하게.      (a casual Slack notice to the ops team about the option change)
@@ -157,14 +157,14 @@ Here is what loads on its own, when, and what to type to call it by name.
 
 | What                             | Runs on its own when                                          | Direct call                                                      |
 | -------------------------------- | ------------------------------------------------------------- | ---------------------------------------------------------------- |
-| The `korean-writing` skill       | A writing request: Slack, mail, a report, a README, a commit  | `/korean-writing`                                                |
+| The `korean-writing` skill       | A writing request, after you confirm it                       | `/korean-writing`; typing it skips the question                  |
 | Polishing                        | "AI 티 없애줘", "번역투 고쳐줘" and similar requests           | `/korean-writing:humanize [text or file path]`                   |
 | A second polishing pass          | Never on its own; it has to be called by name                 | `/korean-writing:humanize-redo [instruction]`                    |
 | The check hook                   | Right after `Edit`, `Write` or `MultiEdit` touches a `.md`    | `/korean-writing:check FILE...`                                   |
 | Character counting               | "500자 이내로", "글자 수 세줘" and similar requests            | `/korean-writing:korean-character-count`                         |
 | README structure                 | A request to write or revise a README                         | `/korean-writing:crafting-effective-readmes`                     |
 
-The hook has no name to call: it runs when its condition is met and stays quiet otherwise. Four of the six skills load from the request; the two polishing entry points (`humanize`, `humanize-redo`) carry `disable-model-invocation`, so they only run when typed, and in exchange they cost nothing in always-on context. If you installed the plugin, `/korean-writing:korean-writing` reaches the same skill; the short form is fine.
+The two hooks have no name to call: they run when their condition is met and stay quiet otherwise. Four of the six skills load from the request; the two polishing entry points (`humanize`, `humanize-redo`) carry `disable-model-invocation`, so they only run when typed, and in exchange they cost nothing in always-on context. If you installed the plugin, `/korean-writing:korean-writing` reaches the same skill; the short form is fine. When Claude calls `korean-writing` on its own, the skill-confirm hook raises a permission prompt. Injected style rules have been measured dropping details ([`EVALUATION.md`](EVALUATION.md) H13, Korean), so decline it for a document whose details must survive; declining means the text is written without the rules.
 
 Hand a draft to the polish skill and the fixed text comes back with a one-line status: an estimated change rate and a grade from A to D. Below it, three to six of the main edits are shown side by side, before and after. If more than half the text changed, you get that fact instead of a result. A text changed by half is a rewrite, not a polish.
 
@@ -175,7 +175,7 @@ It can be switched off at four scopes.
 | Scope                | How                                                                                                                                 |
 | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | One file             | `<!-- korean-writing: ignore -->` at the top. For contracts, or a catalog of bad examples, where flagging every time makes no sense |
-| Whole session        | `KOREAN_WRITING_HOOK_DISABLED=1`. Turns off the check hook                                                                         |
+| Whole session        | `KOREAN_WRITING_HOOK_DISABLED=1`. Turns off both the check hook and the skill-confirm hook                                         |
 | The check, persistently | The plugin setting `edit_check`, toggled from `/plugin` |
 | The whole plugin     | `claude plugin disable korean-writing`                                                                                              |
 
@@ -186,12 +186,12 @@ Here is what the plugin ships with.
 | Part           | Count        | What                                                                                                                                                                                                               |
 | -------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | Skills         | 6            | three written here, `korean-writing`, `korean-character-count`, `crafting-effective-readmes`, and three vendored from im-not-ai, `humanize-korean`, `humanize`, `humanize-redo`                                    |
-| Hooks          | 1            | a check right after `.md` edits |
+| Hooks          | 2            | a check right after `.md` edits, and a confirmation before Claude calls the `korean-writing` skill |
 | Check patterns | 10           | `K1` to `K10`: em-dashes, abstract structure words, 것 constructions, AI idioms, mechanical enumeration, win/lose and object personification, translation-ese, negated antithesis, comma after a connective ending |
 | Agents         | 3            | vendored from im-not-ai: diagnosis, rewrite and final review for the polishing pipeline                                                                                                                            |
 | Rulebook       | 84 items     | im-not-ai's taxonomy: 10 categories, each item with a severity and a fix                                                                                                                                           |
 | Ground truth   | 15 sentences | 10 violations Claude Code actually generated, 5 clean sentences from the same context                                                                                                                              |
-| Regression     | 62 cases     | the check hook |
+| Regression     | 82 cases     | 62 for the check hook, 20 for the skill-confirm hook |
 | Scripts        | 4            | character count, whole-file check, false-positive measurement, release                                                                                                                                             |
 | Network        | none         | the hooks are bash and python3 regular expressions; the counter uses `node:fs`                                                                                                                                     |
 
@@ -331,7 +331,7 @@ The pass criteria and the measurements are in [`EVALUATION.md`](./EVALUATION.md)
 | Same-turn fix after a hook finding | 3 / 3; 0 / 3 without the plugin ([experiment](./docs/experiments/hook-loop/)) |
 | Always-on context cost             | about 730 tokens in an isolated HOME (four skill descriptions 430 + three agents 297) |
 | Network calls                      | 0                                                                               |
-| Regression tests                   | 62 / 62                                                                         |
+| Regression tests                   | 82 / 82                                                                         |
 
 False positives on real documents were measured on 205 Korean `.md` files that had accumulated on one machine, unrelated to this plugin. Fed through the hook whole, 85 were flagged. Human-written and Claude-written files were separated by file modification year, a coarse proxy whose limits are recorded in `EVALUATION.md`: of the 32 files written before 2024, one was flagged. The same measurement before the rule changes flagged seven human-written files, 4.9%.
 
@@ -357,6 +357,7 @@ The same checks run locally with these commands.
 
 ```bash
 python3 tests/test_posttooluse.py     # check hook regression, 62 cases
+python3 tests/test_pretooluse.py      # skill-confirm hook regression, 20 cases
 plugin/scripts/check.sh --all                         # do the documents pass their own hook
 tools/measure.sh ~/Documents                 # false positives over real documents
 ```
@@ -385,8 +386,9 @@ korean-writing/
 │
 ├── plugin/                           ── the shipped plugin; only this folder reaches other machines ──
 │   ├── .claude-plugin/plugin.json    manifest: name, version (the source of truth), six skill paths, one toggle
-│   ├── hooks/hooks.json              registers PostToolUse, 10 s limit
+│   ├── hooks/hooks.json              registers PreToolUse (Skill) and PostToolUse, 10 s limit each
 │   ├── hooks-handlers/
+│   │   ├── pretooluse-skill.sh       asks before Claude applies the korean-writing skill
 │   │   └── posttooluse.sh            the checker: python3 regular expressions K1 to K10 inside bash
 │   ├── SKILL.md                      the korean-writing skill
 │   ├── commands/check.md             /korean-writing:check, the same rules on files you already wrote
@@ -407,6 +409,7 @@ korean-writing/
 │                                     marketplace catalog; its source points at ./plugin
 ├── tests/
 │   ├── test_posttooluse.py           62 regression cases for the check hook; verifies reported counts
+│   ├── test_pretooluse.py            20 regression cases for the skill-confirm hook
 │   ├── ground-truth.json             10 awkward sentences that were actually generated
 │   └── clean.json                    5 clean sentences from the same context
 ├── tools/

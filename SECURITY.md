@@ -26,7 +26,7 @@
 
 ## 이 플러그인이 하는 일
 
-설치하면 `.md` 파일을 편집할 때마다 셸 스크립트 하나가 자동으로 실행됩니다. 무엇을 하는지 알고 설치할 수 있도록 아래에 적습니다.
+설치하면 셸 스크립트 둘이 자동으로 실행됩니다. 하나는 `.md` 파일을 편집할 때마다, 다른 하나는 모델이 `korean-writing` 스킬을 부르기 직전에 돕니다. 무엇을 하는지 알고 설치할 수 있도록 아래에 적습니다. 표는 편집 검사 훅의 것입니다.
 
 | 항목            | 실제                                                                                     |
 | --------------- | ---------------------------------------------------------------------------------------- |
@@ -37,6 +37,8 @@
 | 네트워크        | 쓰지 않습니다. 원문은 이 컴퓨터 밖으로 나가지 않습니다                                    |
 | 외부 의존성     | 없습니다. 표준 라이브러리만 씁니다                                                        |
 | 결과            | stderr 에 걸린 항목을 적고 종료 코드 2 로 끝냅니다. 편집을 되돌리지 않습니다              |
+
+스킬 확인 훅(`plugin/hooks-handlers/pretooluse-skill.sh`)은 도구 입력만 읽고 아무것도 쓰지 않습니다. `korean-writing` 호출이면 권한 확인을 요청하는 JSON 한 줄을 stdout 에 내고 그 밖의 호출에는 아무것도 내지 않습니다. 네트워크와 외부 프로그램을 쓰지 않습니다. 아래 명령의 파일 목록에 이 스크립트를 더하면 1번에 `import json, sys` 한 줄이 더 나오고 2번과 3번은 여전히 아무것도 나오지 않습니다.
 
 네트워크를 쓰지 않는다는 것은 직접 확인할 수 있습니다. 스크립트는 240줄입니다. 1번은 `import sys, json, re, os` 한 줄만 나오고 2번과 3번은 아무것도 나오지 않아야 정상입니다.
 
@@ -101,7 +103,7 @@ You will get an acknowledgement within 5 business days. If a fix is needed, an a
 
 ## What this plugin does
 
-Installing it means a shell script runs automatically every time you edit a `.md` file. Here is exactly what it does:
+Installing it means two shell scripts run automatically: one every time you edit a `.md` file, the other right before Claude calls the `korean-writing` skill. Here is exactly what the first one does:
 
 | Item              | Reality                                                                       |
 | ----------------- | ----------------------------------------------------------------------------- |
@@ -112,6 +114,8 @@ Installing it means a shell script runs automatically every time you edit a `.md
 | Network           | None. Your text never leaves your machine                                      |
 | Dependencies      | None. Standard library only                                                    |
 | Output            | Writes findings to stderr, exits 2. It never reverts your edit                  |
+
+The skill-confirm hook (`plugin/hooks-handlers/pretooluse-skill.sh`) reads only the tool input and writes nothing. For a `korean-writing` call it prints one line of JSON asking for a permission prompt, and it prints nothing for any other call. It uses no network and runs no other program. Adding it to the file lists below makes the first command print one more line, `import json, sys`; the other two still print nothing.
 
 You can verify the network claim yourself. The script is 240 lines. The first command should print a single `import sys, json, re, os` line; the other two should print nothing:
 

@@ -197,6 +197,7 @@ jobs:
       - name: 훅 회귀 테스트
         run: |
           python3 tests/test_posttooluse.py
+          python3 tests/test_pretooluse.py
 
       - name: 내장 윤문 스크립트 컴파일·스모크
         run: |

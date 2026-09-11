@@ -50,7 +50,7 @@ Claude Code의 한국어는 문법이 틀리지 않습니다. 그런데도 읽�
 
 | 시점                                        | 무엇이 맡나                                                                                 | 언제 움직이나                   | 규칙이 적힌 곳                           |
 | ------------------------------------------- | ------------------------------------------------------------------------------------------- | ------------------------------- | ---------------------------------------- |
-| **쓸 때**<br>슬랙·메일·보고서·README       | `korean-writing` 스킬이 첫 줄부터 규칙대로 씁니다                                           | 써 달라는 요청이 오면           | `plugin/SKILL.md`                        |
+| **쓸 때**<br>슬랙·메일·보고서·README       | `korean-writing` 스킬이 첫 줄부터 규칙대로 씁니다. 모델이 스스로 부를 때는 먼저 적용할지 묻습니다 | 써 달라는 요청이 오면           | `plugin/SKILL.md`                        |
 | **저장할 때**<br>`.md`로 남는 것            | PostToolUse 훅이 방금 쓴 부분을 검사하고 걸린 자리를 같은 턴에 Claude에게 돌려줍니다         | `Edit`·`Write`·`MultiEdit` 직후 | `plugin/hooks-handlers/posttooluse.sh`   |
 | **다 쓴 뒤**<br>남이 준 초안, 예전 문서     | 윤문 파이프라인이 사실은 두고 문체만 고칩니다                                               | 다듬어 달라는 요청이 오면       | `plugin/skills/humanize-korean/SKILL.md` |
 
@@ -112,7 +112,7 @@ fluent-korean과는 맡는 시점이 겹치지 않아 같이 설치해도 됩니
    claude plugin marketplace add IsthisLee/claude-korean-writing
    claude plugin install korean-writing
    ```
-2. 새 세션을 열고 아무 글이나 부탁합니다. 스킬이 스스로 뜹니다.
+2. 새 세션을 열고 아무 글이나 부탁합니다. `korean-writing` 규칙으로 쓸지 묻는 확인이 뜨고 허락하면 그 규칙으로 씁니다.
    ```
    운영팀에 보낼 기능 변경 안내문 써줘.
    ```
@@ -135,15 +135,15 @@ claude plugin install korean-writing
 | 필요한 것   | 어디에 쓰나                                                   | 없으면                                              |
 | ----------- | ------------------------------------------------------------- | --------------------------------------------------- |
 | Claude Code | 전부. 2.1.267에서 확인                                        |                                                     |
-| `bash`      | 검사 훅과 스크립트                                           | 훅이 돌지 않습니다                                  |
-| `python3`   | 검사 훅의 판정과 윤문 파이프라인의 스크립트. 윤문은 3.10 이상 | 검사 없이 통과합니다. 윤문 스크립트는 돌지 않습니다 |
+| `bash`      | 훅 둘과 스크립트                                             | 훅이 돌지 않습니다                                  |
+| `python3`   | 훅 둘의 판정과 윤문 파이프라인의 스크립트. 윤문은 3.10 이상 | 검사 없이 통과하고 스킬도 묻지 않고 뜹니다. 윤문 스크립트는 돌지 않습니다 |
 | `node` 18+  | 글자 수 스크립트                                              | 그 스킬만 쓸 수 없습니다                            |
 
 따로 받는 패키지는 없습니다. CI가 macOS와 Linux에서 같은 검사를 돌리고 Windows는 Git Bash나 WSL이 필요한데 아직 돌려 보지 못했습니다.
 
 ## 부탁하는 법
 
-평소처럼 말하면 됩니다. 스킬은 요청을 보고 스스로 뜹니다. 아래 문장은 그대로 붙여 써도 됩니다.
+평소처럼 말하면 됩니다. 스킬은 요청을 보고 스스로 뜹니다. `korean-writing` 은 뜨기 전에 적용할지 묻습니다. 아래 문장은 그대로 붙여 써도 됩니다.
 
 ```
 운영팀에 보낼 옵션 변경 안내문 써줘. 슬랙에 캐주얼하게.
@@ -157,14 +157,14 @@ claude plugin install korean-writing
 
 | 무엇이                       | 저절로 도는 때                                            | 직접 부르는 명령                                               |
 | ---------------------------- | --------------------------------------------------------- | -------------------------------------------------------------- |
-| `korean-writing` 스킬        | 슬랙·메일·보고서·README·커밋 메시지 같은 글 작성 요청     | `/korean-writing`                                              |
+| `korean-writing` 스킬        | 글 작성 요청. 적용할지 먼저 묻습니다                      | `/korean-writing`. 직접 치면 묻지 않습니다                     |
 | 윤문                         | "AI 티 없애줘", "번역투 고쳐줘" 같은 요청                 | `/korean-writing:humanize [글 또는 파일 경로]`                 |
 | 2차 윤문                     | 뜨지 않습니다. 이름을 쳐야 돕니다                         | `/korean-writing:humanize-redo [지시]`                         |
 | 검사 훅                      | `.md` 를 `Edit`·`Write`·`MultiEdit` 로 고친 직후          | `/korean-writing:check 파일...`                                |
 | 글자 수                      | "500자 이내로", "글자 수 세줘" 같은 요청                  | `/korean-writing:korean-character-count`                       |
 | README 절 구성               | README 를 쓰거나 고쳐 달라는 요청                         | `/korean-writing:crafting-effective-readmes`                   |
 
-훅은 부를 이름이 없습니다. 조건이 맞으면 저절로 돌고 아니면 돌지 않습니다. 스킬 여섯 가운데 넷은 요청을 보고 스스로 뜨고, 윤문 진입 둘(`humanize`, `humanize-redo`)은 `disable-model-invocation` 이 걸려 있어 이름을 쳐야만 돕니다. 그 대신 이 둘은 상시 컨텍스트를 한 토큰도 쓰지 않습니다. 플러그인으로 설치했으면 `/korean-writing:korean-writing` 도 같은 스킬을 부릅니다. 짧은 쪽으로 써도 됩니다.
+훅 둘은 부를 이름이 없습니다. 조건이 맞으면 저절로 돌고 아니면 돌지 않습니다. 스킬 여섯 가운데 넷은 요청을 보고 스스로 뜨고, 윤문 진입 둘(`humanize`, `humanize-redo`)은 `disable-model-invocation` 이 걸려 있어 이름을 쳐야만 돕니다. 그 대신 이 둘은 상시 컨텍스트를 한 토큰도 쓰지 않습니다. 플러그인으로 설치했으면 `/korean-writing:korean-writing` 도 같은 스킬을 부릅니다. 짧은 쪽으로 써도 됩니다. 모델이 `korean-writing` 을 스스로 부르면 스킬 확인 훅이 권한 확인을 띄웁니다. 문체 규칙을 주입한 답에서 세부가 빠진 적이 있어서([EVALUATION.md](EVALUATION.md) H13) 세부를 잃으면 안 되는 문서라면 거절하면 됩니다. 거절하면 규칙 없이 씁니다.
 
 윤문을 맡기면 고친 글 위에 한 줄 상태가 붙습니다. 변경률 추정과 A부터 D까지의 등급입니다. 그 아래에 주요 교정 서너 개에서 여섯 개를 전과 후로 나란히 보여 줍니다. 변경률이 절반을 넘으면 결과 대신 그 사실만 알립니다. 절반 넘게 바뀐 글은 윤문이 아니라 재작성입니다.
 
@@ -175,7 +175,7 @@ claude plugin install korean-writing
 | 범위          | 방법                                                                                                     |
 | ------------- | -------------------------------------------------------------------------------------------------------- |
 | 파일 하나     | 파일 머리에 `<!-- korean-writing: ignore -->`. 계약서나 나쁜 예 모음처럼 매번 걸리는 게 맞지 않는 파일용 |
-| 세션 전체     | `KOREAN_WRITING_HOOK_DISABLED=1`. 검사 훅을 끕니다                                                    |
+| 세션 전체     | `KOREAN_WRITING_HOOK_DISABLED=1`. 검사 훅과 스킬 확인 훅을 함께 끕니다                                 |
 | 검사만 계속 끄기 | 플러그인 설정의 `edit_check`. `/plugin` 에서 켜고 끕니다 |
 | 플러그인 전체 | `claude plugin disable korean-writing`                                                                   |
 
@@ -186,12 +186,12 @@ claude plugin install korean-writing
 | 구성        | 수     | 무엇                                                                                                                                                    |
 | ----------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 스킬        | 6      | 이 저장소 셋 `korean-writing`, `korean-character-count`, `crafting-effective-readmes`. im-not-ai 내장 셋 `humanize-korean`, `humanize`, `humanize-redo` |
-| 훅          | 1      | `.md` 편집 직후 검사 |
+| 훅          | 2      | `.md` 편집 직후 검사, `korean-writing` 스킬 호출 전 확인 |
 | 검사 패턴   | 10     | `K1`~`K10`. 줄표, 추상 구조어, 것 구문, AI 관용구, 기계적 병렬, 승패 의인화, 사물 의인화, 번역투, 부정 대구, 연결어미 뒤 쉼표                           |
 | 에이전트    | 3      | im-not-ai 내장. 윤문 파이프라인의 진단·윤문·마무리 검토                                                                                                 |
 | 규칙집      | 84항목 | im-not-ai의 분류 체계. 10분류, 항목마다 심각도와 처방                                                                                                   |
 | 정답 데이터 | 15문장 | Claude Code가 실제로 생성한 위반 10건, 같은 맥락의 정상 5건                                                                                             |
-| 회귀 테스트 | 62건   | 검사 훅 |
+| 회귀 테스트 | 82건   | 검사 훅 62, 스킬 확인 훅 20 |
 | 스크립트    | 4 + 9  | 이 저장소 넷은 글자 수, 통째 검사, 오탐 측정, 릴리스. im-not-ai 내장 아홉은 윤문 파이프라인용                                                          |
 | 네트워크    | 없음   | 훅은 bash와 python3 정규식, 글자 수는 `node:fs`                                                                                                         |
 
@@ -333,7 +333,7 @@ plugin/skills/humanize-korean/references/ 384 KB  윤문 중 필요한 문서만
 | 훅 알림 뒤 같은 턴 교정   | 3 / 3, 플러그인 없이는 0 / 3 ([실험](./docs/experiments/hook-loop/)) |
 | 상시 컨텍스트 비용        | 약 730토큰, 격리 HOME 기준 (스킬 설명 넷 430 + 에이전트 셋 297) |
 | 외부 네트워크 호출        | 0                                                                 |
-| 회귀 테스트               | 62 / 62                                                           |
+| 회귀 테스트               | 82 / 82                                                           |
 
 실제 문서 오탐은 이 플러그인과 관계없이 한 컴퓨터에 쌓여 있던 한국어 `.md` 205개로 쟀습니다. 파일을 통째로 훅에 넣으니 85개가 걸렸습니다(K1 74, K9 28, K10 19, K8 10, K4 8, K3 5, K7 5, K5 4, K2 1). 사람이 쓴 글과 Claude가 쓴 글은 파일 수정 연도로 갈랐습니다. 2023년 이전에 쓰인 32개 중 걸린 것은 하나이고 나머지는 2026년 문서입니다. 연도는 거친 대리 지표라 그 한계를 `EVALUATION.md`에 적어 두었습니다. 규칙을 고치기 전 같은 측정에서는 사람이 쓴 문서 7개, 4.9%가 걸렸습니다.
 
@@ -361,6 +361,7 @@ plugin/skills/humanize-korean/references/ 384 KB  윤문 중 필요한 문서만
 
 ```bash
 python3 tests/test_posttooluse.py     # 검사 훅 회귀 62건
+python3 tests/test_pretooluse.py      # 스킬 확인 훅 회귀 20건
 plugin/scripts/check.sh --all                         # 문서가 자기 훅을 통과하는가
 tools/measure.sh ~/Documents                 # 실제 문서 뭉치의 오탐
 ```
@@ -396,8 +397,9 @@ korean-writing/
 │
 ├── plugin/                           ── 설치본. 이 폴더만 남의 기계로 갑니다 ──
 │   ├── .claude-plugin/plugin.json    매니페스트. 이름, 버전(정본), 스킬 경로 여섯, 켜고 끄는 설정 하나
-│   ├── hooks/hooks.json              PostToolUse 등록. 10초 제한
+│   ├── hooks/hooks.json              PreToolUse(Skill)·PostToolUse 등록. 각 10초 제한
 │   ├── hooks-handlers/
+│   │   ├── pretooluse-skill.sh       korean-writing 스킬을 모델이 부르기 전에 적용할지 묻는다
 │   │   └── posttooluse.sh            검사 본체. bash 안의 python3 정규식 K1~K10
 │   ├── SKILL.md                      korean-writing 스킬
 │   ├── commands/check.md             /korean-writing:check. 써 둔 문서를 훅과 같은 기준으로 검사
@@ -418,6 +420,7 @@ korean-writing/
 │                                     마켓플레이스 카탈로그. source 가 ./plugin 을 가리킵니다
 ├── tests/
 │   ├── test_posttooluse.py           검사 훅 회귀 62건. 보고 횟수까지 검증합니다
+│   ├── test_pretooluse.py            스킬 확인 훅 회귀 20건
 │   ├── ground-truth.json             실제로 생성됐던 위반 문장 10건
 │   └── clean.json                    같은 맥락의 정상 문장 5건
 ├── tools/
