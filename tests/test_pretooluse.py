@@ -50,7 +50,20 @@ for name in ("korean-writing:korean-writing", "korean-writing"):
     check(f"{name} → exit 0", rc == 0, f"exit {rc}")
     check(f"{name} → permissionDecision ask", hso.get("permissionDecision") == "ask", out[:120])
     check(f"{name} → hookEventName PreToolUse", hso.get("hookEventName") == "PreToolUse", out[:120])
-    check(f"{name} → 사유에 H13 근거가 있다", "H13" in hso.get("permissionDecisionReason", ""), out[:120])
+    why = hso.get("permissionDecisionReason", "")
+    check(f"{name} → 사유에 요청 맥락, 담는 것과 줄어드는 것, 거절 안내가 있고 실측 언급은 없다",
+          "「공지 써 줘」" in why and "그대로 담지만" in why and "거절" in why
+          and "H13" not in why and "EVALUATION" not in why, why[:120])
+
+print("\n묻는 문장")
+rc, out, err = run({"tool_name": "Skill", "tool_input": {"skill": "korean-writing", "args": "가" * 100}})
+why = json.loads(out)["hookSpecificOutput"]["permissionDecisionReason"] if out else ""
+check("긴 요청은 60자에서 자르고 … 을 붙인다", ("「" + "가" * 60 + "…」") in why, why[:80])
+rc, out, err = run({"tool_name": "Skill", "tool_input": {"skill": "korean-writing"}})
+d = json.loads(out) if out else {}
+why = d.get("hookSpecificOutput", {}).get("permissionDecisionReason", "")
+check("요청 요약이 없으면 맥락 없이 묻고 같은 문장을 systemMessage 로도 낸다",
+      why.startswith("이 글에 korean-writing 문체 규칙을 적용할까요?") and d.get("systemMessage") == why, out[:120])
 
 print("\n나머지는 그대로 지나보낸다")
 for label, payload in [

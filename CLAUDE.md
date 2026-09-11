@@ -61,7 +61,7 @@ plugin/scripts/check.sh --all         # 저장소가 쓴 .md 가 자기 훅을 �
 
 **평소 답변과 서브에이전트에는 규칙을 주입하지 않습니다.** 2026-09-11 에 두 주입을 뺐습니다. 문체 규칙을 주입하면 답변에서 기본값 같은 세부가 빠졌습니다. 규칙을 어휘 수준으로 줄이고 세부를 빼지 말라고 적어도 막지 못했고, 같은 길이의 중립 문장을 넣었을 때는 빠지지 않았습니다(EVALUATION.md H13). 주입을 되살리려면 그 측정을 다시 통과해야 합니다.
 
-**모델이 korean-writing 스킬을 스스로 부르기 전에 사용자에게 묻습니다.** `plugin/hooks-handlers/pretooluse-skill.sh` 가 이 스킬의 Skill 호출에 `permissionDecision: "ask"` 를 돌려줍니다. 스킬도 같은 문체 규칙집을 쓰고 세부를 빼는지는 아직 재지 않았기 때문입니다(EVALUATION.md J1). 이 확인을 없애려면 H13 과 같은 세부 보존 측정을 스킬에 먼저 돌립니다. 이 훅도 무엇을 막지 않고 입력을 못 읽으면 exit 0 으로 지나갑니다.
+**모델이 korean-writing 스킬을 스스로 부르기 전에 사용자에게 묻습니다.** `plugin/hooks-handlers/pretooluse-skill.sh` 가 이 스킬의 Skill 호출에 `permissionDecision: "ask"` 를 돌려줍니다. 스킬로 쓴 설명 문서에서 Claude 가 덧붙이는 설명이 짧아지고 곁가지 설명이 빠졌기 때문입니다(EVALUATION.md J3). 확인을 없애거나 확인 창 문구를 바꾸려면 `docs/experiments/detail-retention/skill/` 측정을 다시 돌리고 그 결과만큼만 적습니다. 이 훅도 무엇을 막지 않고 입력을 못 읽으면 exit 0 으로 지나갑니다.
 
 **한국어 문서를 고쳤으면 `plugin/scripts/check.sh` 를 통과시킵니다.** CI 가 같은 검사를 돌리므로 여기서 걸리면 거기서도 걸립니다. 나쁜 예를 일부러 싣는 문서라면 파일 머리에 `<!-- korean-writing: ignore -->` 를 넣습니다.
 
