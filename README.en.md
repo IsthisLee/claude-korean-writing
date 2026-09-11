@@ -28,21 +28,21 @@
 </p>
 
 <p align="center">
-  <a href="#what-kind-of-plugin-is-this">Introduction</a> ·
-  <a href="#how-it-differs-from-other-tools">Compared with other tools</a> ·
-  <a href="#seeing-it-work">Seeing it work</a> ·
+  <a href="#overview">Introduction</a> ·
+  <a href="#examples">Examples</a> ·
   <a href="#three-minutes-to-try-it">3-minute start</a> ·
   <a href="#install">Install</a> ·
-  <a href="#how-to-ask">How to ask</a> ·
+  <a href="#usage">Usage</a> ·
   <a href="#components">Components</a> ·
   <a href="#the-verdict-rules">Verdict rules</a> ·
   <a href="#verification">Verification</a> ·
+  <a href="#how-it-differs-from-other-tools">Compared with other tools</a> ·
   <a href="#faq">FAQ</a>
 </p>
 
 > **v2.1.0**: Claude now asks in Korean whether to apply the skill instead of raising a permission prompt, and choosing not to apply no longer stops the work. The tagline changed, and the README gained a before/after comparison and a guide to getting the best text. Details: [CHANGELOG.md](CHANGELOG.md)
 
-## What kind of plugin is this
+## Overview
 
 Claude Code's Korean is grammatically fine. It still reads wrong: word order carried over from English, metaphors that arrived through English, and stock phrases that land in the same spot of every document. When 205 Korean documents that had accumulated on one machine were run through the hook, 85 were flagged and only one of those was written before 2024. The rest are 2026 files written by Claude, most of them for em-dash interjections.
 
@@ -58,23 +58,7 @@ One more skill sits alongside: character counts come from a script rather than t
 
 > Think of a linter, attached to Korean prose instead of code. The findings reach Claude within the same turn, so they get fixed before you read the file. In three measured runs that asked Claude to save a draft full of AI tells, Claude saved it first and then fixed every flagged item in the same turn, every time. Without the plugin, all three runs saved the draft as it was ([experiment](./docs/experiments/hook-loop/)).
 
-## How it differs from other tools
-
-There are already several tools that make Korean read naturally. The most widely used ones polish text after it is written, and this plugin's polishing is one of them: im-not-ai, vendored at a pinned commit. What this plugin adds are the two moments before that: the moment the text is written, and the turn in which Claude saves the file.
-
-| Tool                                                               | While writing                                                            | On save                                                                              | Afterwards                                                         | Network                                                                   |
-| ------------------------------------------------------------------ | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------------- |
-| **korean-writing**                                                 | A writing skill follows the rules from the first line                    | A hook checks right after the edit and hands findings back to Claude in the same turn | im-not-ai, vendored                                                | None; CI enforces it                                                      |
-| [im-not-ai](https://github.com/epoko77-ai/im-not-ai)               |                                                                          |                                                                                      | Polishing pipeline (1 to 3 calls)                                  | None                                                                      |
-| [fluent-korean](https://github.com/snflkd/fluent-korean)           | An output style applied to every reply; aims for unambiguous sentences   |                                                                                      |                                                                    | None                                                                      |
-| [patina](https://github.com/devswha/patina)                        |                                                                          | A pre-commit hook scores Markdown at commit time                                     | Polishing (skill, CLI, web) for Korean, English, Chinese, Japanese | The web version runs server-side                                          |
-| [k-skill](https://github.com/NomaDamas/k-skill) `korean-humanizer` |                                                                          |                                                                                      | Polishing                                                          | Instructions are fetched with `npx`; spell-check uses external checkers   |
-
-Checked against each repository on 2026-09-11. A blank cell means no feature for that moment was found. patina also checks on save, but at a different moment: patina runs when a person commits, this plugin runs in the turn where Claude edited the file. When a PostToolUse hook exits with code 2, Claude Code shows its stderr to Claude so it can react in the same turn ([hooks docs](https://code.claude.com/docs/en/hooks)).
-
-fluent-korean covers a different moment, so the two can be installed together. This plugin does not check spelling or spacing, so it does not overlap with spell checkers either.
-
-## Seeing it work
+## Examples
 
 ### Same request, two results
 
@@ -161,7 +145,7 @@ npx skills add IsthisLee/claude-korean-writing -s korean-writing -s korean-chara
 
 The two hooks and the polishing pipeline run only in Claude Code: the hooks attach to Claude Code's hook events, and polishing calls Claude Code subagents. Other agents get the writing rules and the character count, nothing more. On 2026-09-11 both skills were installed for Codex and Cursor into an isolated HOME; their files landed and the character-count script ran from where it was installed. Whether each agent then loads the skills was not checked. The `korean-writing` skill uses the whole plugin folder as its skill folder, so the hook and polishing files are copied along; other agents do not use them.
 
-## How to ask
+## Usage
 
 Talk to Claude Code as usual; the skills load from the request, and `korean-writing` asks before it applies. These lines can be pasted as they are.
 
@@ -489,6 +473,22 @@ korean-writing/
 ├── LICENSE                           MIT
 └── README.md · README.en.md
 ```
+
+## How it differs from other tools
+
+There are already several tools that make Korean read naturally. The most widely used ones polish text after it is written, and this plugin's polishing is one of them: im-not-ai, vendored at a pinned commit. What this plugin adds are the two moments before that: the moment the text is written, and the turn in which Claude saves the file.
+
+| Tool                                                               | While writing                                                            | On save                                                                              | Afterwards                                                         | Network                                                                   |
+| ------------------------------------------------------------------ | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------------- |
+| **korean-writing**                                                 | A writing skill follows the rules from the first line                    | A hook checks right after the edit and hands findings back to Claude in the same turn | im-not-ai, vendored                                                | None; CI enforces it                                                      |
+| [im-not-ai](https://github.com/epoko77-ai/im-not-ai)               |                                                                          |                                                                                      | Polishing pipeline (1 to 3 calls)                                  | None                                                                      |
+| [fluent-korean](https://github.com/snflkd/fluent-korean)           | An output style applied to every reply; aims for unambiguous sentences   |                                                                                      |                                                                    | None                                                                      |
+| [patina](https://github.com/devswha/patina)                        |                                                                          | A pre-commit hook scores Markdown at commit time                                     | Polishing (skill, CLI, web) for Korean, English, Chinese, Japanese | The web version runs server-side                                          |
+| [k-skill](https://github.com/NomaDamas/k-skill) `korean-humanizer` |                                                                          |                                                                                      | Polishing                                                          | Instructions are fetched with `npx`; spell-check uses external checkers   |
+
+Checked against each repository on 2026-09-11. A blank cell means no feature for that moment was found. patina also checks on save, but at a different moment: patina runs when a person commits, this plugin runs in the turn where Claude edited the file. When a PostToolUse hook exits with code 2, Claude Code shows its stderr to Claude so it can react in the same turn ([hooks docs](https://code.claude.com/docs/en/hooks)).
+
+fluent-korean covers a different moment, so the two can be installed together. This plugin does not check spelling or spacing, so it does not overlap with spell checkers either.
 
 ## FAQ
 
