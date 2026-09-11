@@ -40,7 +40,7 @@
   <a href="#자주-묻는-질문">FAQ</a>
 </p>
 
-> **v1.2.0**: 평소 답변에 규칙을 넣던 SessionStart 훅을 뺐습니다. 규칙을 넣은 답에서 기본값 같은 세부가 빠지는 것을 재서 확인했습니다([EVALUATION.md](EVALUATION.md) H13). 이 훅을 끄던 `KOREAN_WRITING_ALWAYS_ON_DISABLED` 는 이제 아무 일도 하지 않습니다. 검사 훅의 교정 안내는 규칙집 처방에 맞췄고 알림대로 고친 초안에서 원문의 정보가 빠지지 않는 것을 확인했습니다(I1). 상세: [CHANGELOG.md](CHANGELOG.md)
+> **v1.3.0**: 모델이 `korean-writing` 스킬을 스스로 부르기 전에 적용할지 묻습니다. 스킬로 쓴 설명 문서에서 Claude 가 덧붙이는 설명이 짧아지는 것을 재서 확인했습니다([EVALUATION.md](EVALUATION.md) J3). 요청에 적은 사실은 스킬을 켜도 모두 담겼습니다. 거절하면 규칙 없이 쓰고 `/korean-writing` 을 직접 치면 묻지 않습니다. 상세: [CHANGELOG.md](CHANGELOG.md)
 
 ## 어떤 플러그인인가
 
@@ -549,9 +549,9 @@ GitHub 릴리스 자체는 이 노트북에서 만들지 않습니다. 태그가
 받은 zip은 설치하지 않고 한 세션만 띄워 볼 수 있습니다. 증명은 `gh` 로 확인합니다.
 
 ```bash
-gh release download v1.1.0 -p '*.zip'
-gh attestation verify korean-writing-v1.1.0.zip -R IsthisLee/claude-korean-writing
-claude --plugin-url ./korean-writing-v1.1.0.zip
+gh release download v1.3.0 -p '*.zip'
+gh attestation verify korean-writing-v1.3.0.zip -R IsthisLee/claude-korean-writing
+claude --plugin-url ./korean-writing-v1.3.0.zip
 ```
 
 ## 출처와 라이선스
