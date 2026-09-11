@@ -1,0 +1,12 @@
+아래 자바스크립트 코드를 리뷰해라. 고칠 곳을 짚어라.
+
+```javascript
+async function transfer(fromId, toId, amount) {
+  const from = await db.query(`SELECT balance FROM accounts WHERE id = ${fromId}`);
+  if (from.balance < amount) return false;
+  await db.query(`UPDATE accounts SET balance = balance - ${amount} WHERE id = ${fromId}`);
+  await db.query(`UPDATE accounts SET balance = balance + ${amount} WHERE id = ${toId}`);
+  console.log("transferred " + amount + " from " + fromId + " to " + toId);
+  return true;
+}
+```

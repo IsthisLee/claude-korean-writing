@@ -1,0 +1,13 @@
+아래 코드가 자정 근처에서 하루치를 잘못 센다. 원인이 되는 줄 번호 하나를 짚어라.
+
+1  from datetime import datetime, timedelta
+2  def daily_range(days):
+3      end = datetime.utcnow()
+4      start = end - timedelta(days=days)
+5      return start.date(), end.date()
+6  def count_in(rows, days):
+7      s, e = daily_range(days)
+8      return sum(1 for r in rows if s <= r.created_at.date() <= e)
+
+문제는 rows 의 created_at 이 KST(UTC+9) 로 저장돼 있다는 것이다.
+도구를 쓸 수 없다. 추론만으로 답하고 마지막 줄에 ANSWER=<줄번호> 만 적어라.

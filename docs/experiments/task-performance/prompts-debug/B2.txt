@@ -1,0 +1,11 @@
+아래 코드가 목록의 마지막 항목을 항상 빠뜨린다. 원인이 되는 줄 번호 하나를 짚어라.
+
+1  def paginate(items, size):
+2      pages = []
+3      i = 0
+4      while i + size < len(items):
+5          pages.append(items[i:i+size])
+6          i += size
+7      return pages
+
+도구를 쓸 수 없다. 추론만으로 답하고 마지막 줄에 ANSWER=<줄번호> 만 적어라.

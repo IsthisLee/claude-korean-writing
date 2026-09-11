@@ -1,0 +1,1 @@
+plugin/scripts/check.sh 가 하는 일을 설명해줘.
