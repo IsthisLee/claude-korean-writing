@@ -349,7 +349,7 @@ The pass criteria and the measurements are in [`EVALUATION.md`](./EVALUATION.md)
 | Correct code on detected items     | 10 / 10                                                                         |
 | Writing-request triggers           | 5 / 5, with 0 / 5 misfires on code work                                         |
 | Mutation testing                   | 23 / 23 injected defects caught                                                 |
-| Skill vs im-not-ai polished text   | 49 won, 0 lost out of 56 blind pairs                                            |
+| Skill vs im-not-ai polished text   | 49 won, 0 lost out of 56 blind pairs. With the follow-the-writer section added in v2.0.0: 3 won, 1 lost out of the default 4 pairs |
 | Same-turn fix after a hook finding | 3 / 3; 0 / 3 without the plugin ([experiment](./docs/experiments/hook-loop/)) |
 | Always-on context cost             | about 730 tokens in an isolated HOME (four skill descriptions 430 + three agents 297) |
 | Network calls                      | 0                                                                               |
