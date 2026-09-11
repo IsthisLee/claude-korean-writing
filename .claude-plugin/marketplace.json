@@ -34,7 +34,6 @@
         "style",
         "hooks",
         "character-count",
-        "readme",
         "documentation"
       ],
       "source": "./plugin",

@@ -86,7 +86,7 @@ Leave version numbers alone. `plugin/.claude-plugin/plugin.json` is the single s
 
 ## Vendored files
 
-`plugin/skills/humanize-korean/**`, `plugin/skills/humanize/**`, `plugin/skills/humanize-redo/**`, `plugin/agents/**`, `plugin/scripts/*.py` (im-not-ai), `plugin/skills/crafting-effective-readmes/**` and `plugin/skills/korean-character-count/scripts/**` come from other MIT projects. If you change one, update the corresponding entry in [plugin/NOTICE.md](plugin/NOTICE.md) too, and never remove an upstream copyright notice.
+`plugin/skills/humanize-korean/**`, `plugin/skills/humanize/**`, `plugin/skills/humanize-redo/**`, `plugin/agents/**`, `plugin/scripts/*.py` (im-not-ai) and `plugin/skills/korean-character-count/scripts/**` come from other MIT projects. If you change one, update the corresponding entry in [plugin/NOTICE.md](plugin/NOTICE.md) too, and never remove an upstream copyright notice.
 
 ## Conduct and license
 

@@ -285,8 +285,6 @@ im-not-ai 의 실측에서 이 표현의 밀도는 AI 5.8 대 사람 0.6 으로 
 
 글자 수·바이트를 정확히 세야 하면 `korean-character-count` 를 쓴다.
 
-README 의 구조와 절 선택은 `crafting-effective-readmes` 가 맡는다. 문장은 이 스킬 규칙대로 쓴다.
-
 ## 더 깊은 판정이 필요할 때
 
 어떤 표현이 AI 티인지 판정이 애매하면 `skills/humanize-korean/references/quick-rules.md`(압축 룰북)와 `ai-tell-taxonomy.md`(10분류 · 84항목 · 심각도 · 처방)에서 그 항목만 찾아본다. im-not-ai 에서 내장한 파일이다. **애매한 항목 하나를 확인하는 용도이지, 글을 쓰기 전에 통독하는 문서가 아니다.**

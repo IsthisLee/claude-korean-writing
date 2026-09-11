@@ -219,7 +219,7 @@ B1 대상: "슬랙 내 캐쥬얼하게 확인 요청드리려는데", "비개발
 | 항목 | 토큰 | 어떻게 쟀나 |
 | --- | --- | --- |
 | 상시 규칙 주입 | **816** | 훅을 껐다 켜서 총량 차이를 봤다. 2026-09-11 에 3,552 대 4,368. 726 → 784(H5) → 816(H11) 으로 늘었다 |
-| 스킬 설명 넷 | 약 430 | `/context` 의 스킬 표. korean-writing 70, humanize-korean 230, korean-character-count 60, crafting-effective-readmes 70 |
+| 스킬 설명 넷 | 약 430 | `/context` 의 스킬 표. korean-writing 70, humanize-korean 230, korean-character-count 60, crafting-effective-readmes 70. crafting-effective-readmes 는 v1.3.0 뒤에 뺐고 뺀 뒤로 다시 재지 않았다 |
 | 에이전트 셋 | 773 | `/context` 의 Custom Agents 표. 266·273·234. 격리 HOME 에서는 297 로 잡힌다 (D2 절) |
 | 서브에이전트 주입 | **816 × 서브에이전트 수** | 세션당 한 번이 아니라 서브에이전트를 띄운 수만큼 곱해진다. 상시 몫이 아니라 쓸 때 드는 몫이다. 끄는 스위치를 따로 뒀다 |
 | 슬래시 전용 스킬 둘 | **0** | `humanize` 와 `humanize-redo` 는 `disable-model-invocation: true` 라 `/context` 의 스킬 표에 실리지 않는다. 이름을 쳐야만 뜨는 대신 상시 몫이 없다 |

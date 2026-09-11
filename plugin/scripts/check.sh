@@ -22,7 +22,7 @@ HOOK="$ROOT/hooks-handlers/posttooluse.sh"
 # --all 이 훑지 않는 곳. 다른 MIT 프로젝트에서 가져온 파일이라 이 저장소의 규칙 대상이 아니다.
 # plugin/NOTICE.md 에 적힌 목록과 같아야 한다. 저장소에서는 plugin/ 아래에 있고
 # 설치본에서는 루트에 있으므로 접두사를 선택으로 둔다.
-VENDORED='^(plugin/)?(skills/(humanize|humanize-korean|humanize-redo|crafting-effective-readmes)/|agents/)'
+VENDORED='^(plugin/)?(skills/(humanize|humanize-korean|humanize-redo)/|agents/)'
 
 if [ "${1:-}" = "--all" ]; then
   command -v git >/dev/null 2>&1 || { echo "--all 은 git 이 있어야 한다" >&2; exit 2; }

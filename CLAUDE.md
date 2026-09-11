@@ -4,7 +4,7 @@
 
 ## 이 저장소가 무엇인가
 
-Claude Code 가 쓰는 한국어 글의 품질과 자연스러움을 맡는 플러그인입니다. 이 저장소가 쓴 스킬 셋, im-not-ai 에서 내장한 윤문 스킬 셋과 에이전트 셋, 훅 둘(모델이 korean-writing 스킬을 부르기 전 확인, 편집 뒤 검사), 슬래시 명령 하나, 검사·릴리스 스크립트로 이루어집니다. 구조와 사용법은 [README.md](README.md), 판정 기준은 [EVALUATION.md](EVALUATION.md) 에 있습니다.
+Claude Code 가 쓰는 한국어 글의 품질과 자연스러움을 맡는 플러그인입니다. 이 저장소가 쓴 스킬 둘, im-not-ai 에서 내장한 윤문 스킬 셋과 에이전트 셋, 훅 둘(모델이 korean-writing 스킬을 부르기 전 확인, 편집 뒤 검사), 슬래시 명령 하나, 검사·릴리스 스크립트로 이루어집니다. 구조와 사용법은 [README.md](README.md), 판정 기준은 [EVALUATION.md](EVALUATION.md) 에 있습니다.
 
 ## 저장소는 두 층이다
 
@@ -22,7 +22,7 @@ docs/        실험과 그림
 **플러그인 설치는 `source` 가 가리키는 폴더를 통째로 복사하고 무엇을 빼는 수단이 없습니다.**
 `.claude-plugin/marketplace.json` 의 `source` 가 `./plugin` 인 이유가 이것입니다. 테스트·실험·CI·저장소
 문서를 `plugin/` 안에 두면 설치한 사람이 그것까지 내려받습니다. 나눠 두기 전에는 219개 파일 1.8MB 가
-갔고 지금은 53개 590KB 가 갑니다.
+갔고 지금은 41개 636KB 가 갑니다.
 
 새 파일을 어디에 둘지는 한 가지만 물으면 됩니다. **설치한 사람이 이것을 쓰는가.** 아니면 `plugin/` 밖입니다.
 CI 의 `설치본 경계` 작업이 테스트·실험 산출물·CI 설정·관리자 스크립트·저장소 문서·잠금 파일이
@@ -71,7 +71,7 @@ plugin/scripts/check.sh --all         # 저장소가 쓴 .md 가 자기 훅을 �
 
 ## 건드리지 않는 것
 
-`plugin/skills/humanize-korean/**`, `plugin/skills/humanize/**`, `plugin/skills/humanize-redo/**`, `plugin/agents/**`, `plugin/scripts/*.py`, `plugin/skills/crafting-effective-readmes/**`, `plugin/skills/korean-character-count/scripts/**` 는 다른 MIT 프로젝트에서 가져온 파일입니다. 출처와 수정 범위가 [plugin/NOTICE.md](plugin/NOTICE.md) 에 적혀 있습니다. 고쳐야 하면 그 파일의 해당 줄도 함께 고칩니다.
+`plugin/skills/humanize-korean/**`, `plugin/skills/humanize/**`, `plugin/skills/humanize-redo/**`, `plugin/agents/**`, `plugin/scripts/*.py`, `plugin/skills/korean-character-count/scripts/**` 는 다른 MIT 프로젝트에서 가져온 파일입니다. 출처와 수정 범위가 [plugin/NOTICE.md](plugin/NOTICE.md) 에 적혀 있습니다. 고쳐야 하면 그 파일의 해당 줄도 함께 고칩니다.
 
 윤문 파이프라인은 im-not-ai 의 런타임 부분집합을 그대로 내장한 것입니다. 새 판을 받으려면 원본 저장소를 그 커밋으로 받아 같은 경로에 복사하고 plugin/NOTICE.md 에 적힌 한 줄 수정(트리거 문구)을 다시 적용한 뒤, `python3 -m py_compile plugin/scripts/*.py` 와 격리된 HOME 에서 `/korean-writing:humanize` 실행으로 확인하고 plugin/NOTICE.md 의 커밋을 올립니다. 스크립트는 `plugin/scripts/` 와 `plugin/skills/humanize-korean/references/` 의 상대 위치로 서로를 찾으므로 둘의 관계를 바꾸지 않습니다.
 

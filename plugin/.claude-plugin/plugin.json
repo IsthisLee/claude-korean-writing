@@ -13,7 +13,6 @@
   "skills": [
     "./",
     "./skills/korean-character-count",
-    "./skills/crafting-effective-readmes",
     "./skills/humanize-korean",
     "./skills/humanize",
     "./skills/humanize-redo"
@@ -44,7 +43,6 @@
     "style",
     "hooks",
     "character-count",
-    "readme",
     "documentation"
   ]
 }

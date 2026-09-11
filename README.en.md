@@ -54,7 +54,7 @@ Patching this with a prompt means pasting that prompt into every session, and as
 | **On save**<br>anything that lands as `.md`                   | A PostToolUse hook checks what was just written and hands the findings back to Claude in the same turn   | Right after `Edit`, `Write`, `MultiEdit` | `plugin/hooks-handlers/posttooluse.sh`   |
 | **Afterwards**<br>someone else's draft, an old document       | The polishing pipeline fixes the style and leaves the facts alone                                        | When you ask for a touch-up              | `plugin/skills/humanize-korean/SKILL.md` |
 
-Two more skills sit alongside. Character counts come from a script rather than the model's guess, and READMEs start with a skill that lays out the sections.
+One more skill sits alongside: character counts come from a script rather than the model's guess.
 
 > Think of a linter, attached to Korean prose instead of code. The findings reach Claude within the same turn, so they get fixed before you read the file. In three measured runs that asked Claude to save a draft full of AI tells, Claude saved it first and then fixed every flagged item in the same turn, every time. Without the plugin, all three runs saved the draft as it was ([experiment](./docs/experiments/hook-loop/)).
 
@@ -166,9 +166,8 @@ Here is what loads on its own, when, and what to type to call it by name.
 | A second polishing pass          | Never on its own; it has to be called by name                 | `/korean-writing:humanize-redo [instruction]`                    |
 | The check hook                   | Right after `Edit`, `Write` or `MultiEdit` touches a `.md`    | `/korean-writing:check FILE...`                                   |
 | Character counting               | "500자 이내로", "글자 수 세줘" and similar requests            | `/korean-writing:korean-character-count`                         |
-| README structure                 | A request to write or revise a README                         | `/korean-writing:crafting-effective-readmes`                     |
 
-The two hooks have no name to call: they run when their condition is met and stay quiet otherwise. Four of the six skills load from the request; the two polishing entry points (`humanize`, `humanize-redo`) carry `disable-model-invocation`, so they only run when typed, and in exchange they cost nothing in always-on context. If you installed the plugin, `/korean-writing:korean-writing` reaches the same skill; the short form is fine. When Claude calls `korean-writing` on its own, the skill-confirm hook raises a permission prompt. With the skill applied, facts given in the request were all kept, but the explanation Claude adds on its own came out shorter ([`EVALUATION.md`](EVALUATION.md) J3, Korean), so decline it for a document that needs a detailed explanation; declining means the text is written without the rules.
+The two hooks have no name to call: they run when their condition is met and stay quiet otherwise. Three of the five skills load from the request; the two polishing entry points (`humanize`, `humanize-redo`) carry `disable-model-invocation`, so they only run when typed, and in exchange they cost nothing in always-on context. If you installed the plugin, `/korean-writing:korean-writing` reaches the same skill; the short form is fine. When Claude calls `korean-writing` on its own, the skill-confirm hook raises a permission prompt. With the skill applied, facts given in the request were all kept, but the explanation Claude adds on its own came out shorter ([`EVALUATION.md`](EVALUATION.md) J3, Korean), so decline it for a document that needs a detailed explanation; declining means the text is written without the rules.
 
 Hand a draft to the polish skill and the fixed text comes back with a one-line status: an estimated change rate and a grade from A to D. Below it, three to six of the main edits are shown side by side, before and after. If more than half the text changed, you get that fact instead of a result. A text changed by half is a rewrite, not a polish.
 
@@ -201,7 +200,7 @@ Here is what the plugin ships with.
 
 | Part           | Count        | What                                                                                                                                                                                                               |
 | -------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Skills         | 6            | three written here, `korean-writing`, `korean-character-count`, `crafting-effective-readmes`, and three vendored from im-not-ai, `humanize-korean`, `humanize`, `humanize-redo`                                    |
+| Skills         | 5            | two written here, `korean-writing` and `korean-character-count`, and three vendored from im-not-ai, `humanize-korean`, `humanize`, `humanize-redo` |
 | Hooks          | 2            | a check right after `.md` edits, and a confirmation before Claude calls the `korean-writing` skill |
 | Check patterns | 10           | `K1` to `K10`: em-dashes, abstract structure words, 것 constructions, AI idioms, mechanical enumeration, win/lose and object personification, translation-ese, negated antithesis, comma after a connective ending |
 | Agents         | 3            | vendored from im-not-ai: diagnosis, rewrite and final review for the polishing pipeline                                                                                                                            |
@@ -264,10 +263,6 @@ character_contract: Unicode extended grapheme clusters via Intl.Segmenter
 byte_contract: Actual UTF-8 encoded byte length
 line_contract: Empty string => 0 lines; otherwise count CRLF, LF, CR, U+2028, U+2029 as one line break each and add 1
 ```
-
-### The crafting-effective-readmes skill
-
-It loads when you ask for a README to be created or revised. First it settles the kind of task: creating, adding a section, updating, or reviewing. Then the project type, one of open source, personal, internal or config repository, each with its own template and section checklist. Whatever the README, a name, a one- or two-sentence description and usage are never left out. This skill goes as far as laying out the sections, and the sentences follow the `korean-writing` rules.
 
 ### The check hook and the scripts
 
@@ -415,7 +410,6 @@ korean-writing/
 │   │   ├── humanize/SKILL.md         entry point for /korean-writing:humanize; slash-only
 │   │   ├── humanize-redo/SKILL.md    entry point for a second pass; slash-only
 │   │   ├── korean-character-count/   the counting skill: SKILL.md, instruction.md, scripts/
-│   │   └── crafting-effective-readmes/  the README structure skill: 4 templates, 5 references
 │   ├── scripts/
 │   │   ├── check.sh                  whole-file check; --all covers every .md this repository wrote
 │   │   └── *.py                      vendored from im-not-ai: the nine polishing scripts
@@ -567,6 +561,5 @@ claude --plugin-url ./korean-writing-v1.3.0.zip
 | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
 | `plugin/skills/humanize-korean/`, `plugin/skills/humanize/`, `plugin/skills/humanize-redo/`, `plugin/agents/`, `plugin/scripts/*.py` | The runtime subset of [im-not-ai](https://github.com/epoko77-ai/im-not-ai) at commit `9747f03` (2026-09-06)                     | One trigger phrase in the skill description                        |
 | `plugin/skills/korean-character-count/`                                                                  | [k-skill](https://github.com/NomaDamas/k-skill)                                                                                 | Script unchanged, run path in the instructions, SKILL.md rewritten |
-| `plugin/skills/crafting-effective-readmes/`                                                              | [agent-skills](https://github.com/joshuadavidthomas/agent-skills)' `crafting-effective-readmes/`, commit `516dee7` (2026-07-20) | One line in `style-guide.md` that names the companion skills       |
 
 The rest was written in this repository: the `korean-writing` skill, the whole check hook, the ground truth and the evaluation criteria. Every imported file is MIT-licensed and the original copyright notices are gathered in [`plugin/NOTICE.md`](./plugin/NOTICE.md). This repository is [MIT](./LICENSE) too.
