@@ -15,8 +15,6 @@
     ],
     "ask": [
       "Bash(tools/release.sh:*)",
-      "Edit(/plugin/skills/crafting-effective-readmes/**)",
-      "Write(/plugin/skills/crafting-effective-readmes/**)",
       "Edit(/plugin/skills/korean-character-count/scripts/**)",
       "Write(/plugin/skills/korean-character-count/scripts/**)",
       "Edit(/plugin/skills/humanize-korean/**)",

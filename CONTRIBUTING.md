@@ -86,7 +86,7 @@ docs: 스킬 유무 비교 기록
 
 ## 가져온 파일
 
-`plugin/skills/humanize-korean/**`, `plugin/skills/humanize/**`, `plugin/skills/humanize-redo/**`, `plugin/agents/**`, `plugin/scripts/*.py`(im-not-ai), `plugin/skills/crafting-effective-readmes/**`, `plugin/skills/korean-character-count/scripts/**` 는 다른 MIT 프로젝트에서 가져왔습니다. 고쳐야 한다면 [plugin/NOTICE.md](plugin/NOTICE.md) 의 수정 범위도 함께 고쳐 주세요. 원 저작자의 저작권 표시는 지우지 않습니다.
+`plugin/skills/humanize-korean/**`, `plugin/skills/humanize/**`, `plugin/skills/humanize-redo/**`, `plugin/agents/**`, `plugin/scripts/*.py`(im-not-ai), `plugin/skills/korean-character-count/scripts/**` 는 다른 MIT 프로젝트에서 가져왔습니다. 고쳐야 한다면 [plugin/NOTICE.md](plugin/NOTICE.md) 의 수정 범위도 함께 고쳐 주세요. 원 저작자의 저작권 표시는 지우지 않습니다.
 
 ## 규칙과 라이선스
 

@@ -74,6 +74,27 @@ def expect_hit(name, content, code, count=None, **kw):
     print(f"  o {name}  ({code}{'' if count is None else f' {count}회'})")
 
 
+def expect_without(name, content, code, **kw):
+    """다른 규칙은 걸려도 code 는 보고되지 않아야 한다. 규칙을 골라 끄는 설정을 검증한다."""
+    rc, out = run(content, **kw)
+    if code + "  " in out:
+        FAILS.append(f"[끄기 실패] {name}: {code} 가 보고됐다")
+        print(f"  x {name}")
+    else:
+        print(f"  o {name}")
+
+
+def expect_in_output(name, content, wants, **kw):
+    """보고에 wants 의 문자열이 모두 있어야 한다. 위치(줄 번호·발췌)를 검증한다."""
+    rc, out = run(content, **kw)
+    missing = [w for w in wants if w not in out]
+    if rc != 2 or missing:
+        FAILS.append(f"[출력] {name}: 없는 것 {missing} / exit {rc} / {out.strip()[:160]}")
+        print(f"  x {name}")
+    else:
+        print(f"  o {name}")
+
+
 print("통과해야 하는 것 - 오탐 검사")
 expect_clean(
     "정상 한국어 문단",
@@ -278,6 +299,84 @@ expect_hit(
     "머리 10줄 밖의 표시는 끄지 않는다",
     "\n".join(["첫 줄부터 열 줄을 채운다."] * 11) + "\n<!-- korean-writing: ignore -->\n" + BAD,
     "K4",
+)
+
+print("\n규칙 골라 끄기 - 끈 규칙만 빠지고 나머지는 그대로 걸린다")
+BAD2 = (FILLER * 2 + "이것은 성능 문제가 아니라 설정 문제다. 고칠 곳은 코드가 아니라 문서다. "
+        "필요한 것은 새 기능이 아니라 기준이다. 결론적으로 고칠 곳이 많다.")
+expect_hit("끄지 않으면 K9 가 걸린다", BAD2, "K9", count=3)
+expect_hit("끄지 않으면 K4 도 걸린다", BAD2, "K4")
+expect_without("파일 머리 disable K9 는 K9 를 끈다", "<!-- korean-writing: disable K9 -->\n" + BAD2, "K9")
+expect_hit("파일 머리 disable K9 여도 K4 는 걸린다", "<!-- korean-writing: disable K9 -->\n" + BAD2, "K4")
+expect_clean("쉼표·소문자로 둘 다 끄면 통과", "<!-- korean-writing: disable K9, k4 -->\n" + BAD2)
+expect_hit(
+    "머리 10줄 밖의 disable 은 끄지 않는다",
+    "\n".join(["첫 줄부터 열 줄을 채운다."] * 11) + "\n<!-- korean-writing: disable K9 -->\n" + BAD2,
+    "K9",
+)
+expect_hit(
+    "본문이 disable 표시를 인용해도 끄지 않는다",
+    "한두 규칙만 끄려면 `<!-- korean-writing: disable K9 -->` 를 넣습니다.\n\n" + BAD2,
+    "K9",
+)
+_head = os.path.join(tempfile.mkdtemp(), "head.md")
+with open(_head, "w", encoding="utf-8") as _f:
+    _f.write("<!-- korean-writing: disable K9 -->\n# 설계 메모\n\n" + BAD2 + "\n")
+expect_without("Edit 로 일부만 고칠 때도 파일 머리의 disable 을 본다", BAD2, "K9", path=_head, tool="Edit", key="new_string")
+expect_without("환경변수 KOREAN_WRITING_DISABLE_RULES=K9", BAD2, "K9", env={"KOREAN_WRITING_DISABLE_RULES": "K9"})
+expect_without("플러그인 설정 disabled_rules=K9", BAD2, "K9", env={"CLAUDE_PLUGIN_OPTION_DISABLED_RULES": "K9"})
+expect_clean("걸린 규칙을 모두 끄면 통과", BAD2, env={"KOREAN_WRITING_DISABLE_RULES": "K4 K9"})
+expect_hit("모르는 코드는 무시한다", BAD2, "K9", env={"KOREAN_WRITING_DISABLE_RULES": "K99,X9,9"})
+
+print("\n저장소 설정 - .korean-writing.json")
+_repo = tempfile.mkdtemp()
+os.makedirs(os.path.join(_repo, ".git"))
+os.makedirs(os.path.join(_repo, "docs", "deep"))
+os.makedirs(os.path.join(_repo, "legal"))
+with open(os.path.join(_repo, ".korean-writing.json"), "w", encoding="utf-8") as _f:
+    json.dump({"disable": ["K9"], "ignore": ["legal/*", "CHANGELOG.md"]}, _f)
+expect_without("저장소 루트 설정의 disable 이 하위 폴더에도 든다", BAD2, "K9", path=os.path.join(_repo, "docs", "deep", "a.md"))
+expect_hit("저장소 설정이 끄지 않은 규칙은 걸린다", BAD2, "K4", path=os.path.join(_repo, "docs", "deep", "a.md"))
+expect_clean("ignore 패턴에 맞는 파일은 검사하지 않는다", BAD2, path=os.path.join(_repo, "legal", "terms.md"))
+expect_clean("ignore 의 파일 이름 패턴", BAD2, path=os.path.join(_repo, "CHANGELOG.md"))
+_outer = tempfile.mkdtemp()
+with open(os.path.join(_outer, ".korean-writing.json"), "w", encoding="utf-8") as _f:
+    json.dump({"disable": ["K9"]}, _f)
+os.makedirs(os.path.join(_outer, "repo", ".git"))
+expect_hit("저장소 루트 위의 설정은 쓰지 않는다", BAD2, "K9", path=os.path.join(_outer, "repo", "a.md"))
+_broken = tempfile.mkdtemp()
+os.makedirs(os.path.join(_broken, ".git"))
+with open(os.path.join(_broken, ".korean-writing.json"), "w", encoding="utf-8") as _f:
+    _f.write("{ disable: K9 ")
+expect_hit("깨진 설정은 무시하고 검사한다", BAD2, "K9", path=os.path.join(_broken, "a.md"))
+expect_in_output("깨진 설정은 보고에 알린다", BAD2, ["읽지 못해"], path=os.path.join(_broken, "a.md"))
+
+print("\n위치 - 걸린 자리의 줄 번호와 발췌를 붙인다")
+_loc = FILLER + "\n" + FILLER + "\n이것은 성능 문제가 아니라 설정 문제다.\n고칠 곳은 코드가 아니라 문서다.\n필요한 것은 새 기능이 아니라 기준이다.\n"
+expect_in_output("Write 는 내용의 줄 번호", _loc, ["3행", "성능 문제가 아니라", "4행", "5행"])
+expect_in_output(
+    "코드블록이 있어도 줄 번호가 밀리지 않는다",
+    FILLER + "\n```\n첫째 줄\n둘째 줄\n```\n" + FILLER + "\n이것은 성능 문제가 아니라 설정 문제다. 고칠 곳은 코드가 아니라 문서다. 필요한 것은 새 기능이 아니라 기준이다.\n",
+    ["7행"],
+)
+_ed = os.path.join(tempfile.mkdtemp(), "edit.md")
+_new = "이것은 성능 문제가 아니라 설정 문제다.\n고칠 곳은 코드가 아니라 문서다. 필요한 것은 새 기능이 아니라 기준이다."
+with open(_ed, "w", encoding="utf-8") as _f:
+    _f.write("# 제목\n\n" + FILLER + "\n\n" + FILLER + "\n\n" + _new + "\n")
+expect_in_output("Edit 는 파일 기준 줄 번호", _new, ["7행", "8행"], path=_ed, tool="Edit", key="new_string")
+expect_in_output(
+    "넷째부터는 외 N곳으로 줄인다",
+    FILLER * 2 + "\n" + "\n".join(f"{i}번은 코드가 아니라 문서다." for i in range(5)) + "\n",
+    ["외 2곳"],
+)
+expect_in_output(
+    "파일 전체로 판정한 K1 은 파일의 줄 번호",
+    FILLER * 2 + "사 — 아.",
+    ["K1", "2행", "외 1곳"],
+    path=(lambda p: (open(p, "w", encoding="utf-8").write(
+        FILLER * 2 + "\n가 — 나.\n다 — 라.\n마 — 바.\n" + FILLER * 2 + "사 — 아.\n"), p)[1])(
+        os.path.join(tempfile.mkdtemp(), "dash.md")),
+    tool="Edit", key="new_string",
 )
 
 print("\n누적 - 이번 편집에 있으면 파일 전체 개수로 판정한다 (K1 줄표, K10 연결어미 쉼표)")

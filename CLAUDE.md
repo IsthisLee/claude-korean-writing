@@ -4,7 +4,7 @@
 
 ## 이 저장소가 무엇인가
 
-Claude Code 가 쓰는 한국어 글의 품질과 자연스러움을 맡는 플러그인입니다. 이 저장소가 쓴 스킬 셋, im-not-ai 에서 내장한 윤문 스킬 셋과 에이전트 셋, 훅 둘(모델이 korean-writing 스킬을 부르기 전 확인, 편집 뒤 검사), 슬래시 명령 하나, 검사·릴리스 스크립트로 이루어집니다. 구조와 사용법은 [README.md](README.md), 판정 기준은 [EVALUATION.md](EVALUATION.md) 에 있습니다.
+Claude Code 가 쓰는 한국어 글의 품질과 자연스러움을 맡는 플러그인입니다. 이 저장소가 쓴 스킬 둘, im-not-ai 에서 내장한 윤문 스킬 셋과 에이전트 셋, 훅 둘(모델이 korean-writing 스킬을 부르기 전 확인, 편집 뒤 검사), 슬래시 명령 하나, 검사·릴리스 스크립트로 이루어집니다. 구조와 사용법은 [README.md](README.md), 판정 기준은 [EVALUATION.md](EVALUATION.md) 에 있습니다.
 
 ## 저장소는 두 층이다
 
@@ -22,7 +22,7 @@ docs/        실험과 그림
 **플러그인 설치는 `source` 가 가리키는 폴더를 통째로 복사하고 무엇을 빼는 수단이 없습니다.**
 `.claude-plugin/marketplace.json` 의 `source` 가 `./plugin` 인 이유가 이것입니다. 테스트·실험·CI·저장소
 문서를 `plugin/` 안에 두면 설치한 사람이 그것까지 내려받습니다. 나눠 두기 전에는 219개 파일 1.8MB 가
-갔고 지금은 53개 590KB 가 갑니다.
+갔고 지금은 41개 636KB 가 갑니다.
 
 새 파일을 어디에 둘지는 한 가지만 물으면 됩니다. **설치한 사람이 이것을 쓰는가.** 아니면 `plugin/` 밖입니다.
 CI 의 `설치본 경계` 작업이 테스트·실험 산출물·CI 설정·관리자 스크립트·저장소 문서·잠금 파일이
@@ -59,6 +59,8 @@ plugin/scripts/check.sh --all         # 저장소가 쓴 .md 가 자기 훅을 �
 
 **훅은 편집을 되돌리지 않습니다.** 걸린 항목을 stderr 로 알리고 종료 코드 2 로 끝냅니다. 사람이 쓰던 작업을 막는 설계가 아닙니다.
 
+**규칙을 끄는 방법은 훅의 알림에 적지 않습니다.** 파일 머리의 `disable` 표시와 `.korean-writing.json`, `disabled_rules` 는 README 에만 적습니다. 알림에 있으면 Claude 가 표현을 고치는 대신 규칙을 끌 수 있습니다. 알림이 알려 주는 끄기는 격식 문서용 `ignore` 하나뿐입니다. 판정(코드와 횟수)은 위치 찾기와 따로 계산하므로 출력 형식을 바꿔도 판정이 바뀌면 안 됩니다. 바꿨으면 옛 훅과 새 훅을 같은 문서 뭉치에 돌려 판정 줄을 비교합니다(EVALUATION.md K).
+
 **평소 답변과 서브에이전트에는 규칙을 주입하지 않습니다.** 2026-09-11 에 두 주입을 뺐습니다. 문체 규칙을 주입하면 답변에서 기본값 같은 세부가 빠졌습니다. 규칙을 어휘 수준으로 줄이고 세부를 빼지 말라고 적어도 막지 못했고, 같은 길이의 중립 문장을 넣었을 때는 빠지지 않았습니다(EVALUATION.md H13). 주입을 되살리려면 그 측정을 다시 통과해야 합니다.
 
 **모델이 korean-writing 스킬을 스스로 부르기 전에 사용자에게 묻습니다.** `plugin/hooks-handlers/pretooluse-skill.sh` 가 이 스킬의 Skill 호출에 `permissionDecision: "ask"` 를 돌려줍니다. 스킬로 쓴 설명 문서에서 Claude 가 덧붙이는 설명이 짧아지고 곁가지 설명이 빠졌기 때문입니다(EVALUATION.md J3). 확인을 없애거나 확인 창 문구를 바꾸려면 `docs/experiments/detail-retention/skill/` 측정을 다시 돌리고 그 결과만큼만 적습니다. 이 훅도 무엇을 막지 않고 입력을 못 읽으면 exit 0 으로 지나갑니다.
@@ -69,7 +71,7 @@ plugin/scripts/check.sh --all         # 저장소가 쓴 .md 가 자기 훅을 �
 
 ## 건드리지 않는 것
 
-`plugin/skills/humanize-korean/**`, `plugin/skills/humanize/**`, `plugin/skills/humanize-redo/**`, `plugin/agents/**`, `plugin/scripts/*.py`, `plugin/skills/crafting-effective-readmes/**`, `plugin/skills/korean-character-count/scripts/**` 는 다른 MIT 프로젝트에서 가져온 파일입니다. 출처와 수정 범위가 [plugin/NOTICE.md](plugin/NOTICE.md) 에 적혀 있습니다. 고쳐야 하면 그 파일의 해당 줄도 함께 고칩니다.
+`plugin/skills/humanize-korean/**`, `plugin/skills/humanize/**`, `plugin/skills/humanize-redo/**`, `plugin/agents/**`, `plugin/scripts/*.py`, `plugin/skills/korean-character-count/scripts/**` 는 다른 MIT 프로젝트에서 가져온 파일입니다. 출처와 수정 범위가 [plugin/NOTICE.md](plugin/NOTICE.md) 에 적혀 있습니다. 고쳐야 하면 그 파일의 해당 줄도 함께 고칩니다.
 
 윤문 파이프라인은 im-not-ai 의 런타임 부분집합을 그대로 내장한 것입니다. 새 판을 받으려면 원본 저장소를 그 커밋으로 받아 같은 경로에 복사하고 plugin/NOTICE.md 에 적힌 한 줄 수정(트리거 문구)을 다시 적용한 뒤, `python3 -m py_compile plugin/scripts/*.py` 와 격리된 HOME 에서 `/korean-writing:humanize` 실행으로 확인하고 plugin/NOTICE.md 의 커밋을 올립니다. 스크립트는 `plugin/scripts/` 와 `plugin/skills/humanize-korean/references/` 의 상대 위치로 서로를 찾으므로 둘의 관계를 바꾸지 않습니다.
 
@@ -100,6 +102,6 @@ docs/experiments/skill-vs-imnotai/run.sh                      # 스킬을 고쳤
 docs/experiments/detail-retention/run.sh                      # 검사 훅의 안내를 고쳤을 때
 ```
 
-**검사 훅의 안내 문구도 규칙집 처방을 따릅니다.** 모델은 훅이 알린 대로 고칩니다. 안내를 한 줄로 줄이다 보존 조건을 떨어뜨리면 고치는 동안 정보가 지워집니다. 실제로 `A가 아니라 B다 → B다` 라는 안내가 부정한 쪽의 정보를 지우게 했습니다(EVALUATION.md I1). 안내를 바꾸면 [rewriting-playbook.md](plugin/skills/humanize-korean/references/rewriting-playbook.md) 의 해당 처방과 대조하고 고친 전후를 잽니다.
+**검사 훅의 안내 문구도 규칙집 처방을 따릅니다.** 모델은 훅이 알린 대로 고칩니다. 안내를 한 줄로 줄이다 보존 조건을 떨어뜨리면 고치는 동안 정보가 지워집니다. 실제로 `A가 아니라 B다 → B다` 라는 안내가 부정한 쪽의 정보를 지우게 했습니다(EVALUATION.md I1). 안내를 바꾸면 [rewriting-playbook.md](plugin/skills/humanize-korean/references/rewriting-playbook.md) 의 해당 처방과 대조하고 고친 전후를 잽니다. 안내나 출력 형식을 바꿨으면 `python3 tools/render-hook-output.py` 로 README 의 그림을 다시 그리고 README 의 출력 예시도 새 출력으로 바꿉니다.
 
 둘 다 LLM 을 부르므로 CI 에 넣지 않습니다. 스킬 쪽은 im-not-ai 로 사후 윤문한 글과 붙여 이 플러그인의 목표를 그대로 잽니다. 계정 사용량이 떨어지면 판정 출력 자리에 안내 문구가 들어오므로 실패 건수를 먼저 봅니다.

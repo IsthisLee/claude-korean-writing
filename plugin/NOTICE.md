@@ -35,13 +35,3 @@
     MIT License
     Copyright (c) 2026
     https://github.com/NomaDamas/k-skill
-
-## agent-skills (crafting-effective-readmes)
-
-    skills/crafting-effective-readmes/**        crafting-effective-readmes/ 그대로. style-guide.md 의 관련 스킬 한 줄만 수정
-
-    가져온 판: 커밋 516dee7a422b (2026-07-20)
-
-    MIT License
-    Copyright (c) 2025 Josh Thomas
-    https://github.com/joshuadavidthomas/agent-skills

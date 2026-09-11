@@ -54,7 +54,7 @@ Patching this with a prompt means pasting that prompt into every session, and as
 | **On save**<br>anything that lands as `.md`                   | A PostToolUse hook checks what was just written and hands the findings back to Claude in the same turn   | Right after `Edit`, `Write`, `MultiEdit` | `plugin/hooks-handlers/posttooluse.sh`   |
 | **Afterwards**<br>someone else's draft, an old document       | The polishing pipeline fixes the style and leaves the facts alone                                        | When you ask for a touch-up              | `plugin/skills/humanize-korean/SKILL.md` |
 
-Two more skills sit alongside. Character counts come from a script rather than the model's guess, and READMEs start with a skill that lays out the sections.
+One more skill sits alongside: character counts come from a script rather than the model's guess.
 
 > Think of a linter, attached to Korean prose instead of code. The findings reach Claude within the same turn, so they get fixed before you read the file. In three measured runs that asked Claude to save a draft full of AI tells, Claude saved it first and then fixed every flagged item in the same turn, every time. Without the plugin, all three runs saved the draft as it was ([experiment](./docs/experiments/hook-loop/)).
 
@@ -89,16 +89,20 @@ Four sentences from the ground truth show what the rules are after, before and a
 
 ### What you see on save
 
-This is what appears in Claude Code after a `.md` edit. The window frame is drawn; from the yellow line down it is the hook's actual output, unchanged.
+This is what appears in Claude Code after a `.md` edit. The window frame is drawn; from the yellow line down it is the hook's actual output, unchanged. `tools/render-hook-output.py` draws it by feeding ground-truth sentences to the hook.
 
 <p align="center"><img src="docs/hook-output.svg" alt="Hook output flagging K1, K2, K3, K4 and K7" width="860"></p>
 
-This is the exact stderr the hook produced when the win/lose sentence and the em-dash sentence from the ground truth were fed in as an edit.
+This is the exact stderr the hook produced when the win/lose sentence (G06) and the em-dash sentence (G07) from the ground truth were fed in as two paragraphs. Each flagged spot carries its line number and an excerpt, so Claude fixes only those spots.
 
 ```
 [korean-writing] 배포-지연.md 에 AI 티 패턴이 있다. 편집은 그대로 두었으니 확인하고 고쳐라.
   K1  줄표(—) 삽입구 4개 — 쉼표나 문장 분리로 바꾼다. 한국어에서 가장 강한 AI 티다
+      3행 「원인은 힙 부족이 아니었습니다 — 실측해보니 — 설정이 아예 먹히지…」
+      3행 「…그동안 엉뚱한 데를 뒤졌고 — 그게 시간을 더 잡아먹었습니다 — 결국 다시 봐야 했습니다.」
   K6  승패 의인화 2회 — 우선한다·따른다·앞선다 로 직결한다
+      1행 「규칙이 충돌하면 상위 문서가 이깁니다. 둘 다 값이 있을 때는…」
+      1행 「…다 값이 있을 때는 텍스트가 이기고 강의실 참조는 무시됩니다.…」
   걸린 표현만 고친다. 수치·개수·조건·유보 표현과 걸리지 않은 문장은 그대로 둔다.
   교정 규칙은 korean-writing 스킬에 있다. 격식 문서(계약·약관·법률)면 파일 머리에 <!-- korean-writing: ignore --> 를 넣으면 다시 알리지 않는다.
 ```
@@ -141,6 +145,16 @@ claude plugin install korean-writing
 
 There are no packages to download. CI runs the same checks on macOS and Linux, and Windows needs Git Bash or WSL and has not been tried yet.
 
+### Outside Claude Code
+
+The writing rules and the character-count skill follow the [Agent Skills](https://agentskills.io/specification) format, so they also install into other agents such as Codex, Cursor and Gemini CLI. The [Skills CLI](https://skills.sh) finds them in the repository.
+
+```bash
+npx skills add IsthisLee/claude-korean-writing -s korean-writing -s korean-character-count -g
+```
+
+The two hooks and the polishing pipeline run only in Claude Code: the hooks attach to Claude Code's hook events, and polishing calls Claude Code subagents. Other agents get the writing rules and the character count, nothing more. On 2026-09-11 both skills were installed for Codex and Cursor into an isolated HOME; their files landed and the character-count script ran from where it was installed. Whether each agent then loads the skills was not checked. The `korean-writing` skill uses the whole plugin folder as its skill folder, so the hook and polishing files are copied along; other agents do not use them.
+
 ## How to ask
 
 Talk to Claude Code as usual; the skills load from the request, and `korean-writing` asks before it applies. These lines can be pasted as they are.
@@ -162,22 +176,33 @@ Here is what loads on its own, when, and what to type to call it by name.
 | A second polishing pass          | Never on its own; it has to be called by name                 | `/korean-writing:humanize-redo [instruction]`                    |
 | The check hook                   | Right after `Edit`, `Write` or `MultiEdit` touches a `.md`    | `/korean-writing:check FILE...`                                   |
 | Character counting               | "500자 이내로", "글자 수 세줘" and similar requests            | `/korean-writing:korean-character-count`                         |
-| README structure                 | A request to write or revise a README                         | `/korean-writing:crafting-effective-readmes`                     |
 
-The two hooks have no name to call: they run when their condition is met and stay quiet otherwise. Four of the six skills load from the request; the two polishing entry points (`humanize`, `humanize-redo`) carry `disable-model-invocation`, so they only run when typed, and in exchange they cost nothing in always-on context. If you installed the plugin, `/korean-writing:korean-writing` reaches the same skill; the short form is fine. When Claude calls `korean-writing` on its own, the skill-confirm hook raises a permission prompt. With the skill applied, facts given in the request were all kept, but the explanation Claude adds on its own came out shorter ([`EVALUATION.md`](EVALUATION.md) J3, Korean), so decline it for a document that needs a detailed explanation; declining means the text is written without the rules.
+The two hooks have no name to call: they run when their condition is met and stay quiet otherwise. Three of the five skills load from the request; the two polishing entry points (`humanize`, `humanize-redo`) carry `disable-model-invocation`, so they only run when typed, and in exchange they cost nothing in always-on context. If you installed the plugin, `/korean-writing:korean-writing` reaches the same skill; the short form is fine. When Claude calls `korean-writing` on its own, the skill-confirm hook raises a permission prompt. With the skill applied, facts given in the request were all kept, but the explanation Claude adds on its own came out shorter ([`EVALUATION.md`](EVALUATION.md) J3, Korean), so decline it for a document that needs a detailed explanation; declining means the text is written without the rules.
 
 Hand a draft to the polish skill and the fixed text comes back with a one-line status: an estimated change rate and a grade from A to D. Below it, three to six of the main edits are shown side by side, before and after. If more than half the text changed, you get that fact instead of a result. A text changed by half is a rewrite, not a polish.
 
 To check existing documents, run `/korean-writing:check FILE...`. It applies the same rules as the hook, points at each flagged spot, and asks before changing anything. From a shell, `plugin/scripts/check.sh FILE...` exits 1 if any file is flagged, and `--all` covers every `.md` this repository wrote. Both work as-is in CI and pre-commit; `tools/install-git-hook.sh` installs the pre-commit hook for you.
 
-It can be switched off at four scopes.
+It can be switched off at several scopes, and individual rules can be turned off on their own.
 
 | Scope                | How                                                                                                                                 |
 | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | One file             | `<!-- korean-writing: ignore -->` at the top. For contracts, or a catalog of bad examples, where flagging every time makes no sense |
+| Some rules in one file | `<!-- korean-writing: disable K1 K9 -->` at the top. For a document that uses em dashes on purpose, where only a rule or two does not fit |
+| A repository         | Commit a `.korean-writing.json` so the whole team shares one standard. Example below                                               |
+| Some rules, persistently | The plugin setting `disabled_rules`, or `KOREAN_WRITING_DISABLE_RULES=K1,K9`                                                  |
 | Whole session        | `KOREAN_WRITING_HOOK_DISABLED=1`. Turns off both the check hook and the skill-confirm hook                                         |
 | The check, persistently | The plugin setting `edit_check`, toggled from `/plugin` |
 | The whole plugin     | `claude plugin disable korean-writing`                                                                                              |
+
+```json
+{
+  "disable": ["K1"],
+  "ignore": ["legal/*", "CHANGELOG.md"]
+}
+```
+
+The hook uses the first `.korean-writing.json` it finds walking up from the edited file, and stops at the folder holding `.git`, so settings from outside the repository never mix in. `ignore` takes path patterns relative to the folder the settings file sits in, and `*` also crosses folder boundaries. An unreadable settings file is ignored; the file is checked anyway and the report says so. The hook's message never mentions how to turn rules off: if it did, Claude could switch a rule off instead of fixing the wording.
 
 ## Components
 
@@ -185,14 +210,14 @@ Here is what the plugin ships with.
 
 | Part           | Count        | What                                                                                                                                                                                                               |
 | -------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Skills         | 6            | three written here, `korean-writing`, `korean-character-count`, `crafting-effective-readmes`, and three vendored from im-not-ai, `humanize-korean`, `humanize`, `humanize-redo`                                    |
+| Skills         | 5            | two written here, `korean-writing` and `korean-character-count`, and three vendored from im-not-ai, `humanize-korean`, `humanize`, `humanize-redo` |
 | Hooks          | 2            | a check right after `.md` edits, and a confirmation before Claude calls the `korean-writing` skill |
 | Check patterns | 10           | `K1` to `K10`: em-dashes, abstract structure words, 것 constructions, AI idioms, mechanical enumeration, win/lose and object personification, translation-ese, negated antithesis, comma after a connective ending |
 | Agents         | 3            | vendored from im-not-ai: diagnosis, rewrite and final review for the polishing pipeline                                                                                                                            |
 | Rulebook       | 84 items     | im-not-ai's taxonomy: 10 categories, each item with a severity and a fix                                                                                                                                           |
 | Ground truth   | 15 sentences | 10 violations Claude Code actually generated, 5 clean sentences from the same context                                                                                                                              |
-| Regression     | 84 cases     | 62 for the check hook, 22 for the skill-confirm hook |
-| Scripts        | 4            | character count, whole-file check, false-positive measurement, release                                                                                                                                             |
+| Regression     | 108 cases    | 86 for the check hook, 22 for the skill-confirm hook |
+| Scripts        | 5 + 9        | five written here: character count, whole-file check, false-positive measurement, release, hook-output image. The nine vendored from im-not-ai serve the polishing pipeline |
 | Network        | none         | the hooks are bash and python3 regular expressions; the counter uses `node:fs`                                                                                                                                     |
 
 ### The korean-writing skill
@@ -249,13 +274,9 @@ byte_contract: Actual UTF-8 encoded byte length
 line_contract: Empty string => 0 lines; otherwise count CRLF, LF, CR, U+2028, U+2029 as one line break each and add 1
 ```
 
-### The crafting-effective-readmes skill
-
-It loads when you ask for a README to be created or revised. First it settles the kind of task: creating, adding a section, updating, or reviewing. Then the project type, one of open source, personal, internal or config repository, each with its own template and section checklist. Whatever the README, a name, a one- or two-sentence description and usage are never left out. This skill goes as far as laying out the sections, and the sentences follow the `korean-writing` rules.
-
 ### The check hook and the scripts
 
-The check hook runs right after `Edit`, `Write` or `MultiEdit` touches a `.md` file and looks only at what was just written, because checking the whole file would re-flag old wording on every edit. The verdict is described in the next section.
+The check hook runs right after `Edit`, `Write` or `MultiEdit` touches a `.md` file and looks only at what was just written, because checking the whole file would re-flag old wording on every edit. Each rule's flagged spots, up to three, come with the file's line number and a short excerpt, so Claude fixes those spots and leaves the unflagged sentences alone. The verdict is described in the next section.
 
 | Script               | What it does                                                                                                                                                                                                                |
 | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -263,6 +284,7 @@ The check hook runs right after `Edit`, `Write` or `MultiEdit` touches a `.md` f
 | `tools/install-git-hook.sh` | Installs a git hook that runs the same check on staged `.md` files before a commit. It refuses to overwrite an existing `pre-commit` and prints the two lines to add instead. `--uninstall` removes it; `git commit --no-verify` skips it |
 | `tools/measure.sh` | Pushes every Korean `.md` under a directory through the hook and reports flagged files and counts per code. Whether a flagged file was written by a person or by Claude is a human call                                     |
 | `tools/release.sh` | Aligns `plugin.json`, the README badges and CHANGELOG to one version, then commits and tags. With `--push` it also pushes and creates the GitHub release                                                                    |
+| `tools/render-hook-output.py` | Builds a document from ground-truth sentences, feeds it to the hook and draws the output as the README image (`docs/hook-output.svg`). Rerun it after changing the hook's messages |
 | `plugin/scripts/*.py`       | The nine scripts of the polishing pipeline, vendored from im-not-ai: input preparation and routing, the change-rate gate, modality restoration, injected-comma removal, chunk reassembly. They run only on a polish request |
 
 ## The verdict rules
@@ -327,7 +349,7 @@ The pass criteria and the measurements are in [`EVALUATION.md`](./EVALUATION.md)
 | Correct code on detected items     | 10 / 10                                                                         |
 | Writing-request triggers           | 5 / 5, with 0 / 5 misfires on code work                                         |
 | Mutation testing                   | 23 / 23 injected defects caught                                                 |
-| Skill vs im-not-ai polished text   | 49 won, 0 lost out of 56 blind pairs                                            |
+| Skill vs im-not-ai polished text   | 49 won, 0 lost out of 56 blind pairs. With the follow-the-writer section added in v2.0.0: 3 won, 1 lost out of the default 4 pairs |
 | Same-turn fix after a hook finding | 3 / 3; 0 / 3 without the plugin ([experiment](./docs/experiments/hook-loop/)) |
 | Always-on context cost             | about 730 tokens in an isolated HOME (four skill descriptions 430 + three agents 297) |
 | Network calls                      | 0                                                                               |
@@ -398,7 +420,6 @@ korean-writing/
 │   │   ├── humanize/SKILL.md         entry point for /korean-writing:humanize; slash-only
 │   │   ├── humanize-redo/SKILL.md    entry point for a second pass; slash-only
 │   │   ├── korean-character-count/   the counting skill: SKILL.md, instruction.md, scripts/
-│   │   └── crafting-effective-readmes/  the README structure skill: 4 templates, 5 references
 │   ├── scripts/
 │   │   ├── check.sh                  whole-file check; --all covers every .md this repository wrote
 │   │   └── *.py                      vendored from im-not-ai: the nine polishing scripts
@@ -415,7 +436,8 @@ korean-writing/
 ├── tools/
 │   ├── install-git-hook.sh           installs or removes the pre-commit check hook
 │   ├── measure.sh                    false-positive measurement over a corpus
-│   └── release.sh                    version, marketplace manifest, badges, tag
+│   ├── release.sh                    version, marketplace manifest, badges, tag
+│   └── render-hook-output.py         redraws the README hook-output image from real output
 ├── docs/
 │   ├── (banners in Korean and English, light and dark; hook output demo; social preview)
 │   │                                 social-preview.png is the matching svg rendered with rsvg-convert -w 1280 -h 640
@@ -549,6 +571,5 @@ claude --plugin-url ./korean-writing-v1.3.0.zip
 | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
 | `plugin/skills/humanize-korean/`, `plugin/skills/humanize/`, `plugin/skills/humanize-redo/`, `plugin/agents/`, `plugin/scripts/*.py` | The runtime subset of [im-not-ai](https://github.com/epoko77-ai/im-not-ai) at commit `9747f03` (2026-09-06)                     | One trigger phrase in the skill description                        |
 | `plugin/skills/korean-character-count/`                                                                  | [k-skill](https://github.com/NomaDamas/k-skill)                                                                                 | Script unchanged, run path in the instructions, SKILL.md rewritten |
-| `plugin/skills/crafting-effective-readmes/`                                                              | [agent-skills](https://github.com/joshuadavidthomas/agent-skills)' `crafting-effective-readmes/`, commit `516dee7` (2026-07-20) | One line in `style-guide.md` that names the companion skills       |
 
 The rest was written in this repository: the `korean-writing` skill, the whole check hook, the ground truth and the evaluation criteria. Every imported file is MIT-licensed and the original copyright notices are gathered in [`plugin/NOTICE.md`](./plugin/NOTICE.md). This repository is [MIT](./LICENSE) too.

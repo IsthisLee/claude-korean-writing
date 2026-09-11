@@ -33,7 +33,7 @@
 | --------------- | ---------------------------------------------------------------------------------------- |
 | 실행 시점       | `Edit` · `Write` · `MultiEdit` 직후 (PostToolUse)                                          |
 | 실행하는 것     | `plugin/hooks-handlers/posttooluse.sh` 안의 bash 와 python3. 그 밖의 프로그램을 부르지 않습니다  |
-| 읽는 것         | 편집한 내용, 그리고 줄표와 연결어미 쉼표를 셀 때 편집한 `.md` 파일 자체                   |
+| 읽는 것         | 편집한 내용, 편집한 `.md` 파일(줄표·쉼표를 파일 전체로 셀 때와 걸린 자리의 줄 번호를 찾을 때), 그 파일에서 저장소 루트까지 올라가며 찾은 `.korean-writing.json` |
 | 쓰는 것         | 없습니다. 파일을 고치거나 만들지 않습니다                                                 |
 | 네트워크        | 쓰지 않습니다. 원문은 이 컴퓨터 밖으로 나가지 않습니다                                    |
 | 외부 의존성     | 없습니다. 표준 라이브러리만 씁니다                                                        |
@@ -41,10 +41,10 @@
 
 스킬 확인 훅(`plugin/hooks-handlers/pretooluse-skill.sh`)은 도구 입력만 읽고 아무것도 쓰지 않습니다. `korean-writing` 호출이면 권한 확인을 요청하는 JSON 한 줄을 stdout 에 내고 그 밖의 호출에는 아무것도 내지 않습니다. 네트워크와 외부 프로그램을 쓰지 않습니다. 아래 명령의 파일 목록에 이 스크립트를 더하면 1번에 `import json, sys` 한 줄이 더 나오고 2번과 3번은 여전히 아무것도 나오지 않습니다.
 
-네트워크를 쓰지 않는다는 것은 직접 확인할 수 있습니다. 스크립트는 240줄입니다. 1번은 `import sys, json, re, os` 한 줄만 나오고 2번과 3번은 아무것도 나오지 않아야 정상입니다.
+네트워크를 쓰지 않는다는 것은 직접 확인할 수 있습니다. 스크립트는 392줄입니다. 1번은 `import sys, json, re, os, fnmatch` 한 줄만 나오고 2번과 3번은 아무것도 나오지 않아야 정상입니다.
 
 ```bash
-# 1. 파이썬이 불러오는 모듈. sys, json, re, os 한 줄만 나옵니다
+# 1. 파이썬이 불러오는 모듈. sys, json, re, os, fnmatch 한 줄만 나옵니다
 grep -nE '^\s*(import|from) ' plugin/hooks-handlers/posttooluse.sh
 
 # 2. 네트워크 호출 — 출력 없음 (훅과 내장 윤문 스크립트 모두)
@@ -111,7 +111,7 @@ Installing it means two shell scripts run automatically: one every time you edit
 | ----------------- | ----------------------------------------------------------------------------- |
 | When it runs      | Right after `Edit` / `Write` / `MultiEdit` (PostToolUse)                        |
 | What it executes  | bash and python3 inside `plugin/hooks-handlers/posttooluse.sh`, nothing else           |
-| What it reads     | The edited content, plus the edited `.md` file when counting em dashes and commas after connective endings |
+| What it reads     | The edited content; the edited `.md` file (to count em dashes and commas across the whole file and to find line numbers for flagged spots); the first `.korean-writing.json` found walking up to the repository root |
 | What it writes    | Nothing. It never modifies or creates files                                    |
 | Network           | None. Your text never leaves your machine                                      |
 | Dependencies      | None. Standard library only                                                    |
@@ -119,10 +119,10 @@ Installing it means two shell scripts run automatically: one every time you edit
 
 The skill-confirm hook (`plugin/hooks-handlers/pretooluse-skill.sh`) reads only the tool input and writes nothing. For a `korean-writing` call it prints one line of JSON asking for a permission prompt, and it prints nothing for any other call. It uses no network and runs no other program. Adding it to the file lists below makes the first command print one more line, `import json, sys`; the other two still print nothing.
 
-You can verify the network claim yourself. The script is 240 lines. The first command should print a single `import sys, json, re, os` line; the other two should print nothing:
+You can verify the network claim yourself. The script is 392 lines. The first command should print a single `import sys, json, re, os, fnmatch` line; the other two should print nothing:
 
 ```bash
-# 1. Python imports. Prints one line: sys, json, re, os
+# 1. Python imports. Prints one line: sys, json, re, os, fnmatch
 grep -nE '^\s*(import|from) ' plugin/hooks-handlers/posttooluse.sh
 
 # 2. Network calls - no output (the hook and the vendored polishing scripts)

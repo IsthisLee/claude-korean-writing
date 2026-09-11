@@ -7,7 +7,8 @@
 # 사용  : plugin/scripts/check.sh FILE...
 #         plugin/scripts/check.sh --all      저장소가 쓴 .md 를 전부 검사한다 (가져온 파일은 뺀다)
 # 종료  : 걸린 파일이 하나라도 있으면 1, 없으면 0. 인자가 없으면 2. .md 가 아닌 파일은 건너뛴다.
-# 끄기  : 파일 머리에 <!-- korean-writing: ignore --> 가 있으면 그 파일은 통과한다.
+# 끄기  : 훅과 같다. 파일 머리의 <!-- korean-writing: ignore --> 는 그 파일을 건너뛰고, 머리의 disable 표시와
+#         .korean-writing.json · KOREAN_WRITING_DISABLE_RULES 는 적힌 규칙만 뺀다.
 #
 # 세션 단위 끄기 스위치는 여기서 걷어낸다. 이 스크립트를 부르는 것 자체가 검사하라는 뜻이다.
 # 걷어내지 않으면 훅이 stdin 을 읽기 전에 끝나 파이프가 끊기고, 검사가 아니라 exit 120 이 나온다.
@@ -21,7 +22,7 @@ HOOK="$ROOT/hooks-handlers/posttooluse.sh"
 # --all 이 훑지 않는 곳. 다른 MIT 프로젝트에서 가져온 파일이라 이 저장소의 규칙 대상이 아니다.
 # plugin/NOTICE.md 에 적힌 목록과 같아야 한다. 저장소에서는 plugin/ 아래에 있고
 # 설치본에서는 루트에 있으므로 접두사를 선택으로 둔다.
-VENDORED='^(plugin/)?(skills/(humanize|humanize-korean|humanize-redo|crafting-effective-readmes)/|agents/)'
+VENDORED='^(plugin/)?(skills/(humanize|humanize-korean|humanize-redo)/|agents/)'
 
 if [ "${1:-}" = "--all" ]; then
   command -v git >/dev/null 2>&1 || { echo "--all 은 git 이 있어야 한다" >&2; exit 2; }
