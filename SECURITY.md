@@ -40,7 +40,7 @@
 | 외부 의존성     | 없습니다. 표준 라이브러리만 씁니다                                                        |
 | 결과            | stderr 에 걸린 항목을 적고 종료 코드 2 로 끝냅니다. 편집을 되돌리지 않습니다              |
 
-스킬 확인 훅(`plugin/hooks-handlers/pretooluse-skill.sh`)은 도구 입력만 읽고 아무것도 쓰지 않습니다. `korean-writing` 호출이면 권한 확인을 요청하는 JSON 한 줄을 stdout 에 내고 그 밖의 호출에는 아무것도 내지 않습니다. 네트워크와 외부 프로그램을 쓰지 않습니다. 아래 명령의 파일 목록에 이 스크립트를 더하면 1번에 `import json, sys` 한 줄이 더 나오고 2번과 3번은 여전히 아무것도 나오지 않습니다.
+스킬 확인 훅(`plugin/hooks-handlers/pretooluse-skill.sh`)은 훅 입력과 이 세션의 기록 파일을 읽고 아무것도 쓰지 않습니다. 기록 파일은 Claude Code 가 `transcript_path` 로 알려 주는 이 컴퓨터의 파일이고 뒤쪽 4MB 만 읽습니다. 사용자가 적용 여부 질문에 무엇을 골랐는지 찾는 데만 씁니다. `korean-writing` 호출이면 호출을 막거나 통과시키는 JSON 한 줄을 stdout 에 내고 그 밖의 호출에는 아무것도 내지 않습니다. 네트워크와 외부 프로그램을 쓰지 않습니다. 아래 명령의 파일 목록에 이 스크립트를 더하면 1번에 `import json, os, re, sys` 한 줄이 더 나오고 2번과 3번은 여전히 아무것도 나오지 않습니다.
 
 네트워크를 쓰지 않는다는 것은 직접 확인할 수 있습니다. 스크립트는 392줄입니다. 1번은 `import sys, json, re, os, fnmatch` 한 줄만 나오고 2번과 3번은 아무것도 나오지 않아야 정상입니다.
 
@@ -119,7 +119,7 @@ Installing it means two shell scripts run automatically: one every time you edit
 | Dependencies      | None. Standard library only                                                    |
 | Output            | Writes findings to stderr, exits 2. It never reverts your edit                  |
 
-The skill-confirm hook (`plugin/hooks-handlers/pretooluse-skill.sh`) reads only the tool input and writes nothing. For a `korean-writing` call it prints one line of JSON asking for a permission prompt, and it prints nothing for any other call. It uses no network and runs no other program. Adding it to the file lists below makes the first command print one more line, `import json, sys`; the other two still print nothing.
+The skill-confirm hook (`plugin/hooks-handlers/pretooluse-skill.sh`) reads the hook input and this session's transcript, and writes nothing. The transcript is the local file Claude Code names in `transcript_path`; only its last 4 MB are read, and only to find what you answered when asked whether to apply the rules. For a `korean-writing` call it prints one line of JSON that blocks or lets the call through, and it prints nothing for any other call. It uses no network and runs no other program. Adding it to the file lists below makes the first command print one more line, `import json, os, re, sys`; the other two still print nothing.
 
 You can verify the network claim yourself. The script is 392 lines. The first command should print a single `import sys, json, re, os, fnmatch` line; the other two should print nothing:
 

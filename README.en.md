@@ -177,7 +177,16 @@ Here is what loads on its own, when, and what to type to call it by name.
 | The check hook                   | Right after `Edit`, `Write` or `MultiEdit` touches a `.md`    | `/korean-writing:check FILE...`                                   |
 | Character counting               | "500자 이내로", "글자 수 세줘" and similar requests            | `/korean-writing:korean-character-count`                         |
 
-The two hooks have no name to call: they run when their condition is met and stay quiet otherwise. Three of the five skills load from the request; the two polishing entry points (`humanize`, `humanize-redo`) carry `disable-model-invocation`, so they only run when typed, and in exchange they cost nothing in always-on context. If you installed the plugin, `/korean-writing:korean-writing` reaches the same skill; the short form is fine. When Claude calls `korean-writing` on its own, the skill-confirm hook raises a permission prompt. With the skill applied, facts given in the request were all kept, but the explanation Claude adds on its own came out shorter ([`EVALUATION.md`](EVALUATION.md) J3, Korean), so decline it for a document that needs a detailed explanation; declining means the text is written without the rules.
+The two hooks have no name to call: they run when their condition is met and stay quiet otherwise. Three of the five skills load from the request; the two polishing entry points (`humanize`, `humanize-redo`) carry `disable-model-invocation`, so they only run when typed, and in exchange they cost nothing in always-on context. If you installed the plugin, `/korean-writing:korean-writing` reaches the same skill; the short form is fine. When Claude calls `korean-writing` on its own, it first asks in Korean whether to apply it; why is under "Why it asks before writing" below.
+
+### Why it asks before writing
+
+When Claude calls `korean-writing` on its own, it asks in Korean right before writing. It shows in one line what it is about to write and offers 「적용」 (apply) or 「적용 안 함」 (don't apply). Choosing not to apply does not stop the work; Claude carries on without the rules.
+
+It asks because the rules make text shorter. Dates, numbers and conditions written into the request were never dropped in the measurement (27 items). What shrinks is the explanation Claude adds on its own. Asked for a document explaining debouncing, text written without the rules ran 661 Korean characters and all 8 runs explained that changing `delay` restarts the timer; with the rules it ran 461 characters and only 4 of 8 did ([`EVALUATION.md`](EVALUATION.md) J3, Korean). For a document that needs those side explanations, choose 「적용 안 함」 or put the explanation you need into the request.
+
+It asks once, right before writing, whether the text is a chat reply or a `.md` file. The check hook that runs after a file is saved never asks. Typing `/korean-writing` yourself, or asking for it by name ("korean-writing 스킬로 써줘"), applies it without asking.
+
 
 Hand a draft to the polish skill and the fixed text comes back with a one-line status: an estimated change rate and a grade from A to D. Below it, three to six of the main edits are shown side by side, before and after. If more than half the text changed, you get that fact instead of a result. A text changed by half is a rewrite, not a polish.
 
@@ -216,7 +225,7 @@ Here is what the plugin ships with.
 | Agents         | 3            | vendored from im-not-ai: diagnosis, rewrite and final review for the polishing pipeline                                                                                                                            |
 | Rulebook       | 84 items     | im-not-ai's taxonomy: 10 categories, each item with a severity and a fix                                                                                                                                           |
 | Ground truth   | 15 sentences | 10 violations Claude Code actually generated, 5 clean sentences from the same context                                                                                                                              |
-| Regression     | 108 cases    | 86 for the check hook, 22 for the skill-confirm hook |
+| Regression     | 120 cases    | 86 for the check hook, 34 for the skill-confirm hook |
 | Scripts        | 5 + 9        | five written here: character count, whole-file check, false-positive measurement, release, hook-output image. The nine vendored from im-not-ai serve the polishing pipeline |
 | Network        | none         | the hooks are bash and python3 regular expressions; the counter uses `node:fs`                                                                                                                                     |
 
@@ -379,7 +388,7 @@ The same checks run locally with these commands.
 
 ```bash
 python3 tests/test_posttooluse.py     # check hook regression, 62 cases
-python3 tests/test_pretooluse.py      # skill-confirm hook regression, 22 cases
+python3 tests/test_pretooluse.py      # skill-confirm hook regression, 34 cases
 plugin/scripts/check.sh --all                         # do the documents pass their own hook
 tools/measure.sh ~/Documents                 # false positives over real documents
 ```
@@ -430,7 +439,7 @@ korean-writing/
 │                                     marketplace catalog; its source points at ./plugin
 ├── tests/
 │   ├── test_posttooluse.py           62 regression cases for the check hook; verifies reported counts
-│   ├── test_pretooluse.py            22 regression cases for the skill-confirm hook
+│   ├── test_pretooluse.py            34 regression cases for the skill-confirm hook
 │   ├── ground-truth.json             10 awkward sentences that were actually generated
 │   └── clean.json                    5 clean sentences from the same context
 ├── tools/
