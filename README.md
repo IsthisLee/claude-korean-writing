@@ -40,7 +40,7 @@
   <a href="#자주-묻는-질문">FAQ</a>
 </p>
 
-> **v1.3.0**: 모델이 `korean-writing` 스킬을 스스로 부르기 전에 적용할지 묻습니다. 스킬로 쓴 설명 문서에서 Claude 가 덧붙이는 설명이 짧아지는 것을 재서 확인했습니다([EVALUATION.md](EVALUATION.md) J3). 요청에 적은 사실은 스킬을 켜도 모두 담겼습니다. 거절하면 규칙 없이 쓰고 `/korean-writing` 을 직접 치면 묻지 않습니다. 상세: [CHANGELOG.md](CHANGELOG.md)
+> **v2.0.0**: 검사 훅이 걸린 자리의 줄 번호와 발췌를 함께 알리고 규칙을 골라 끌 수 있게 됐습니다(파일 머리 표시, `.korean-writing.json`, 플러그인 설정 `disabled_rules`). 한국어 산문과 관계없던 `crafting-effective-readmes` 스킬은 뺐습니다. 작성 규칙과 글자 수 스킬은 `npx skills add` 로 다른 에이전트에도 깔립니다. 상세: [CHANGELOG.md](CHANGELOG.md)
 
 ## 어떤 플러그인인가
 
@@ -571,9 +571,9 @@ GitHub 릴리스 자체는 이 노트북에서 만들지 않습니다. 태그가
 받은 zip은 설치하지 않고 한 세션만 띄워 볼 수 있습니다. 증명은 `gh` 로 확인합니다.
 
 ```bash
-gh release download v1.3.0 -p '*.zip'
-gh attestation verify korean-writing-v1.3.0.zip -R IsthisLee/claude-korean-writing
-claude --plugin-url ./korean-writing-v1.3.0.zip
+gh release download v2.0.0 -p '*.zip'
+gh attestation verify korean-writing-v2.0.0.zip -R IsthisLee/claude-korean-writing
+claude --plugin-url ./korean-writing-v2.0.0.zip
 ```
 
 ## 출처와 라이선스
