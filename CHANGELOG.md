@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-09-11
+
 ### 추가
 
 - **훅이 짚은 자리를 Claude 가 같은 턴에 고치는지 재는 실험을 넣었습니다.** `docs/experiments/hook-loop/` 입니다. AI 티가 든 초안을 `notice.md` 로 저장해 달라고 한 claude-sonnet-5 3회에서 Claude 는 매번 초안을 먼저 저장했고 훅의 알림을 받은 뒤 걸린 항목을 같은 턴에 모두 고쳤습니다. 플러그인을 끈 3회는 초안 그대로 저장하고 끝났습니다. 훅의 알림은 stream-json 에 찍히지 않아서 마지막 파일을 같은 검사기에 다시 넣어 판정합니다. K2 가 `결입니다` 를 세지 않아 그 문장은 결과물에 남는다는 한계도 적었습니다
@@ -149,6 +151,7 @@
 - README 한국어판·영어판, 훅 출력 데모 이미지(`docs/hook-output.svg`)
 - 제3자 고지(`NOTICE.md`): im-not-ai·claude-forge·k-skill·agent-toolkit 의 원 저작권 표시
 
-[Unreleased]: https://github.com/IsthisLee/claude-korean-writing/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/IsthisLee/claude-korean-writing/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/IsthisLee/claude-korean-writing/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/IsthisLee/claude-korean-writing/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/IsthisLee/claude-korean-writing/releases/tag/v1.0.0
