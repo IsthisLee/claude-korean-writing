@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-09-11
+
 ### 변경
 
 - **스킬 적용 여부를 Claude 가 한국어로 묻고 거절해도 작업이 멈추지 않습니다.** 지금까지는 Claude Code 권한 창이 떴는데 선택지가 영어였고 거절하면 작업이 멈췄습니다. 이제 확인 훅이 스킬 호출을 막고 Claude 에게 질문 도구로 「적용」·「적용 안 함」 을 띄우게 합니다. 질문에는 무엇을 어디에 쓰는 글인지가 들어갑니다. 「적용」 을 고르면 훅이 세션 기록에서 그 답을 찾아 다음 호출을 통과시키고 다른 답이면 Claude 는 스킬 없이 이어서 씁니다. 세션 기록을 읽지 못하면 예전 권한 창으로 돌아갑니다. 질문 도구가 없는 헤드리스 실행에서도 막힌 뒤 규칙 없이 끝까지 썼습니다(`EVALUATION.md` J4). 다만 헤드리스에서는 도구가 없다는 말이 글 앞에 붙는 경우가 두 번 중 한 번 남았습니다. 회귀 테스트가 22건에서 36건이 됐습니다
@@ -199,7 +201,8 @@
 - README 한국어판·영어판, 훅 출력 데모 이미지(`docs/hook-output.svg`)
 - 제3자 고지(`NOTICE.md`): im-not-ai·claude-forge·k-skill·agent-toolkit 의 원 저작권 표시
 
-[Unreleased]: https://github.com/IsthisLee/claude-korean-writing/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/IsthisLee/claude-korean-writing/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/IsthisLee/claude-korean-writing/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/IsthisLee/claude-korean-writing/compare/v1.3.0...v2.0.0
 [1.3.0]: https://github.com/IsthisLee/claude-korean-writing/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/IsthisLee/claude-korean-writing/compare/v1.1.0...v1.2.0
