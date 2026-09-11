@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <strong>A Korean prose linter for Claude Code: polished while writing, checked on save.</strong><br>
+  <strong>A Claude Code plugin that makes Claude write Korean without translationese or AI tells.</strong><br>
   New text follows the rules from the first line. When a <code>.md</code> is saved, AI tells are flagged and handed back to Claude in the same turn.<br>
   Text that already exists is polished by the bundled <a href="https://github.com/epoko77-ai/im-not-ai">im-not-ai</a>.<br>
   Two commands to install, nothing to configure. Nothing you write leaves your machine.
@@ -46,7 +46,7 @@
 
 Claude Code's Korean is grammatically fine. It still reads wrong: word order carried over from English, metaphors that arrived through English, and stock phrases that land in the same spot of every document. When 205 Korean documents that had accumulated on one machine were run through the hook, 85 were flagged and only one of those was written before 2024. The rest are 2026 files written by Claude, most of them for em-dash interjections.
 
-Patching this with a prompt means pasting that prompt into every session, and asking for a cleanup afterwards is already too late: a finished draft is built on translation-ese, and polishing rarely gets it out. So the three moments when Korean text gets made each get an owner. Installing turns on all three at once, and there is nothing to remember to call.
+Patching this with a prompt means pasting that prompt into every session, and asking for a cleanup afterwards is already too late: polishing a finished draft leaves its shape mostly in place. In blind judging the polish changed 0 to 18% of the text (0% for the notice compared below), and text written under the rules from the start beat the polished drafts 49 to 0 over 56 pairs. So the three moments when Korean text gets made each get an owner. Installing turns on all three at once, and there is nothing to remember to call.
 
 | Moment                                                        | What covers it                                                                                           | When it runs                             | Where the rules live                     |
 | ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | ---------------------------------------- | ---------------------------------------- |
@@ -75,6 +75,12 @@ Checked against each repository on 2026-09-11. A blank cell means no feature for
 fluent-korean covers a different moment, so the two can be installed together. This plugin does not check spelling or spacing, so it does not overlap with spell checkers either.
 
 ## Seeing it work
+
+### Same request, two results
+
+<p align="center"><img src="docs/before-after.svg" alt="The same notice request written without the plugin and polished afterwards, next to the one written with the skill from the start" width="100%"></p>
+
+On the left, a notice written without the plugin and then polished by im-not-ai. The polish did not change a single character, so the bold text, the numbered list and the length report tacked on after the body all stayed. On the right, the same request written with the `korean-writing` skill from the start; a judge who did not know which was which picked it both times, with the order swapped. This is one pair; the full judging is in the Verification section. `tools/render-before-after.py` draws the image from the real outputs in `docs/samples/before-after/`.
 
 ### Sentences, before and after
 
@@ -177,7 +183,24 @@ Here is what loads on its own, when, and what to type to call it by name.
 | The check hook                   | Right after `Edit`, `Write` or `MultiEdit` touches a `.md`    | `/korean-writing:check FILE...`                                   |
 | Character counting               | "500자 이내로", "글자 수 세줘" and similar requests            | `/korean-writing:korean-character-count`                         |
 
-The two hooks have no name to call: they run when their condition is met and stay quiet otherwise. Three of the five skills load from the request; the two polishing entry points (`humanize`, `humanize-redo`) carry `disable-model-invocation`, so they only run when typed, and in exchange they cost nothing in always-on context. If you installed the plugin, `/korean-writing:korean-writing` reaches the same skill; the short form is fine. When Claude calls `korean-writing` on its own, the skill-confirm hook raises a permission prompt. With the skill applied, facts given in the request were all kept, but the explanation Claude adds on its own came out shorter ([`EVALUATION.md`](EVALUATION.md) J3, Korean), so decline it for a document that needs a detailed explanation; declining means the text is written without the rules.
+The two hooks have no name to call: they run when their condition is met and stay quiet otherwise. Three of the five skills load from the request; the two polishing entry points (`humanize`, `humanize-redo`) carry `disable-model-invocation`, so they only run when typed, and in exchange they cost nothing in always-on context. If you installed the plugin, `/korean-writing:korean-writing` reaches the same skill; the short form is fine. When Claude calls `korean-writing` on its own, it first asks in Korean whether to apply it; why is under "Why it asks before writing" below.
+
+### Why it asks before writing
+
+When Claude calls `korean-writing` on its own, it asks in Korean right before writing. It shows in one line what it is about to write and offers 「적용」 (apply) or 「적용 안 함」 (don't apply). Choosing not to apply does not stop the work; Claude carries on without the rules.
+
+It asks because the rules make text shorter. Dates, numbers and conditions written into the request were never dropped in the measurement (27 items). What shrinks is the explanation Claude adds on its own. Asked for a document explaining debouncing, text written without the rules ran 661 Korean characters and all 8 runs explained that changing `delay` restarts the timer; with the rules it ran 461 characters and only 4 of 8 did ([`EVALUATION.md`](EVALUATION.md) J3, Korean). For a document that needs those side explanations, choose 「적용 안 함」 or put the explanation you need into the request.
+
+It asks once, right before writing, whether the text is a chat reply or a `.md` file. The check hook that runs after a file is saved never asks. Typing `/korean-writing` yourself, or asking for it by name ("korean-writing 스킬로 써줘"), applies it without asking.
+
+### Getting the best text
+
+1. **Put the facts in the request.** Dates, numbers, conditions and the audience come through even with the rules on (J3).
+2. **State the length if it matters.** Text written under the rules tends to come out shorter than asked (C10); ask for more if it falls short.
+3. **Attach a sample of your own writing if you have a voice.** The skill follows the sample's endings and sentence length before its own rules. This has not been measured yet.
+4. **Choose 「적용」 when asked.** If you need long side explanations, choose 「적용 안 함」.
+5. **Have it saved as a `.md` file.** The check hook hands back each flagged spot with its line number and Claude fixes it in the same turn ([experiment](./docs/experiments/hook-loop/)).
+6. **Polish drafts that already exist** with `/korean-writing:humanize`. For new text, writing under the rules from the start beat writing first and polishing afterwards (49 to 0 over 56 pairs).
 
 Hand a draft to the polish skill and the fixed text comes back with a one-line status: an estimated change rate and a grade from A to D. Below it, three to six of the main edits are shown side by side, before and after. If more than half the text changed, you get that fact instead of a result. A text changed by half is a rewrite, not a polish.
 
@@ -216,7 +239,7 @@ Here is what the plugin ships with.
 | Agents         | 3            | vendored from im-not-ai: diagnosis, rewrite and final review for the polishing pipeline                                                                                                                            |
 | Rulebook       | 84 items     | im-not-ai's taxonomy: 10 categories, each item with a severity and a fix                                                                                                                                           |
 | Ground truth   | 15 sentences | 10 violations Claude Code actually generated, 5 clean sentences from the same context                                                                                                                              |
-| Regression     | 108 cases    | 86 for the check hook, 22 for the skill-confirm hook |
+| Regression     | 120 cases    | 86 for the check hook, 34 for the skill-confirm hook |
 | Scripts        | 5 + 9        | five written here: character count, whole-file check, false-positive measurement, release, hook-output image. The nine vendored from im-not-ai serve the polishing pipeline |
 | Network        | none         | the hooks are bash and python3 regular expressions; the counter uses `node:fs`                                                                                                                                     |
 
@@ -224,7 +247,7 @@ Here is what the plugin ships with.
 
 Any request to write text triggers it: Slack notices and mail, announcements, reports, release notes, commit messages, READMEs and planning documents, meeting notes and working memos. Whether the reader is someone else or only you makes no difference, and code-only work does not trigger it.
 
-The heart of the rule is to write as a person speaks, and a sentence that reads like translated English has failed. Timing matters. The skill writes that way from the first sentence rather than fixing a finished draft, because a finished draft is already translation-ese in its structure and polishing rarely gets it out.
+The heart of the rule is to write as a person speaks, and a sentence that reads like translated English has failed. Timing matters. The skill writes that way from the first sentence rather than fixing a finished draft, because polishing a finished draft tends to leave its numbered lists and bold labels in place ([Same request, two results](#same-request-two-results)).
 
 Six principles sit underneath. Write clean from the start. Strip only the machine tics, and leave formality, expertise, genre, argument and facts untouched. Add no metaphor or rhetoric the source did not have. Do not turn an obligation or a hedge into a flat assertion. If the draft still misses the bar, hand it to `humanize-korean`. Which model writes is not this rule's concern.
 
@@ -379,7 +402,7 @@ The same checks run locally with these commands.
 
 ```bash
 python3 tests/test_posttooluse.py     # check hook regression, 62 cases
-python3 tests/test_pretooluse.py      # skill-confirm hook regression, 22 cases
+python3 tests/test_pretooluse.py      # skill-confirm hook regression, 34 cases
 plugin/scripts/check.sh --all                         # do the documents pass their own hook
 tools/measure.sh ~/Documents                 # false positives over real documents
 ```
@@ -430,7 +453,7 @@ korean-writing/
 │                                     marketplace catalog; its source points at ./plugin
 ├── tests/
 │   ├── test_posttooluse.py           62 regression cases for the check hook; verifies reported counts
-│   ├── test_pretooluse.py            22 regression cases for the skill-confirm hook
+│   ├── test_pretooluse.py            34 regression cases for the skill-confirm hook
 │   ├── ground-truth.json             10 awkward sentences that were actually generated
 │   └── clean.json                    5 clean sentences from the same context
 ├── tools/
