@@ -4,6 +4,26 @@
 
 ## [Unreleased]
 
+### 추가
+
+- **검사 결과에 걸린 자리를 붙입니다.** 규칙마다 셋까지 파일의 줄 번호와 짧은 발췌를 알림에 붙이고 넘치면 「외 N곳」으로 줄입니다. Claude 가 그 자리만 고치고 걸리지 않은 문장은 건드리지 않게 하려는 것입니다. 판정(코드와 횟수)은 예전 경로로 계산하고 위치는 따로 찾습니다. 이 기계의 한글 `.md` 304개를 옛 훅과 새 훅에 같은 입력으로 넣어 판정이 달라진 파일이 0개인 것을 확인했습니다(`EVALUATION.md` K). 알림대로 고친 글의 정보 보존도 같은 조건의 옛 훅과 차이가 없었습니다(I1 재측정, 정보가 사라진 표본 옛 훅 12건 중 0건, 새 훅 17건 중 1건, Fisher 단측 p=0.586). `plugin/scripts/check.sh` 와 `/korean-writing:check` 도 같은 위치를 냅니다
+- **규칙을 골라 끌 수 있습니다.** 파일 머리 10줄 안의 `<!-- korean-writing: disable K1 K9 -->`, 저장소에 커밋하는 `.korean-writing.json`(`disable` 규칙 목록과 `ignore` 경로 패턴), 환경변수 `KOREAN_WRITING_DISABLE_RULES`, 플러그인 설정 `disabled_rules` 넷입니다. 설정 파일은 편집한 파일에서 위로 올라가며 찾고 `.git` 이 있는 폴더에서 멈춥니다. 읽지 못한 설정은 무시하고 검사한 뒤 그 사실을 알립니다. 끄는 방법은 훅의 알림에 적지 않았습니다. 알림에 있으면 Claude 가 표현을 고치는 대신 규칙을 끌 수 있어서입니다. 회귀 테스트 24건을 더해 검사 훅 테스트가 86건이 됐습니다
+- **Claude Code 밖에서도 작성 규칙을 쓸 수 있습니다.** `npx skills add IsthisLee/claude-korean-writing -s korean-writing -s korean-character-count -g` 로 Codex·Cursor 같은 다른 에이전트에 깔립니다. 격리한 HOME 에서 설치와 글자 수 스크립트 실행까지 확인했고 각 에이전트 안의 동작은 확인하지 못했습니다. 훅과 윤문은 Claude Code 에서만 돕니다
+- **작성 스킬이 쓰는 사람의 문체를 따릅니다.** 사용자가 자기 글을 표본으로 주면 종결어미·문장 길이·낱말·문장 부호를 표본에 맞추고 이 규칙보다 표본을 먼저 둡니다. 이미 있는 문서를 고칠 때는 그 문서의 격식을 그대로 둡니다. [humanizer](https://github.com/blader/humanizer) 의 Voice 절과 im-not-ai 규칙집의 register 보존을 따랐습니다. 표본이 없는 과제로 다시 잰 J3 에서 세부 보존은 앞 판과 같았습니다. 고친 블라인드 판정 스크립트로 im-not-ai 윤문본과 기본 네 쌍을 붙여 3승 1패였고 진 쌍은 `~할 수 있다` 가 되풀이된 짧은 공지였습니다(`EVALUATION.md` J)
+- `tools/render-hook-output.py` 가 README 의 훅 출력 그림을 다시 그립니다. 정답 데이터 문장으로 문서를 만들어 실제 훅에 넣고 그 출력을 그대로 옮깁니다. 손으로 그렸던 그림을 누구나 재현할 수 있게 됐습니다
+
+### 변경
+
+- SECURITY.md 의 「읽는 것」에 `.korean-writing.json` 을 더했습니다. 검사 훅의 import 에 표준 라이브러리 `fnmatch` 가 늘었습니다
+
+### 제거
+
+- **`crafting-effective-readmes` 스킬을 뺐습니다.** 한국어 산문과 관계없는 README 구조 스킬이었고 설명이 영어라 영어 README 요청에도 떴습니다. 지난 측정값으로 상시 컨텍스트의 스킬 설명 몫 약 70 토큰이 빠집니다. 이 스킬을 쓰던 사람은 원본 [agent-skills](https://github.com/joshuadavidthomas/agent-skills) 에서 받을 수 있습니다. README 를 쓰는 요청의 문장은 계속 `korean-writing` 스킬이 맡습니다
+
+### 수정
+
+- **릴리스 전에 돌리는 블라인드 판정 스크립트가 스킬 없이 돌던 문제를 고쳤습니다.** 설치본을 `plugin/` 으로 나눈 뒤 `docs/experiments/skill-vs-imnotai/run.sh` 가 옛 경로를 읽어 스킬과 규칙집을 싣지 못했는데도 끝까지 돌아 「회귀 없음」 을 냈습니다. 경로를 고치고 필요한 파일이 없으면 LLM 을 부르기 전에 멈추게 했습니다. 이 스크립트로 잰 `EVALUATION.md` C7·C9 는 나누기 전에 잰 것이라 영향이 없습니다
+
 ## [1.3.0] - 2026-09-11
 
 ### 추가
