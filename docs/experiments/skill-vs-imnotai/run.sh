@@ -12,19 +12,29 @@
 #
 # 사용  : run.sh [출력디렉터리] [프롬프트ID...]
 #         ID 를 안 주면 01 05 L1 L4 를 쓴다. 넷이 기본인 이유는 비용이다.
-# 종료  : 스킬이 진 쌍이 이긴 쌍보다 많으면 1, 아니면 0.
+#         출력디렉터리를 안 주면 이 폴더의 out/run-<시각> 이다. out/ 은 커밋하지 않는다.
+# 종료  : 스킬이 진 쌍이 이긴 쌍보다 많으면 1, 아니면 0. 필요한 파일이 없으면 2.
 # 비용  : 프롬프트 4개 기준 생성 8회, 윤문 최대 14회, 판정 8회. LLM 을 부르므로 CI 에 넣지 않는다.
 #         릴리스 전에 사람이 한 번 돌리는 자리다.
 # 주의  : 병렬로 돌릴 때 claude 호출에 `< /dev/null` 을 붙인다. 붙이지 않으면 작업 목록 stdin 을
 #         물어 마지막 묶음이 통째로 빈 출력을 낸다(실측: 24건 중 4건이 그렇게 죽었다).
+#         스킬과 규칙집을 읽지 못하면 판정이 규칙 없는 글끼리 붙어도 끝까지 돈다. 그래서 먼저 확인하고 멈춘다.
+#         설치본을 plugin/ 으로 나눈 뒤 2026-09-11 까지 이 스크립트가 옛 경로를 읽어 실제로 그렇게 돌았다.
 set -uo pipefail
 BASE="$(cd "$(dirname "$0")" && pwd)"
 REPO="$(cd "$BASE/../../.." && pwd)"
+PLUGIN="$REPO/plugin"
 export KW_REPO="$REPO"
-OUT=${1:-"$BASE/run-$(date +%Y%m%d-%H%M%S)"}; shift 2>/dev/null || true
+OUT=${1:-"$BASE/out/run-$(date +%Y%m%d-%H%M%S)"}; shift 2>/dev/null || true
 IDS=("$@"); [ ${#IDS[@]} -gt 0 ] || IDS=(01 05 L1 L4)
 command -v claude >/dev/null 2>&1 || { echo "claude 가 없다" >&2; exit 2; }
+for f in SKILL.md agents/humanize-monolith.md agents/humanize-diagnostician.md agents/humanize-finalizer.md \
+         skills/humanize-korean/references/quick-rules.md skills/humanize-korean/references/ai-tell-taxonomy.md \
+         scripts/prepare_monolith_input.py; do
+  [ -r "$PLUGIN/$f" ] || { echo "필요한 파일이 없다: plugin/$f. 경로가 바뀌었으면 이 스크립트를 고친다" >&2; exit 2; }
+done
 mkdir -p "$OUT/gen" "$OUT/work" "$OUT/judge"
+echo "출력: $OUT"
 
 MODEL=${KW_MODEL:-claude-opus-5}
 JUDGE=${KW_JUDGE:-claude-opus-5}
@@ -32,14 +42,14 @@ COMMON=(--strict-mcp-config --setting-sources "" --max-turns 1)
 NOTOOL=$'\n\n## 이 실행의 예외\n이 세션에는 도구가 없다. 파일을 읽거나 쓰지 말고 요구한 산출물의 본문만 그대로 출력한다. 설명·머리말·코드펜스를 붙이지 않는다.'
 
 sys_of() { # sys_of <에이전트파일> <규칙집파일>
-  cat "$REPO/agents/$1"; echo; echo "## 규칙집"; echo; cat "$REPO/skills/humanize-korean/references/$2"; printf '%s' "$NOTOOL"
+  cat "$PLUGIN/agents/$1"; echo; echo "## 규칙집"; echo; cat "$PLUGIN/skills/humanize-korean/references/$2"; printf '%s' "$NOTOOL"
 }
 
 for id in "${IDS[@]}"; do
   q="$BASE/prompts/$id.txt"
   [ -r "$q" ] || { echo "프롬프트 없음: $id" >&2; exit 2; }
   echo "  생성 $id"
-  claude -p "$(cat "$q")" --append-system-prompt "$(cat "$REPO/SKILL.md")" --model "$MODEL" "${COMMON[@]}" \
+  claude -p "$(cat "$q")" --append-system-prompt "$(cat "$PLUGIN/SKILL.md")" --model "$MODEL" "${COMMON[@]}" \
     > "$OUT/gen/skill_$id.md" 2>/dev/null < /dev/null
   claude -p "$(cat "$q")" --model "$MODEL" "${COMMON[@]}" \
     > "$OUT/gen/plain_$id.md" 2>/dev/null < /dev/null
@@ -49,7 +59,7 @@ for id in "${IDS[@]}"; do
 
   echo "  윤문 $id"
   run="$OUT/work/$id"; mkdir -p "$run"; cp "$OUT/gen/plain_$id.md" "$run/01_input.txt"
-  python3 "$REPO/plugin/scripts/prepare_monolith_input.py" --run-dir "$run" --genre column >/dev/null 2>&1 || exit 1
+  python3 "$PLUGIN/scripts/prepare_monolith_input.py" --run-dir "$run" --genre column >/dev/null 2>&1 || exit 1
   case "$id" in
     L*)  # 정밀 3콜
       claude -p "다음 결합 입력을 진단하라. 진단 본문만 출력한다.
@@ -57,7 +67,7 @@ for id in "${IDS[@]}"; do
 $(cat "$run/01_input_with_metrics.txt")" \
         --append-system-prompt "$(sys_of humanize-diagnostician.md ai-tell-taxonomy.md)" \
         --model "$MODEL" "${COMMON[@]}" > "$run/02_diagnosis.md" 2>/dev/null < /dev/null
-      python3 "$REPO/plugin/scripts/prepare_monolith_input.py" --run-dir "$run" --genre column \
+      python3 "$PLUGIN/scripts/prepare_monolith_input.py" --run-dir "$run" --genre column \
         --diagnosis "$run/02_diagnosis.md" >/dev/null 2>&1 || exit 1 ;;
   esac
   claude -p "다음 결합 입력을 윤문하라. 본문만 출력한다. HUMANIZE-SUMMARY 블록은 붙이지 않는다.
