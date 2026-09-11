@@ -24,6 +24,12 @@
       "title": ".md 편집 뒤 AI 티 검사",
       "description": "한국어 비중이 높은 .md 를 편집하면 AI 티 패턴을 알립니다. 편집을 되돌리지는 않습니다.",
       "default": true
+    },
+    "disabled_rules": {
+      "type": "string",
+      "title": "끌 검사 규칙",
+      "description": "검사 훅에서 끌 규칙 코드를 쉼표로 적습니다. 예: K1,K9. 비워 두면 K1~K10 을 모두 검사합니다.",
+      "default": ""
     }
   },
   "keywords": [

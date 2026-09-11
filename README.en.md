@@ -89,16 +89,20 @@ Four sentences from the ground truth show what the rules are after, before and a
 
 ### What you see on save
 
-This is what appears in Claude Code after a `.md` edit. The window frame is drawn; from the yellow line down it is the hook's actual output, unchanged.
+This is what appears in Claude Code after a `.md` edit. The window frame is drawn; from the yellow line down it is the hook's actual output, unchanged. `tools/render-hook-output.py` draws it by feeding ground-truth sentences to the hook.
 
 <p align="center"><img src="docs/hook-output.svg" alt="Hook output flagging K1, K2, K3, K4 and K7" width="860"></p>
 
-This is the exact stderr the hook produced when the win/lose sentence and the em-dash sentence from the ground truth were fed in as an edit.
+This is the exact stderr the hook produced when the win/lose sentence (G06) and the em-dash sentence (G07) from the ground truth were fed in as two paragraphs. Each flagged spot carries its line number and an excerpt, so Claude fixes only those spots.
 
 ```
 [korean-writing] 배포-지연.md 에 AI 티 패턴이 있다. 편집은 그대로 두었으니 확인하고 고쳐라.
   K1  줄표(—) 삽입구 4개 — 쉼표나 문장 분리로 바꾼다. 한국어에서 가장 강한 AI 티다
+      3행 「원인은 힙 부족이 아니었습니다 — 실측해보니 — 설정이 아예 먹히지…」
+      3행 「…그동안 엉뚱한 데를 뒤졌고 — 그게 시간을 더 잡아먹었습니다 — 결국 다시 봐야 했습니다.」
   K6  승패 의인화 2회 — 우선한다·따른다·앞선다 로 직결한다
+      1행 「규칙이 충돌하면 상위 문서가 이깁니다. 둘 다 값이 있을 때는…」
+      1행 「…다 값이 있을 때는 텍스트가 이기고 강의실 참조는 무시됩니다.…」
   걸린 표현만 고친다. 수치·개수·조건·유보 표현과 걸리지 않은 문장은 그대로 둔다.
   교정 규칙은 korean-writing 스킬에 있다. 격식 문서(계약·약관·법률)면 파일 머리에 <!-- korean-writing: ignore --> 를 넣으면 다시 알리지 않는다.
 ```
@@ -170,14 +174,26 @@ Hand a draft to the polish skill and the fixed text comes back with a one-line s
 
 To check existing documents, run `/korean-writing:check FILE...`. It applies the same rules as the hook, points at each flagged spot, and asks before changing anything. From a shell, `plugin/scripts/check.sh FILE...` exits 1 if any file is flagged, and `--all` covers every `.md` this repository wrote. Both work as-is in CI and pre-commit; `tools/install-git-hook.sh` installs the pre-commit hook for you.
 
-It can be switched off at four scopes.
+It can be switched off at several scopes, and individual rules can be turned off on their own.
 
 | Scope                | How                                                                                                                                 |
 | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | One file             | `<!-- korean-writing: ignore -->` at the top. For contracts, or a catalog of bad examples, where flagging every time makes no sense |
+| Some rules in one file | `<!-- korean-writing: disable K1 K9 -->` at the top. For a document that uses em dashes on purpose, where only a rule or two does not fit |
+| A repository         | Commit a `.korean-writing.json` so the whole team shares one standard. Example below                                               |
+| Some rules, persistently | The plugin setting `disabled_rules`, or `KOREAN_WRITING_DISABLE_RULES=K1,K9`                                                  |
 | Whole session        | `KOREAN_WRITING_HOOK_DISABLED=1`. Turns off both the check hook and the skill-confirm hook                                         |
 | The check, persistently | The plugin setting `edit_check`, toggled from `/plugin` |
 | The whole plugin     | `claude plugin disable korean-writing`                                                                                              |
+
+```json
+{
+  "disable": ["K1"],
+  "ignore": ["legal/*", "CHANGELOG.md"]
+}
+```
+
+The hook uses the first `.korean-writing.json` it finds walking up from the edited file, and stops at the folder holding `.git`, so settings from outside the repository never mix in. `ignore` takes path patterns relative to the folder the settings file sits in, and `*` also crosses folder boundaries. An unreadable settings file is ignored; the file is checked anyway and the report says so. The hook's message never mentions how to turn rules off: if it did, Claude could switch a rule off instead of fixing the wording.
 
 ## Components
 
@@ -191,8 +207,8 @@ Here is what the plugin ships with.
 | Agents         | 3            | vendored from im-not-ai: diagnosis, rewrite and final review for the polishing pipeline                                                                                                                            |
 | Rulebook       | 84 items     | im-not-ai's taxonomy: 10 categories, each item with a severity and a fix                                                                                                                                           |
 | Ground truth   | 15 sentences | 10 violations Claude Code actually generated, 5 clean sentences from the same context                                                                                                                              |
-| Regression     | 84 cases     | 62 for the check hook, 22 for the skill-confirm hook |
-| Scripts        | 4            | character count, whole-file check, false-positive measurement, release                                                                                                                                             |
+| Regression     | 108 cases    | 86 for the check hook, 22 for the skill-confirm hook |
+| Scripts        | 5 + 9        | five written here: character count, whole-file check, false-positive measurement, release, hook-output image. The nine vendored from im-not-ai serve the polishing pipeline |
 | Network        | none         | the hooks are bash and python3 regular expressions; the counter uses `node:fs`                                                                                                                                     |
 
 ### The korean-writing skill
@@ -255,7 +271,7 @@ It loads when you ask for a README to be created or revised. First it settles th
 
 ### The check hook and the scripts
 
-The check hook runs right after `Edit`, `Write` or `MultiEdit` touches a `.md` file and looks only at what was just written, because checking the whole file would re-flag old wording on every edit. The verdict is described in the next section.
+The check hook runs right after `Edit`, `Write` or `MultiEdit` touches a `.md` file and looks only at what was just written, because checking the whole file would re-flag old wording on every edit. Each rule's flagged spots, up to three, come with the file's line number and a short excerpt, so Claude fixes those spots and leaves the unflagged sentences alone. The verdict is described in the next section.
 
 | Script               | What it does                                                                                                                                                                                                                |
 | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -263,6 +279,7 @@ The check hook runs right after `Edit`, `Write` or `MultiEdit` touches a `.md` f
 | `tools/install-git-hook.sh` | Installs a git hook that runs the same check on staged `.md` files before a commit. It refuses to overwrite an existing `pre-commit` and prints the two lines to add instead. `--uninstall` removes it; `git commit --no-verify` skips it |
 | `tools/measure.sh` | Pushes every Korean `.md` under a directory through the hook and reports flagged files and counts per code. Whether a flagged file was written by a person or by Claude is a human call                                     |
 | `tools/release.sh` | Aligns `plugin.json`, the README badges and CHANGELOG to one version, then commits and tags. With `--push` it also pushes and creates the GitHub release                                                                    |
+| `tools/render-hook-output.py` | Builds a document from ground-truth sentences, feeds it to the hook and draws the output as the README image (`docs/hook-output.svg`). Rerun it after changing the hook's messages |
 | `plugin/scripts/*.py`       | The nine scripts of the polishing pipeline, vendored from im-not-ai: input preparation and routing, the change-rate gate, modality restoration, injected-comma removal, chunk reassembly. They run only on a polish request |
 
 ## The verdict rules
@@ -415,7 +432,8 @@ korean-writing/
 ├── tools/
 │   ├── install-git-hook.sh           installs or removes the pre-commit check hook
 │   ├── measure.sh                    false-positive measurement over a corpus
-│   └── release.sh                    version, marketplace manifest, badges, tag
+│   ├── release.sh                    version, marketplace manifest, badges, tag
+│   └── render-hook-output.py         redraws the README hook-output image from real output
 ├── docs/
 │   ├── (banners in Korean and English, light and dark; hook output demo; social preview)
 │   │                                 social-preview.png is the matching svg rendered with rsvg-convert -w 1280 -h 640
