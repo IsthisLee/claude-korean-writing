@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <strong>A Korean prose linter for Claude Code: polished while writing, checked on save.</strong><br>
+  <strong>A Claude Code plugin that makes Claude write Korean without translationese or AI tells.</strong><br>
   New text follows the rules from the first line. When a <code>.md</code> is saved, AI tells are flagged and handed back to Claude in the same turn.<br>
   Text that already exists is polished by the bundled <a href="https://github.com/epoko77-ai/im-not-ai">im-not-ai</a>.<br>
   Two commands to install, nothing to configure. Nothing you write leaves your machine.

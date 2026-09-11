@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <strong>쓸 때 다듬고 저장할 때 검사하는 Claude Code 한국어 린터입니다.</strong><br>
+  <strong>Claude Code가 번역투와 AI 티 없는 한국어를 쓰게 하는 플러그인입니다.</strong><br>
   새 글은 첫 줄부터 규칙대로 쓰고 <code>.md</code>로 저장하면 그 턴 안에서 AI 티를 짚어 Claude에게 돌려줍니다.<br>
   이미 쓴 글은 내장한 <a href="https://github.com/epoko77-ai/im-not-ai">im-not-ai</a>로 다듬습니다.<br>
   설치는 두 줄이고 설정할 것은 없습니다. 원문은 이 컴퓨터를 벗어나지 않습니다.
