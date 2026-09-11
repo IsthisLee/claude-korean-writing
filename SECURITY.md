@@ -8,8 +8,9 @@
 
 | 버전       | 보안 수정                                       |
 | ---------- | ----------------------------------------------- |
-| 1.1.x      | 지원                                            |
-| 1.0.x      | 지원하지 않음. 1.1.x 로 올려 주세요             |
+| 1.2.x      | 지원                                            |
+| 1.1.x      | 지원하지 않음. 1.2.x 로 올려 주세요             |
+| 1.0.x      | 지원하지 않음. 1.2.x 로 올려 주세요             |
 | 1.0.0 미만 | 해당 없음 (1.0.0 이 첫 릴리스)                  |
 
 이 표의 지원 판은 `plugin/.claude-plugin/plugin.json` 의 버전을 따릅니다. 둘이 어긋나면 CI 의 `버전 표기 일치` 작업이 막습니다.
@@ -37,7 +38,7 @@
 | 외부 의존성     | 없습니다. 표준 라이브러리만 씁니다                                                        |
 | 결과            | stderr 에 걸린 항목을 적고 종료 코드 2 로 끝냅니다. 편집을 되돌리지 않습니다              |
 
-네트워크를 쓰지 않는다는 것은 직접 확인할 수 있습니다. 스크립트는 239줄입니다. 1번은 `import sys, json, re, os` 한 줄만 나오고 2번과 3번은 아무것도 나오지 않아야 정상입니다.
+네트워크를 쓰지 않는다는 것은 직접 확인할 수 있습니다. 스크립트는 240줄입니다. 1번은 `import sys, json, re, os` 한 줄만 나오고 2번과 3번은 아무것도 나오지 않아야 정상입니다.
 
 ```bash
 # 1. 파이썬이 불러오는 모듈. sys, json, re, os 한 줄만 나옵니다
@@ -82,8 +83,9 @@ Security fixes land on the latest minor only. Older lines are not backported, so
 
 | Version | Security fixes                     |
 | ------- | ---------------------------------- |
-| 1.1.x   | Supported                          |
-| 1.0.x   | Not supported. Please move to 1.1.x |
+| 1.2.x   | Supported                          |
+| 1.1.x   | Not supported. Please move to 1.2.x |
+| 1.0.x   | Not supported. Please move to 1.2.x |
 | < 1.0.0 | N/A (1.0.0 is the first release)   |
 
 This table tracks the version in `plugin/.claude-plugin/plugin.json`. The `버전 표기 일치` CI job fails if the two drift apart.
@@ -111,7 +113,7 @@ Installing it means a shell script runs automatically every time you edit a `.md
 | Dependencies      | None. Standard library only                                                    |
 | Output            | Writes findings to stderr, exits 2. It never reverts your edit                  |
 
-You can verify the network claim yourself. The script is 239 lines. The first command should print a single `import sys, json, re, os` line; the other two should print nothing:
+You can verify the network claim yourself. The script is 240 lines. The first command should print a single `import sys, json, re, os` line; the other two should print nothing:
 
 ```bash
 # 1. Python imports. Prints one line: sys, json, re, os

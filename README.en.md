@@ -40,7 +40,7 @@
   <a href="#faq">FAQ</a>
 </p>
 
-> **Coming in the next release**: the two hooks that injected rules into ordinary replies and subagents are gone. Replies with the rules injected were measured losing details such as default values ([`EVALUATION.md`](EVALUATION.md) H13, Korean). v1.1.0 still has them. Details: [CHANGELOG.md](CHANGELOG.md)
+> **v1.2.0**: The SessionStart hook that injected rules into ordinary replies is gone. Replies with the rules injected were measured losing details such as default values ([`EVALUATION.md`](EVALUATION.md) H13, Korean). `KOREAN_WRITING_ALWAYS_ON_DISABLED`, which switched that hook off, now does nothing. The check hook's fix instructions now follow the rulebook, and drafts fixed as they instruct lost no information in the measurement (I1). Details: [CHANGELOG.md](CHANGELOG.md)
 
 ## What kind of plugin is this
 

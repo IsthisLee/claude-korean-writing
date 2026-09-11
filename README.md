@@ -40,7 +40,7 @@
   <a href="#자주-묻는-질문">FAQ</a>
 </p>
 
-> **다음 판에서 바뀌는 것**: 평소 답변과 서브에이전트에 규칙을 넣던 훅 둘을 뺐습니다. 규칙을 넣은 답에서 기본값 같은 세부가 빠지는 것을 재서 확인했습니다([EVALUATION.md](EVALUATION.md) H13). v1.1.0 까지는 들어 있습니다. 상세: [CHANGELOG.md](CHANGELOG.md)
+> **v1.2.0**: 평소 답변에 규칙을 넣던 SessionStart 훅을 뺐습니다. 규칙을 넣은 답에서 기본값 같은 세부가 빠지는 것을 재서 확인했습니다([EVALUATION.md](EVALUATION.md) H13). 이 훅을 끄던 `KOREAN_WRITING_ALWAYS_ON_DISABLED` 는 이제 아무 일도 하지 않습니다. 검사 훅의 교정 안내는 규칙집 처방에 맞췄고 알림대로 고친 초안에서 원문의 정보가 빠지지 않는 것을 확인했습니다(I1). 상세: [CHANGELOG.md](CHANGELOG.md)
 
 ## 어떤 플러그인인가
 
