@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1074" height="352" viewBox="0 0 1074 352" font-family="SF Mono, Menlo, Consolas, 'Noto Sans Mono CJK KR', 'Apple SD Gothic Neo', monospace" font-size="13">
-<rect width="1074" height="352" rx="10" fill="#1e2229"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="1074" height="418" viewBox="0 0 1074 418" font-family="SF Mono, Menlo, Consolas, 'Noto Sans Mono CJK KR', 'Apple SD Gothic Neo', monospace" font-size="13">
+<rect width="1074" height="418" rx="10" fill="#1e2229"/>
 <circle cx="20" cy="18" r="6" fill="#ff5f56"/><circle cx="40" cy="18" r="6" fill="#ffbd2e"/><circle cx="60" cy="18" r="6" fill="#27c93f"/>
 <text x="18" y="48" fill="#9aa4b2" xml:space="preserve">$ claude</text>
 <text x="18" y="70" fill="#9aa4b2" xml:space="preserve">&gt; 배포-지연.md 에 지연 사유 정리해줘</text>
@@ -11,7 +11,10 @@
 <text x="18" y="202" fill="#ff8fa3" xml:space="preserve">  K1  줄표(—) 삽입구 4개 — 쉼표나 문장 분리로 바꾼다. 한국어에서 가장 강한 AI 티다</text>
 <text x="18" y="224" fill="#ff8fa3" xml:space="preserve">  K2  추상 구조어 3회 — 기준·경우·종류·단계 같은 구체 명사로 바꾼다</text>
 <text x="18" y="246" fill="#ff8fa3" xml:space="preserve">  K3  번역투 것 구문 1회 — 구체 명사로 바꾼다. 예: 탈이 날 것들이었다 → 탈이 날 문제였다</text>
-<text x="18" y="268" fill="#ff8fa3" xml:space="preserve">  K4  AI 관용구 1회 — 대부분 삭제해도 뜻이 통한다</text>
-<text x="18" y="290" fill="#ff8fa3" xml:space="preserve">  K7  사물 의인화 2회 — 굳다·쓰러지다 같은 직역 비유 대신 멈춘다·죽는다처럼 사실대로 서술한다. 예: 화면이 굳어 → 화면이 멈춰</text>
-<text x="18" y="312" fill="#d7dde5" xml:space="preserve">  교정 규칙은 korean-writing 스킬에 있다. 격식 문서(계약·약관·법률)면 파일 머리에 &lt;!-- korean-writing: ignore --&gt; 를 넣으면 다시 알리지 않는다.</text>
+<text x="18" y="268" fill="#ff8fa3" xml:space="preserve">  K4  AI 관용구 1회 — 결론적으로·요약하자면 같은 표지는 지운다. 「~라고 할 수 있다」는 원문이 이미 단정한 내용일 때만 「~이다」로</text>
+<text x="18" y="290" fill="#ff8fa3" xml:space="preserve">      줄이고 아니면 「~로 보인다」로 둔다. 유보를 단정으로 올리지 않는다</text>
+<text x="18" y="312" fill="#ff8fa3" xml:space="preserve">  K7  사물 의인화 2회 — 굳다·쓰러지다 같은 직역 비유 대신 멈춘다·죽는다처럼 사실대로 서술한다. 예: 화면이 굳어 → 화면이 멈춰</text>
+<text x="18" y="334" fill="#d7dde5" xml:space="preserve">  걸린 표현만 고친다. 수치·개수·조건·유보 표현과 걸리지 않은 문장은 그대로 둔다.</text>
+<text x="18" y="356" fill="#d7dde5" xml:space="preserve">  교정 규칙은 korean-writing 스킬에 있다. 격식 문서(계약·약관·법률)면 파일 머리에 &lt;!-- korean-writing: ignore --&gt; 를 넣으면 다시</text>
+<text x="18" y="378" fill="#d7dde5" xml:space="preserve">      알리지 않는다.</text>
 </svg>

@@ -13,8 +13,11 @@
 
 set -uo pipefail
 
-# 끄기. 세션 단위는 환경변수, 파일 단위는 파일 머리의 <!-- korean-writing: ignore --> 표시(아래 python).
+# 끄기. 세션 단위는 환경변수나 플러그인 설정 edit_check,
+# 파일 단위는 파일 머리의 <!-- korean-writing: ignore --> 표시(아래 python).
+# scripts/check.sh 는 이 둘을 걷어내고 부른다. 부르는 것 자체가 검사하라는 뜻이다.
 [ "${KOREAN_WRITING_HOOK_DISABLED:-0}" = "1" ] && exit 0
+case "${CLAUDE_PLUGIN_OPTION_EDIT_CHECK:-}" in false|0) exit 0 ;; esac
 # python3 가 없으면 검사하지 않는다. 검사기가 작업을 막는 것보다 낫다.
 command -v python3 >/dev/null 2>&1 || exit 0
 
@@ -30,12 +33,14 @@ try:
 except Exception:
     sys.exit(0)
 
+# hooks.json 의 matcher 와 같은 목록이어야 한다. 훅을 직접 부르는 scripts/check.sh 도 여기를 지난다.
+# NotebookEdit 은 넣지 않는다. 그 도구가 주는 경로는 .ipynb 라 아래 검사에 걸리는 일이 없다.
 tool = d.get("tool_name", "")
-if tool not in ("Edit", "Write", "MultiEdit", "NotebookEdit"):
+if tool not in ("Edit", "Write", "MultiEdit"):
     sys.exit(0)
 
 ti = d.get("tool_input") or {}
-path = ti.get("file_path") or ti.get("notebook_path") or ""
+path = ti.get("file_path") or ""
 if not path.endswith(".md"):
     sys.exit(0)
 
@@ -148,11 +153,11 @@ if m:
 # K4 AI 관용구
 m = re.findall(r"결론적으로|종합하면|요약하자면|중요한 점은|시사하는 바가 크|주목할 만하|혁신적|획기적|압도적|라고 할 수 있(?:습니다|다)", body)
 if m:
-    hits.append(("K4", f"AI 관용구 {len(m)}회", "대부분 삭제해도 뜻이 통한다"))
+    hits.append(("K4", f"AI 관용구 {len(m)}회", "결론적으로·요약하자면 같은 표지는 지운다. 「~라고 할 수 있다」는 원문이 이미 단정한 내용일 때만 「~이다」로 줄이고 아니면 「~로 보인다」로 둔다. 유보를 단정으로 올리지 않는다"))
 
 # K5 기계적 병렬
 if re.search(r"첫째[,.]", body) and re.search(r"둘째[,.]", body):
-    hits.append(("K5", "첫째·둘째 병렬", "하나둘은 서술문으로 녹인다"))
+    hits.append(("K5", "첫째·둘째 병렬", "열거가 내용의 뼈대면 순서와 개수를 두고 표지만 바꾼다(우선·이어서·마지막으로). 장식일 때만 서술문으로 녹인다"))
 
 # K6 승패 의인화. 정답 데이터 G06(Claude Code 의 실제 생성물)에 있는 패턴.
 # 한 문서 1회는 허용하고 2회부터 잡는다(EVALUATION 4번).
@@ -191,7 +196,7 @@ if tr:
 # 대안을 더 넓히는 쪽(것은 아니다·인가,)도 재 봤는데 2026년 적중이 하나 늘고 2회 임계에서 오탐이 하나 났다.
 m = re.findall(r"(?:가|이)\s*아니라(?![면서])|이기\s*이전에|되기\s*이전에|이기보다", body)
 if len(m) >= 3:
-    hits.append(("K9", f"부정 대구 {len(m)}회", "하나만 남기고 나머지는 그냥 단언한다. 예: A가 아니라 B다 → B다"))
+    hits.append(("K9", f"부정 대구 {len(m)}회", "부정한 쪽의 정보는 버리지 않고 문장을 둘로 나눈다. 예: 도구가 아니라 방식이 바뀐다 → 도구는 그대로다. 바뀌는 것은 방식이다. 힘 있는 대구 한두 개는 남긴다"))
 
 # K10 연결어미 뒤 쉼표 (im-not-ai taxonomy C-11)
 # 그 규칙집에서 단일 지표 분리도가 가장 큰 항목이다(KatFish ACL 2025, 에세이 사람 4.10% 대 AI 19.83%).
@@ -229,6 +234,7 @@ if korean_lines_only:
     print("  (영어가 대부분인 편집이라 한글 비중 30% 이상인 줄만 검사했다)", file=sys.stderr)
 for code, what, how in hits:
     print(f"  {code}  {what} — {how}", file=sys.stderr)
+print("  걸린 표현만 고친다. 수치·개수·조건·유보 표현과 걸리지 않은 문장은 그대로 둔다.", file=sys.stderr)
 print("  교정 규칙은 korean-writing 스킬에 있다. 격식 문서(계약·약관·법률)면 파일 머리에 <!-- korean-writing: ignore --> 를 넣으면 다시 알리지 않는다.", file=sys.stderr)
 sys.exit(2)
 '

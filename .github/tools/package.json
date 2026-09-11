@@ -1,0 +1,9 @@
+{
+  "name": "korean-writing-ci-tools",
+  "private": true,
+  "description": "CI 전용. 이 저장소가 쓰는 도구를 잠금 파일로 고정한다. 플러그인 자체는 npm 패키지가 아니고 이 디렉터리는 릴리스 zip 에 실리지 않는다(.gitattributes 의 .github/ export-ignore).",
+  "license": "MIT",
+  "devDependencies": {
+    "@anthropic-ai/claude-code": "2.1.268"
+  }
+}

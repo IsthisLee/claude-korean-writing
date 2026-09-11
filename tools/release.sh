@@ -2,8 +2,8 @@
 # 릴리스: 버전 하나로 plugin.json·README 배지·CHANGELOG 를 맞추고 커밋·태그한다.
 #
 # 사용
-#   scripts/release.sh <major.minor.patch>          로컬에서 커밋과 태그까지
-#   scripts/release.sh <major.minor.patch> --push   여기에 push 와 GitHub 릴리스까지
+#   tools/release.sh <major.minor.patch>          로컬에서 커밋과 태그까지
+#   tools/release.sh <major.minor.patch> --push   여기에 push 까지 (릴리스는 Actions 가)
 #
 # 순서
 #   1. 검사: 작업 트리 clean, 버전 형식, 새 버전이 현재 이상, 같은 태그 없음
@@ -13,15 +13,16 @@
 #   4. 버전 반영: plugin.json, 두 README 의 version 배지
 #   5. 회귀 테스트, claude plugin validate
 #   6. 커밋 "release: v<버전>", 주석 태그 v<버전> (메시지는 CHANGELOG 절)
-#   7. --push 면 git push --follow-tags, gh release create. 아니면 다음 명령만 출력
+#   7. --push 면 git push --follow-tags. GitHub 릴리스는 태그를 받은
+#      .github/workflows/release.yml 이 만든다(노트는 CHANGELOG, zip 에 출처 증명)
 #
-# 버전의 정본은 .claude-plugin/plugin.json 이다. 공식 문서: 마켓플레이스 항목에도
+# 버전의 정본은 plugin/.claude-plugin/plugin.json 이다. 공식 문서: 마켓플레이스 항목에도
 # 버전이 있으면 plugin.json 이 우선한다. 그래서 marketplace.json 에는 버전을 두지 않는다.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
 VER="${1:-}"; MODE="${2:-}"
-[[ "$VER" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "사용: scripts/release.sh <major.minor.patch> [--push]" >&2; exit 1; }
+[[ "$VER" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "사용: tools/release.sh <major.minor.patch> [--push]" >&2; exit 1; }
 TAG="v$VER"; TODAY="$(date +%Y-%m-%d)"
 REPO="https://github.com/IsthisLee/claude-korean-writing"
 
@@ -30,7 +31,7 @@ fail() { echo "중단: $*" >&2; git checkout -q -- . 2>/dev/null || true; exit 1
 # 1. 검사
 [ -z "$(git status --porcelain)" ] || fail "작업 트리가 clean 이 아니다. 먼저 커밋한다"
 git rev-parse -q --verify "refs/tags/$TAG" >/dev/null && fail "$TAG 태그가 이미 있다"
-CUR="$(python3 -c "import json;print(json.load(open('.claude-plugin/plugin.json'))['version'])")"
+CUR="$(python3 -c "import json;print(json.load(open('plugin/.claude-plugin/plugin.json'))['version'])")"
 python3 -c "
 import sys
 cur=tuple(map(int,'$CUR'.split('.'))); new=tuple(map(int,'$VER'.split('.')))
@@ -68,19 +69,25 @@ done
 python3 - "$VER" <<'PY'
 import io, re, sys
 ver = sys.argv[1]
-p = ".claude-plugin/plugin.json"; s = io.open(p, encoding="utf-8").read()
+p = "plugin/.claude-plugin/plugin.json"; s = io.open(p, encoding="utf-8").read()
 s = re.sub(r'("version":\s*")[^"]+(")', lambda m: m.group(1) + ver + m.group(2), s, count=1)
+io.open(p, "w", encoding="utf-8").write(s)
+# 마켓플레이스도 같은 버전을 적는다. 루트와 plugins[0] 둘 다다. CI 가 어긋남을 막는다.
+p = ".claude-plugin/marketplace.json"; s = io.open(p, encoding="utf-8").read()
+s = re.sub(r'("version":\s*")[^"]+(")', lambda m: m.group(1) + ver + m.group(2), s, count=2)
 io.open(p, "w", encoding="utf-8").write(s)
 for p in ("README.md", "README.en.md"):
     s = io.open(p, encoding="utf-8").read()
     s = re.sub(r"(badge/version-)[^-]+(-lightgrey)", lambda m: m.group(1) + ver + m.group(2), s)
     io.open(p, "w", encoding="utf-8").write(s)
-print(f"  plugin.json·README 배지 → {ver}")
+print(f"  plugin.json·marketplace.json·README 배지 → {ver}")
 PY
 
 # 5. 검사
-python3 hooks-handlers/test_posttooluse.py >/dev/null 2>&1 || fail "회귀 테스트 실패 (python3 hooks-handlers/test_posttooluse.py)"
-claude plugin validate . 2>&1 | grep -q "Validation passed" || fail "claude plugin validate 실패"
+python3 tests/test_posttooluse.py >/dev/null 2>&1 || fail "회귀 테스트 실패 (python3 tests/test_posttooluse.py)"
+# grep "Validation passed" 는 "Validation passed with warnings" 에도 걸린다.
+# --strict 는 경고에서 exit 1 이므로 종료 코드만 본다.
+claude plugin validate . --strict >/dev/null 2>&1 || fail "claude plugin validate --strict 실패"
 echo "  회귀 테스트·validate 통과"
 
 # 6. 커밋·태그
@@ -96,11 +103,14 @@ git commit -q -m "release: $TAG"
 git tag -a "$TAG" --cleanup=verbatim -m "$TAG" -m "$NOTES"   # ### 헤딩이 주석으로 잘리지 않게
 echo "  커밋 $(git rev-parse --short HEAD) · 태그 $TAG"
 
-# 7. push
+# 7. push. 릴리스는 여기서 만들지 않는다 — 태그가 올라가면
+#    .github/workflows/release.yml 이 노트를 CHANGELOG 에서 읽어 만들고
+#    설치본 zip 에 출처 증명을 붙인다. 이 노트북에서 만들면 증명이 붙지 않는다.
 if [ "$MODE" = "--push" ]; then
   git push origin HEAD --follow-tags
-  gh release create "$TAG" --title "$TAG" --notes "$NOTES"
-  echo "  push 와 GitHub 릴리스 완료"
+  echo "  push 완료. 릴리스는 Actions 가 만든다:"
+  echo "  gh run watch \$(gh run list --workflow=release.yml -L1 --json databaseId --jq '.[0].databaseId')"
 else
-  echo "  다음: git push origin main --follow-tags && gh release create $TAG --title $TAG --notes-file <(git tag -l --format='%(contents:body)' $TAG)"
+  echo "  다음: git push origin main --follow-tags"
+  echo "  태그가 올라가면 Actions 의 Release 워크플로가 릴리스를 만든다"
 fi

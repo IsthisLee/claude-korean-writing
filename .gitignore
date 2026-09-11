@@ -43,3 +43,9 @@ venv/
 # Archive
 archive/
 reports/
+
+# 실험 산출물. LLM 호출 결과라 커밋하지 않는다. 숫자는 각 실험의 README 에 적는다.
+docs/experiments/*/out/
+docs/experiments/*/subout/
+docs/experiments/*/skillout/
+docs/experiments/*/judge/

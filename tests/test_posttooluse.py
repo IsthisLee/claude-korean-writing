@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """posttooluse.sh 회귀 테스트.
 
-pytest 없이 assert 만 쓴다. 실행: python3 hooks-handlers/test_posttooluse.py
+pytest 없이 assert 만 쓴다. 실행: python3 tests/test_posttooluse.py
 
 위반 케이스는 실제로 생성됐던 어색한 문장에서 가져왔다. 합성 예문이 아니다.
 오탐(정상 글을 막는 것)이 미탐(위반을 놓치는 것)보다 나쁘다.
@@ -18,7 +18,13 @@ import subprocess
 import sys
 import tempfile
 
-HOOK = pathlib.Path(__file__).resolve().parent / "posttooluse.sh"
+HERE = pathlib.Path(__file__).resolve().parent
+REPO = HERE.parent
+# 설치본은 plugin/ 안에만 있다. 릴리스 zip 을 풀어 그것을 대고 돌릴 때는
+# KW_PLUGIN_ROOT 로 가리킨다.
+PLUGIN = pathlib.Path(os.environ.get("KW_PLUGIN_ROOT") or (REPO / "plugin")).resolve()
+HANDLERS = PLUGIN / "hooks-handlers"
+HOOK = HANDLERS / "posttooluse.sh"
 CODES = ("K1", "K2", "K3", "K4", "K5", "K6", "K7", "K8", "K9", "K10")
 FILLER = "이번 배포에서 고칠 곳이 나왔다. 담당자가 수강생을 옮기면 기록이 남는다. "
 FAILS = []
@@ -212,6 +218,25 @@ expect_hit(
     count=6,
 )
 
+print("\n안내 - 고치면서 정보를 지우게 하지 않는다 (EVALUATION.md I1)")
+# 모델은 훅이 알린 대로 고친다. 옛 K9 안내 「A가 아니라 B다 → B다」 는 부정한 쪽의 정보를 지우게 했다.
+# 대조군 6건에서 9건이 사라졌고 규칙집(rewriting-playbook.md) 처방대로 고치자 0건이 됐다.
+_, out = run(
+    FILLER * 2 + "이것은 성능 문제가 아니라 설정 문제다. 고칠 곳은 코드가 아니라 문서다. "
+    "필요한 것은 새 기능이 아니라 기준이다. 첫째, 기록이 어긋난다. 둘째, 화면이 멈춘다. 결론적으로 고칠 곳이 많다."
+)
+for name, want, ban in [
+    ("K9 는 부정한 쪽의 정보를 버리지 않게 한다", "버리지 않고", "→ B다"),
+    ("K5 는 뼈대인 열거의 순서와 개수를 두게 한다", "순서와 개수", None),
+    ("K4 는 유보를 단정으로 올리지 않게 한다", "유보를 단정으로 올리지 않는다", "대부분 삭제해도"),
+    ("걸린 표현만 고치고 수치·조건·유보는 두게 한다", "걸린 표현만 고친다", None),
+]:
+    if want in out and (ban is None or ban not in out):
+        print(f"  o {name}")
+    else:
+        FAILS.append(f"[안내] {name}")
+        print(f"  x {name}")
+
 EN = "This section explains how the release script works and what it checks. " * 8
 EN_DASH = "The plan — as agreed — is fine. Also — yes — done. " * 8
 
@@ -234,6 +259,9 @@ with open(_formal, "w", encoding="utf-8") as _f:
     _f.write("<!-- korean-writing: ignore -->\n# 이용 약관\n")
 expect_clean("파일 머리의 표시 (Edit 로 일부만 고칠 때)", BAD, path=_formal, tool="Edit", key="new_string")
 expect_clean("환경변수 KOREAN_WRITING_HOOK_DISABLED=1", BAD, env={"KOREAN_WRITING_HOOK_DISABLED": "1"})
+expect_clean("플러그인 설정 edit_check=false", BAD, env={"CLAUDE_PLUGIN_OPTION_EDIT_CHECK": "false"})
+expect_clean("플러그인 설정 edit_check=0", BAD, env={"CLAUDE_PLUGIN_OPTION_EDIT_CHECK": "0"})
+expect_hit("플러그인 설정 edit_check=true 는 끄지 않는다", BAD, "K4", env={"CLAUDE_PLUGIN_OPTION_EDIT_CHECK": "true"})
 
 # 표시는 줄 하나로 서 있을 때만 지시다. 이 기능을 설명하는 문서가 자기 검사를 건너뛰면 안 된다.
 expect_hit(

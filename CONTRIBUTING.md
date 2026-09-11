@@ -13,7 +13,7 @@
 - Claude 가 쓴 어색한 한국어를 봤다면 [어색한 문장 제보](https://github.com/IsthisLee/claude-korean-writing/issues/new?template=awkward-sentence.yml) 로 보내 주세요. 고치지 않은 원문 그대로가 필요합니다.
 - 훅이 멀쩡한 문장을 잡았다면 그것도 같은 양식으로 보내 주세요. 오탐은 미탐보다 심각합니다. 사람이 검사기를 꺼버리게 만들기 때문입니다.
 
-제보한 문장은 `hooks-handlers/ground-truth.json` 이나 `clean.json` 에 들어가 회귀 테스트가 됩니다.
+제보한 문장은 `tests/ground-truth.json` 이나 `clean.json` 에 들어가 회귀 테스트가 됩니다.
 
 ## 시작하기
 
@@ -23,8 +23,8 @@
 git clone https://github.com/IsthisLee/claude-korean-writing
 cd claude-korean-writing
 
-python3 hooks-handlers/test_posttooluse.py    # 훅 회귀 테스트
-scripts/check.sh README.md CONTRIBUTING.md    # 문서가 자기 훅을 통과하는가
+python3 tests/test_posttooluse.py    # 훅 회귀 테스트
+plugin/scripts/check.sh README.md CONTRIBUTING.md    # 문서가 자기 훅을 통과하는가
 ```
 
 | 필요한 것 | 쓰는 곳                         | 없으면                              |
@@ -37,10 +37,10 @@ macOS 와 Linux 에서 CI 가 돌고 있습니다. Windows 는 Git Bash 나 WSL 
 
 ## 판정 규칙을 바꾸려면 실측이 있어야 합니다
 
-`hooks-handlers/posttooluse.sh` 의 K1~K10 을 넣거나 빼거나 임계를 조정하는 변경은 **숫자를 함께 보내 주세요.** 느낌으로 조정하면 오탐이 조용히 늘어납니다.
+`plugin/hooks-handlers/posttooluse.sh` 의 K1~K10 을 넣거나 빼거나 임계를 조정하는 변경은 **숫자를 함께 보내 주세요.** 느낌으로 조정하면 오탐이 조용히 늘어납니다.
 
 ```bash
-scripts/measure.sh ~/내문서폴더 ~/다른폴더
+tools/measure.sh ~/내문서폴더 ~/다른폴더
 ```
 
 한국어 `.md` 를 모아 둔 폴더에 돌리면 몇 개 파일이 걸리는지, 어떤 코드로 걸리는지 나옵니다. 걸린 파일이 사람이 쓴 글이면 오탐이고 Claude 가 쓴 글이면 맞게 잡은 것입니다. 그 구분은 사람이 합니다.
@@ -54,14 +54,14 @@ PR 에 이렇게 적어 주시면 충분합니다.
 
 실제로 K7 에서 "죽다" 를 뺀 것과 K8 에서 `~에 대해` 횟수를 안 세기로 한 것이 이 절차로 결정됐습니다. 판별력이 없는 규칙은 사람의 글만 잡습니다. 배경은 [EVALUATION.md](EVALUATION.md) 에 있습니다.
 
-**판정을 바꿨으면 회귀 테스트도 함께 넣어 주세요.** `hooks-handlers/test_posttooluse.py` 에 통과해야 할 문장과 걸려야 할 문장을 추가합니다. 기존 테스트가 실패하면 테스트가 아니라 코드를 고칩니다. 요구가 바뀌어 테스트가 틀린 경우라면 무엇이 바뀌었는지 PR 에 한 줄 적어 주세요.
+**판정을 바꿨으면 회귀 테스트도 함께 넣어 주세요.** `tests/test_posttooluse.py` 에 통과해야 할 문장과 걸려야 할 문장을 추가합니다. 기존 테스트가 실패하면 테스트가 아니라 코드를 고칩니다. 요구가 바뀌어 테스트가 틀린 경우라면 무엇이 바뀌었는지 PR 에 한 줄 적어 주세요.
 
 ## 문서를 고치려면
 
 한국어 문서는 이 저장소의 규칙을 지켜야 합니다. 자기 규칙을 어기는 저장소는 설득력이 없습니다.
 
 ```bash
-scripts/check.sh 고친파일.md
+plugin/scripts/check.sh 고친파일.md
 ```
 
 나쁜 예를 일부러 싣는 문서라면 파일 머리에 `<!-- korean-writing: ignore -->` 를 넣습니다.
@@ -82,11 +82,11 @@ fix: 릴리스 태그 메시지에서 ### 헤딩이 주석으로 잘리던 문�
 docs: 스킬 유무 비교 기록
 ```
 
-버전 번호는 손대지 마세요. `.claude-plugin/plugin.json` 이 정본이고 릴리스할 때 `scripts/release.sh` 가 README 배지와 CHANGELOG 를 맞춥니다.
+버전 번호는 손대지 마세요. `plugin/.claude-plugin/plugin.json` 이 정본이고 릴리스할 때 `tools/release.sh` 가 README 배지와 CHANGELOG 를 맞춥니다.
 
 ## 가져온 파일
 
-`skills/humanize-korean/**`, `skills/humanize/**`, `skills/humanize-redo/**`, `agents/**`, `scripts/*.py`(im-not-ai), `skills/crafting-effective-readmes/**`, `skills/korean-character-count/scripts/**` 는 다른 MIT 프로젝트에서 가져왔습니다. 고쳐야 한다면 [NOTICE.md](NOTICE.md) 의 수정 범위도 함께 고쳐 주세요. 원 저작자의 저작권 표시는 지우지 않습니다.
+`plugin/skills/humanize-korean/**`, `plugin/skills/humanize/**`, `plugin/skills/humanize-redo/**`, `plugin/agents/**`, `plugin/scripts/*.py`(im-not-ai), `plugin/skills/crafting-effective-readmes/**`, `plugin/skills/korean-character-count/scripts/**` 는 다른 MIT 프로젝트에서 가져왔습니다. 고쳐야 한다면 [plugin/NOTICE.md](plugin/NOTICE.md) 의 수정 범위도 함께 고쳐 주세요. 원 저작자의 저작권 표시는 지우지 않습니다.
 
 ## 규칙과 라이선스
 

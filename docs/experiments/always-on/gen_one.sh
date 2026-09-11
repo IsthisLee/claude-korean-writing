@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # usage: gen_one.sh <prompt_id> <cond A|B> <sample>
 set -u
-cd "$(dirname "$0")"
+cd "$(dirname "$0")" || exit 1
 id=$1; cond=$2; s=$3
 out="out/${id}_${cond}_${s}.json"
 [ -s "$out" ] && exit 0

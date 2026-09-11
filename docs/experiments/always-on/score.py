@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """정규식 채점. 훅 검사기(posttooluse.sh)를 그대로 돌린 결과와, 임계 없는 원시 패턴 횟수를 같이 낸다."""
 import json, re, subprocess, sys, glob, os, csv
-HOOK = "/Users/isthis/Documents/personal/claude-plugins/korean-writing/hooks-handlers/posttooluse.sh"
+HOOK = "/Users/isthis/Documents/personal/claude-plugins/korean-writing/plugin/hooks-handlers/posttooluse.sh"
 THING = r"(?:화면|서버|장비|시스템|페이지|프로세스|코드|스크립트|훅|모듈|테스트|빌드)"
 def strip(raw):
     b = re.sub(r"```.*?```", "", raw, flags=re.S)

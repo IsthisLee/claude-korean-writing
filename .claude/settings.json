@@ -2,11 +2,10 @@
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "permissions": {
     "allow": [
-      "Bash(python3 hooks-handlers/test_posttooluse.py)",
-      "Bash(python3 hooks-handlers/test_sessionstart.py)",
-      "Bash(scripts/check.sh:*)",
-      "Bash(scripts/measure.sh:*)",
-      "Bash(node skills/korean-character-count/scripts/korean_character_count.js:*)",
+      "Bash(python3 tests/test_posttooluse.py)",
+      "Bash(plugin/scripts/check.sh:*)",
+      "Bash(tools/measure.sh:*)",
+      "Bash(node plugin/skills/korean-character-count/scripts/korean_character_count.js:*)",
       "Bash(claude plugin validate:*)",
       "Bash(shellcheck:*)",
       "Bash(git status:*)",
@@ -15,19 +14,27 @@
       "Bash(git ls-files:*)"
     ],
     "ask": [
-      "Bash(scripts/release.sh:*)",
-      "Edit(/skills/crafting-effective-readmes/**)",
-      "Write(/skills/crafting-effective-readmes/**)",
-      "Edit(/skills/korean-character-count/scripts/**)",
-      "Edit(/skills/humanize-korean/**)",
-      "Edit(/skills/humanize/**)",
-      "Edit(/skills/humanize-redo/**)",
-      "Edit(/agents/**)",
-      "Edit(/scripts/*.py)",
-      "Write(/skills/korean-character-count/scripts/**)",
+      "Bash(tools/release.sh:*)",
+      "Edit(/plugin/skills/crafting-effective-readmes/**)",
+      "Write(/plugin/skills/crafting-effective-readmes/**)",
+      "Edit(/plugin/skills/korean-character-count/scripts/**)",
+      "Write(/plugin/skills/korean-character-count/scripts/**)",
+      "Edit(/plugin/skills/humanize-korean/**)",
+      "Write(/plugin/skills/humanize-korean/**)",
+      "Edit(/plugin/skills/humanize/**)",
+      "Write(/plugin/skills/humanize/**)",
+      "Edit(/plugin/skills/humanize-redo/**)",
+      "Write(/plugin/skills/humanize-redo/**)",
+      "Edit(/plugin/agents/**)",
+      "Write(/plugin/agents/**)",
+      "Edit(/plugin/scripts/*.py)",
+      "Write(/plugin/scripts/*.py)",
       "Edit(/.claude-plugin/plugin.json)",
+      "Write(/.claude-plugin/plugin.json)",
       "Edit(/NOTICE.md)",
-      "Edit(/LICENSE)"
+      "Write(/NOTICE.md)",
+      "Edit(/LICENSE)",
+      "Write(/LICENSE)"
     ]
   }
 }
