@@ -4,6 +4,8 @@
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-09-11
+
 ### 추가
 
 - **검사 결과에 걸린 자리를 붙입니다.** 규칙마다 셋까지 파일의 줄 번호와 짧은 발췌를 알림에 붙이고 넘치면 「외 N곳」으로 줄입니다. Claude 가 그 자리만 고치고 걸리지 않은 문장은 건드리지 않게 하려는 것입니다. 판정(코드와 횟수)은 예전 경로로 계산하고 위치는 따로 찾습니다. 이 기계의 한글 `.md` 304개를 옛 훅과 새 훅에 같은 입력으로 넣어 판정이 달라진 파일이 0개인 것을 확인했습니다(`EVALUATION.md` K). 알림대로 고친 글의 정보 보존도 같은 조건의 옛 훅과 차이가 없었습니다(I1 재측정, 정보가 사라진 표본 옛 훅 12건 중 0건, 새 훅 17건 중 1건, Fisher 단측 p=0.586). `plugin/scripts/check.sh` 와 `/korean-writing:check` 도 같은 위치를 냅니다
@@ -181,7 +183,8 @@
 - README 한국어판·영어판, 훅 출력 데모 이미지(`docs/hook-output.svg`)
 - 제3자 고지(`NOTICE.md`): im-not-ai·claude-forge·k-skill·agent-toolkit 의 원 저작권 표시
 
-[Unreleased]: https://github.com/IsthisLee/claude-korean-writing/compare/v1.3.0...HEAD
+[Unreleased]: https://github.com/IsthisLee/claude-korean-writing/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/IsthisLee/claude-korean-writing/compare/v1.3.0...v2.0.0
 [1.3.0]: https://github.com/IsthisLee/claude-korean-writing/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/IsthisLee/claude-korean-writing/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/IsthisLee/claude-korean-writing/compare/v1.0.0...v1.1.0
