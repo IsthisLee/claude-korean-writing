@@ -46,7 +46,7 @@
 
 Claude Code's Korean is grammatically fine. It still reads wrong: word order carried over from English, metaphors that arrived through English, and stock phrases that land in the same spot of every document. When 205 Korean documents that had accumulated on one machine were run through the hook, 85 were flagged and only one of those was written before 2024. The rest are 2026 files written by Claude, most of them for em-dash interjections.
 
-Patching this with a prompt means pasting that prompt into every session, and asking for a cleanup afterwards is already too late: polishing a finished draft changes little. When drafts were polished in our tests, at most 18% of the text changed, and the notice compared below did not change at all. Across 56 comparisons of the same request, an AI judge who was not told which text was which picked the one written under the rules from the start 49 times and never picked the polished draft. So the three moments when Korean text gets made each get an owner. Installing turns on all three at once, and there is nothing to remember to call.
+Patching this with a prompt means pasting that prompt into every session, and asking for a cleanup afterwards is already too late: polishing a finished draft changes little. When drafts were polished in our tests, at most 18% of the text changed, and one notice did not change at all. Across 56 comparisons of the same request, an AI judge who was not told which text was which picked the one written under the rules from the start 49 times and never picked the polished draft. So the three moments when Korean text gets made each get an owner. Installing turns on all three at once, and there is nothing to remember to call.
 
 | Moment                                                        | What covers it                                                                                           | When it runs                             | Where the rules live                     |
 | ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | ---------------------------------------- | ---------------------------------------- |
@@ -78,9 +78,9 @@ fluent-korean covers a different moment, so the two can be installed together. T
 
 ### Same request, two results
 
-<p align="center"><img src="docs/before-after.svg" alt="The same notice request written without the plugin and polished afterwards, next to the one written with the skill from the start" width="100%"></p>
+<p align="center"><img src="docs/before-after.svg" alt="Sentences the judge pointed at in one column request, polished afterwards on the left and written with the skill from the start on the right" width="100%"></p>
 
-On the left, a notice written without the plugin and then polished by im-not-ai. The polish did not change a single character, so the bold text, the numbered list and the length report tacked on after the body all stayed. On the right, the same request written with the `korean-writing` skill from the start. An AI judge, not told which was which, was asked twice (the second time with the order swapped) and picked the right-hand text both times. This is one example; the full comparison is in the Verification section. `tools/render-before-after.py` draws the image from the real outputs in `docs/samples/before-after/`.
+These are the sentences the judge pointed at, taken from one column written two ways. On the left, a column written without the rules and then polished by im-not-ai; the first/next/finally sequence and the aphoristic closing line survived the polish. On the right, the same request written with the `korean-writing` skill from the start; an AI judge, not told which was which, was asked twice (the second time with the order swapped) and picked it both times. This is one example; the full comparison is in the Verification section. The full texts are in `docs/samples/before-after/`, and `tools/render-before-after.py` draws the image.
 
 ### Sentences, before and after
 
@@ -247,7 +247,7 @@ Here is what the plugin ships with.
 
 Any request to write text triggers it: Slack notices and mail, announcements, reports, release notes, commit messages, READMEs and planning documents, meeting notes and working memos. Whether the reader is someone else or only you makes no difference, and code-only work does not trigger it.
 
-The heart of the rule is to write as a person speaks, and a sentence that reads like translated English has failed. Timing matters. The skill writes that way from the first sentence rather than fixing a finished draft, because polishing a finished draft tends to leave its numbered lists and bold labels in place ([Same request, two results](#same-request-two-results)).
+The heart of the rule is to write as a person speaks, and a sentence that reads like translated English has failed. Timing matters. The skill writes that way from the first sentence rather than fixing a finished draft, because polishing a finished draft tends to leave its framing, such as a first/next/finally sequence, in place ([Same request, two results](#same-request-two-results)).
 
 Six principles sit underneath. Write clean from the start. Strip only the machine tics, and leave formality, expertise, genre, argument and facts untouched. Add no metaphor or rhetoric the source did not have. Do not turn an obligation or a hedge into a flat assertion. If the draft still misses the bar, hand it to `humanize-korean`. Which model writes is not this rule's concern.
 
@@ -307,7 +307,8 @@ The check hook runs right after `Edit`, `Write` or `MultiEdit` touches a `.md` f
 | `tools/install-git-hook.sh` | Installs a git hook that runs the same check on staged `.md` files before a commit. It refuses to overwrite an existing `pre-commit` and prints the two lines to add instead. `--uninstall` removes it; `git commit --no-verify` skips it |
 | `tools/measure.sh` | Pushes every Korean `.md` under a directory through the hook and reports flagged files and counts per code. Whether a flagged file was written by a person or by Claude is a human call                                     |
 | `tools/release.sh` | Aligns `plugin.json`, the README badges and CHANGELOG to one version, then commits and tags. With `--push` it also pushes and creates the GitHub release                                                                    |
-| `tools/render-hook-output.py` | Builds a document from ground-truth sentences, feeds it to the hook and draws the output as the README image (`docs/hook-output.svg`). Rerun it after changing the hook's messages |
+\1
+| `tools/render-before-after.py` | Picks the sentences the judge pointed at from the real outputs in `docs/samples/before-after/` and draws the before/after image (`docs/before-after.svg`). Stops if a picked sentence is not in the source |
 | `tools/render-hero.py` | Draws the four README top images (`docs/hero*.svg`). Stops if a left-hand sentence is not in the ground truth |
 | `plugin/scripts/*.py`       | The nine scripts of the polishing pipeline, vendored from im-not-ai: input preparation and routing, the change-rate gate, modality restoration, injected-comma removal, chunk reassembly. They run only on a polish request |
 
@@ -461,6 +462,7 @@ korean-writing/
 │   ├── install-git-hook.sh           installs or removes the pre-commit check hook
 │   ├── measure.sh                    false-positive measurement over a corpus
 │   ├── release.sh                    version, marketplace manifest, badges, tag
+│   ├── render-before-after.py        draws the README before/after image from real outputs
 │   ├── render-hero.py                draws the README top image
 │   └── render-hook-output.py         redraws the README hook-output image from real output
 ├── docs/
