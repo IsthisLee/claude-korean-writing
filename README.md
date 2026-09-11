@@ -164,7 +164,7 @@ claude plugin install korean-writing
 | 글자 수                      | "500자 이내로", "글자 수 세줘" 같은 요청                  | `/korean-writing:korean-character-count`                       |
 | README 절 구성               | README 를 쓰거나 고쳐 달라는 요청                         | `/korean-writing:crafting-effective-readmes`                   |
 
-훅 둘은 부를 이름이 없습니다. 조건이 맞으면 저절로 돌고 아니면 돌지 않습니다. 스킬 여섯 가운데 넷은 요청을 보고 스스로 뜨고, 윤문 진입 둘(`humanize`, `humanize-redo`)은 `disable-model-invocation` 이 걸려 있어 이름을 쳐야만 돕니다. 그 대신 이 둘은 상시 컨텍스트를 한 토큰도 쓰지 않습니다. 플러그인으로 설치했으면 `/korean-writing:korean-writing` 도 같은 스킬을 부릅니다. 짧은 쪽으로 써도 됩니다. 모델이 `korean-writing` 을 스스로 부르면 스킬 확인 훅이 권한 확인을 띄웁니다. 문체 규칙을 주입한 답에서 세부가 빠진 적이 있어서([EVALUATION.md](EVALUATION.md) H13) 세부를 잃으면 안 되는 문서라면 거절하면 됩니다. 거절하면 규칙 없이 씁니다.
+훅 둘은 부를 이름이 없습니다. 조건이 맞으면 저절로 돌고 아니면 돌지 않습니다. 스킬 여섯 가운데 넷은 요청을 보고 스스로 뜨고, 윤문 진입 둘(`humanize`, `humanize-redo`)은 `disable-model-invocation` 이 걸려 있어 이름을 쳐야만 돕니다. 그 대신 이 둘은 상시 컨텍스트를 한 토큰도 쓰지 않습니다. 플러그인으로 설치했으면 `/korean-writing:korean-writing` 도 같은 스킬을 부릅니다. 짧은 쪽으로 써도 됩니다. 모델이 `korean-writing` 을 스스로 부르면 스킬 확인 훅이 권한 확인을 띄웁니다. 요청에 적은 사실은 스킬을 켜도 그대로 담기지만 Claude 가 덧붙이는 설명은 짧아졌습니다([EVALUATION.md](EVALUATION.md) J3). 자세한 설명이 필요한 문서라면 거절하면 됩니다. 거절하면 규칙 없이 씁니다.
 
 윤문을 맡기면 고친 글 위에 한 줄 상태가 붙습니다. 변경률 추정과 A부터 D까지의 등급입니다. 그 아래에 주요 교정 서너 개에서 여섯 개를 전과 후로 나란히 보여 줍니다. 변경률이 절반을 넘으면 결과 대신 그 사실만 알립니다. 절반 넘게 바뀐 글은 윤문이 아니라 재작성입니다.
 
@@ -191,7 +191,7 @@ claude plugin install korean-writing
 | 에이전트    | 3      | im-not-ai 내장. 윤문 파이프라인의 진단·윤문·마무리 검토                                                                                                 |
 | 규칙집      | 84항목 | im-not-ai의 분류 체계. 10분류, 항목마다 심각도와 처방                                                                                                   |
 | 정답 데이터 | 15문장 | Claude Code가 실제로 생성한 위반 10건, 같은 맥락의 정상 5건                                                                                             |
-| 회귀 테스트 | 82건   | 검사 훅 62, 스킬 확인 훅 20 |
+| 회귀 테스트 | 84건   | 검사 훅 62, 스킬 확인 훅 22 |
 | 스크립트    | 4 + 9  | 이 저장소 넷은 글자 수, 통째 검사, 오탐 측정, 릴리스. im-not-ai 내장 아홉은 윤문 파이프라인용                                                          |
 | 네트워크    | 없음   | 훅은 bash와 python3 정규식, 글자 수는 `node:fs`                                                                                                         |
 
@@ -333,7 +333,7 @@ plugin/skills/humanize-korean/references/ 384 KB  윤문 중 필요한 문서만
 | 훅 알림 뒤 같은 턴 교정   | 3 / 3, 플러그인 없이는 0 / 3 ([실험](./docs/experiments/hook-loop/)) |
 | 상시 컨텍스트 비용        | 약 730토큰, 격리 HOME 기준 (스킬 설명 넷 430 + 에이전트 셋 297) |
 | 외부 네트워크 호출        | 0                                                                 |
-| 회귀 테스트               | 82 / 82                                                           |
+| 회귀 테스트               | 84 / 84                                                           |
 
 실제 문서 오탐은 이 플러그인과 관계없이 한 컴퓨터에 쌓여 있던 한국어 `.md` 205개로 쟀습니다. 파일을 통째로 훅에 넣으니 85개가 걸렸습니다(K1 74, K9 28, K10 19, K8 10, K4 8, K3 5, K7 5, K5 4, K2 1). 사람이 쓴 글과 Claude가 쓴 글은 파일 수정 연도로 갈랐습니다. 2023년 이전에 쓰인 32개 중 걸린 것은 하나이고 나머지는 2026년 문서입니다. 연도는 거친 대리 지표라 그 한계를 `EVALUATION.md`에 적어 두었습니다. 규칙을 고치기 전 같은 측정에서는 사람이 쓴 문서 7개, 4.9%가 걸렸습니다.
 
@@ -361,7 +361,7 @@ plugin/skills/humanize-korean/references/ 384 KB  윤문 중 필요한 문서만
 
 ```bash
 python3 tests/test_posttooluse.py     # 검사 훅 회귀 62건
-python3 tests/test_pretooluse.py      # 스킬 확인 훅 회귀 20건
+python3 tests/test_pretooluse.py      # 스킬 확인 훅 회귀 22건
 plugin/scripts/check.sh --all                         # 문서가 자기 훅을 통과하는가
 tools/measure.sh ~/Documents                 # 실제 문서 뭉치의 오탐
 ```
@@ -420,7 +420,7 @@ korean-writing/
 │                                     마켓플레이스 카탈로그. source 가 ./plugin 을 가리킵니다
 ├── tests/
 │   ├── test_posttooluse.py           검사 훅 회귀 62건. 보고 횟수까지 검증합니다
-│   ├── test_pretooluse.py            스킬 확인 훅 회귀 20건
+│   ├── test_pretooluse.py            스킬 확인 훅 회귀 22건
 │   ├── ground-truth.json             실제로 생성됐던 위반 문장 10건
 │   └── clean.json                    같은 맥락의 정상 문장 5건
 ├── tools/

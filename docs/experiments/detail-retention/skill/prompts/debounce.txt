@@ -1,0 +1,12 @@
+아래 훅을 팀 위키에 올릴 설명 문서로 써 줘. 이 함수가 무엇을 하는지, 특히 cleanup 이 왜 필요한지 설명해 줘.
+
+```ts
+export function useDebouncedValue<T>(value: T, delay = 300): T {
+  const [debounced, setDebounced] = useState(value);
+  useEffect(() => {
+    const id = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(id);
+  }, [value, delay]);
+  return debounced;
+}
+```

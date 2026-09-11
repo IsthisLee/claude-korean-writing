@@ -164,7 +164,7 @@ Here is what loads on its own, when, and what to type to call it by name.
 | Character counting               | "500자 이내로", "글자 수 세줘" and similar requests            | `/korean-writing:korean-character-count`                         |
 | README structure                 | A request to write or revise a README                         | `/korean-writing:crafting-effective-readmes`                     |
 
-The two hooks have no name to call: they run when their condition is met and stay quiet otherwise. Four of the six skills load from the request; the two polishing entry points (`humanize`, `humanize-redo`) carry `disable-model-invocation`, so they only run when typed, and in exchange they cost nothing in always-on context. If you installed the plugin, `/korean-writing:korean-writing` reaches the same skill; the short form is fine. When Claude calls `korean-writing` on its own, the skill-confirm hook raises a permission prompt. Injected style rules have been measured dropping details ([`EVALUATION.md`](EVALUATION.md) H13, Korean), so decline it for a document whose details must survive; declining means the text is written without the rules.
+The two hooks have no name to call: they run when their condition is met and stay quiet otherwise. Four of the six skills load from the request; the two polishing entry points (`humanize`, `humanize-redo`) carry `disable-model-invocation`, so they only run when typed, and in exchange they cost nothing in always-on context. If you installed the plugin, `/korean-writing:korean-writing` reaches the same skill; the short form is fine. When Claude calls `korean-writing` on its own, the skill-confirm hook raises a permission prompt. With the skill applied, facts given in the request were all kept, but the explanation Claude adds on its own came out shorter ([`EVALUATION.md`](EVALUATION.md) J3, Korean), so decline it for a document that needs a detailed explanation; declining means the text is written without the rules.
 
 Hand a draft to the polish skill and the fixed text comes back with a one-line status: an estimated change rate and a grade from A to D. Below it, three to six of the main edits are shown side by side, before and after. If more than half the text changed, you get that fact instead of a result. A text changed by half is a rewrite, not a polish.
 
@@ -191,7 +191,7 @@ Here is what the plugin ships with.
 | Agents         | 3            | vendored from im-not-ai: diagnosis, rewrite and final review for the polishing pipeline                                                                                                                            |
 | Rulebook       | 84 items     | im-not-ai's taxonomy: 10 categories, each item with a severity and a fix                                                                                                                                           |
 | Ground truth   | 15 sentences | 10 violations Claude Code actually generated, 5 clean sentences from the same context                                                                                                                              |
-| Regression     | 82 cases     | 62 for the check hook, 20 for the skill-confirm hook |
+| Regression     | 84 cases     | 62 for the check hook, 22 for the skill-confirm hook |
 | Scripts        | 4            | character count, whole-file check, false-positive measurement, release                                                                                                                                             |
 | Network        | none         | the hooks are bash and python3 regular expressions; the counter uses `node:fs`                                                                                                                                     |
 
@@ -331,7 +331,7 @@ The pass criteria and the measurements are in [`EVALUATION.md`](./EVALUATION.md)
 | Same-turn fix after a hook finding | 3 / 3; 0 / 3 without the plugin ([experiment](./docs/experiments/hook-loop/)) |
 | Always-on context cost             | about 730 tokens in an isolated HOME (four skill descriptions 430 + three agents 297) |
 | Network calls                      | 0                                                                               |
-| Regression tests                   | 82 / 82                                                                         |
+| Regression tests                   | 84 / 84                                                                         |
 
 False positives on real documents were measured on 205 Korean `.md` files that had accumulated on one machine, unrelated to this plugin. Fed through the hook whole, 85 were flagged. Human-written and Claude-written files were separated by file modification year, a coarse proxy whose limits are recorded in `EVALUATION.md`: of the 32 files written before 2024, one was flagged. The same measurement before the rule changes flagged seven human-written files, 4.9%.
 
@@ -357,7 +357,7 @@ The same checks run locally with these commands.
 
 ```bash
 python3 tests/test_posttooluse.py     # check hook regression, 62 cases
-python3 tests/test_pretooluse.py      # skill-confirm hook regression, 20 cases
+python3 tests/test_pretooluse.py      # skill-confirm hook regression, 22 cases
 plugin/scripts/check.sh --all                         # do the documents pass their own hook
 tools/measure.sh ~/Documents                 # false positives over real documents
 ```
@@ -409,7 +409,7 @@ korean-writing/
 │                                     marketplace catalog; its source points at ./plugin
 ├── tests/
 │   ├── test_posttooluse.py           62 regression cases for the check hook; verifies reported counts
-│   ├── test_pretooluse.py            20 regression cases for the skill-confirm hook
+│   ├── test_pretooluse.py            22 regression cases for the skill-confirm hook
 │   ├── ground-truth.json             10 awkward sentences that were actually generated
 │   └── clean.json                    5 clean sentences from the same context
 ├── tools/

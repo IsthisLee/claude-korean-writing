@@ -1,0 +1,26 @@
+{
+ "notice": {
+  "orig_date": "원래 배포일이 9월 21일(월)이었다는 점", "target": "배포 대상이 결제 서버라는 점",
+  "new_date": "새 일정이 9월 23일(수)이라는 점", "new_time": "새 일정 시각이 오후 2시라는 점",
+  "reason_pg": "사유가 PG사 검수라는 점", "reason_detail": "부분 취소 API 응답 코드 2건이 기준과 달랐다는 구체 사유",
+  "freeze": "그동안 배포 동결을 유지한다는 점", "hotfix": "긴급 핫픽스는 예외로 허용한다는 점",
+  "approver": "핫픽스 예외에 결제팀장 승인이 필요하다는 조건", "rehearsal": "리허설이 9월 22일 오후 5시라는 점",
+  "attendees": "리허설 참석 대상이 결제팀·SRE·CS 리드라는 점", "channel": "문의 채널이 #pay-deploy 라는 점"
+ },
+ "incident": {
+  "date": "장애 날짜가 9월 10일이라는 점", "start": "시작 시각 오후 3시 12분", "end": "종료(정상화) 시각 오후 3시 47분",
+  "duration": "지속 시간 35분", "symptom": "주문 API 응답 지연이라는 증상", "p95": "p95 응답 시간이 300ms 에서 4.2초로 올랐다는 수치",
+  "cause": "원인이 새 주문 이력 조회 쿼리가 인덱스를 타지 않은 것이라는 점", "cpu": "DB CPU 가 95%까지 올랐다는 수치",
+  "mitigation": "3시 40분에 기능 플래그를 껐다는 조치와 시각", "impact": "영향 주문 약 1,800건", "no_payfail": "결제 실패는 없었다는 점",
+  "index": "order_history(user_id, created_at) 복합 인덱스 추가", "explain": "새 쿼리는 배포 전 EXPLAIN 결과를 PR 에 첨부한다는 규칙",
+  "owner": "후속 조치 담당이 박지훈이라는 점", "deadline": "후속 조치 기한이 9월 19일이라는 점"
+ },
+ "debounce": {
+  "default300": "delay 의 기본값이 300ms 라는 점", "usecase": "쓰임새 예시(검색어 입력, API 호출 줄이기 등)",
+  "cleanup_before_next": "cleanup 이 다음 effect 가 실행되기 직전에 호출된다는 점", "cleanup_unmount": "cleanup 이 컴포넌트 언마운트 때도 호출된다는 점",
+  "pileup": "cleanup 이 없으면 이전 타이머들이 취소되지 않고 남아 각각 실행된다는 점", "stale": "그 결과 중간 값이나 옛 값이 debounced 에 잠깐이라도 반영된다는 점",
+  "rerender": "그 결과 불필요한 리렌더(재렌더)가 생긴다는 점", "unmount_setstate": "언마운트 뒤에 setState 가 호출되는 문제(경고·누수)",
+  "delay_dep": "delay 가 바뀌어도 effect 가 다시 돌아 타이머를 새로 건다는 점(의존성에 delay 포함)", "last_only": "결국 마지막 값(마지막 타이머) 하나만 반영된다는 점",
+  "concrete_example": "구체적인 입력 순서나 시각을 들어 보인 예시(예: 'r'→'re', t=0/t=100)"
+ }
+}

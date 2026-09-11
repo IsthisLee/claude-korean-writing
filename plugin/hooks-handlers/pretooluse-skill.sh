@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # PreToolUse(Skill): 모델이 korean-writing 스킬을 스스로 부르기 전에 사용자에게 적용할지 묻는다.
 #
-# 왜 : 문체 규칙을 답변에 주입하니 기본값 같은 세부가 빠졌다(EVALUATION.md H13). 이 스킬도 같은
-#      규칙집을 쓰므로 세부를 잃으면 안 되는 문서에서는 사람이 먼저 정해야 한다.
+# 왜 : 이 스킬로 쓴 설명 문서에서 Claude 가 덧붙이는 설명이 약 1/3 짧아지고 곁가지 설명이 빠졌다
+#      (EVALUATION.md J3). 요청에 적어 준 사실은 그대로 담겼다. 적용할지는 쓰는 사람이 정한다.
 # 무엇: Skill 도구로 korean-writing 을 부르면 permissionDecision "ask" 를 돌려준다. Claude Code 가
 #      평소 권한 흐름대로 확인을 받고, 거절하면 모델은 스킬 없이 쓴다. 헤드리스 실측에서 사용자가
 #      /korean-writing 을 직접 친 경우는 Skill 도구를 거치지 않아 이 훅에 걸리지 않았다.
@@ -31,9 +31,17 @@ skill = str(ti.get("skill", "")) if isinstance(ti, dict) else ""
 if skill not in ("korean-writing", "korean-writing:korean-writing"):
     sys.exit(0)
 
-reason = ("korean-writing 규칙으로 쓸지 정해 주세요. 문체는 다듬어지지만 규칙이 세부를 빼는 경우가 "
-          "실측됐습니다(EVALUATION.md H13). 세부를 잃으면 안 되는 문서라면 거절하세요. 거절하면 규칙 없이 씁니다.")
-print(json.dumps({"hookSpecificOutput": {"hookEventName": "PreToolUse",
+# 무엇을 쓰려는지 보여 준다. args 는 모델이 요청을 요약해 넘긴 것이다. 60자에서 자른다.
+args = " ".join(str(ti.get("args", "")).split()) if isinstance(ti, dict) else ""
+if len(args) > 60:
+    args = args[:60].rstrip() + "…"
+head = f"「{args}」 작성에 korean-writing 문체 규칙을 적용할까요?" if args else "이 글에 korean-writing 문체 규칙을 적용할까요?"
+# 주의 문구는 J3 에서 잰 만큼만 말한다. 적어 준 사실은 그대로였고 덧붙이는 설명이 짧아졌다.
+reason = (head + " 요청에 적은 내용은 그대로 담지만 Claude 가 덧붙이는 설명은 짧아질 수 있습니다. "
+          "거절하면 규칙 없이 씁니다.")
+# 확인 창에 사유가 보이는지 공식 문서에 적혀 있지 않아 같은 문장을 systemMessage 로도 낸다.
+print(json.dumps({"systemMessage": reason,
+                  "hookSpecificOutput": {"hookEventName": "PreToolUse",
                                          "permissionDecision": "ask",
                                          "permissionDecisionReason": reason}}, ensure_ascii=False))
 '
