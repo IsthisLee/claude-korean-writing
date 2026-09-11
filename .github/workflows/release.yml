@@ -103,6 +103,7 @@ jobs:
           .github/tools/node_modules/.bin/claude plugin validate "/tmp/stage/$NAME" --strict
           # 회귀 테스트는 설치본에 실리지 않는다. 저장소의 테스트를 풀어 놓은 설치본에 대고 돌린다.
           KW_PLUGIN_ROOT="/tmp/stage/$NAME" python3 tests/test_posttooluse.py
+          KW_PLUGIN_ROOT="/tmp/stage/$NAME" python3 tests/test_pretooluse.py
 
       - name: 검증을 마친 것만 다음 작업으로 넘긴다
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

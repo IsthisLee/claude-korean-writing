@@ -85,6 +85,7 @@ PY
 
 # 5. 검사
 python3 tests/test_posttooluse.py >/dev/null 2>&1 || fail "회귀 테스트 실패 (python3 tests/test_posttooluse.py)"
+python3 tests/test_pretooluse.py >/dev/null 2>&1 || fail "회귀 테스트 실패 (python3 tests/test_pretooluse.py)"
 # grep "Validation passed" 는 "Validation passed with warnings" 에도 걸린다.
 # --strict 는 경고에서 exit 1 이므로 종료 코드만 본다.
 claude plugin validate . --strict >/dev/null 2>&1 || fail "claude plugin validate --strict 실패"
