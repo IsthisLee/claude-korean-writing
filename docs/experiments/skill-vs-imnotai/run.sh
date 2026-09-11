@@ -13,6 +13,12 @@
 # 사용  : run.sh [출력디렉터리] [프롬프트ID...]
 #         ID 를 안 주면 01 05 L1 L4 를 쓴다. 넷이 기본인 이유는 비용이다.
 #         출력디렉터리를 안 주면 이 폴더의 out/run-<시각> 이다. out/ 은 커밋하지 않는다.
+# 환경  : KW_MODEL 생성 모델(기본 claude-opus-5), KW_JUDGE 판정 모델(기본 claude-opus-5)
+#         KW_RUBRIC 판정 기준서(기본 judge-rubric.md. judge-rubric-neutral.md 는 감점 목록 없는 중립 기준)
+#         KW_REJUDGE=1 이면 생성을 건너뛰고 출력디렉터리의 글로 판정만 다시 한다
+# 본문  : 판정 전에 양쪽 모두 HUMANIZE-SUMMARY 블록과, 마지막 --- 줄이 글의 뒤쪽 절반에 있으면 그 뒤 안내를 걷어낸다.
+#         파이프라인 부산물과 어시스턴트 안내는 실제로 받는 본문이 아니어서다. 걷어낸 글은 body/ 에 남는다.
+#         판정 결과는 judge-<기준서>-<판정 모델>/ 에 따로 쌓인다.
 # 종료  : 스킬이 진 쌍이 이긴 쌍보다 많으면 1, 아니면 0. 필요한 파일이 없으면 2.
 # 비용  : 프롬프트 4개 기준 생성 8회, 윤문 최대 14회, 판정 8회. LLM 을 부르므로 CI 에 넣지 않는다.
 #         릴리스 전에 사람이 한 번 돌리는 자리다.
@@ -33,11 +39,17 @@ for f in SKILL.md agents/humanize-monolith.md agents/humanize-diagnostician.md a
          scripts/prepare_monolith_input.py; do
   [ -r "$PLUGIN/$f" ] || { echo "필요한 파일이 없다: plugin/$f. 경로가 바뀌었으면 이 스크립트를 고친다" >&2; exit 2; }
 done
-mkdir -p "$OUT/gen" "$OUT/work" "$OUT/judge"
+mkdir -p "$OUT/gen" "$OUT/work"
 echo "출력: $OUT"
 
 MODEL=${KW_MODEL:-claude-opus-5}
 JUDGE=${KW_JUDGE:-claude-opus-5}
+RUBRIC=${KW_RUBRIC:-"$BASE/judge-rubric.md"}
+case "$RUBRIC" in /*) ;; *) RUBRIC="$BASE/$RUBRIC" ;; esac
+[ -r "$RUBRIC" ] || { echo "판정 기준서가 없다: $RUBRIC" >&2; exit 2; }
+JDIR="$OUT/judge-$(basename "$RUBRIC" .md)-${JUDGE#claude-}"
+mkdir -p "$JDIR" "$OUT/body"
+echo "판정: $JUDGE · 기준서 $(basename "$RUBRIC")"
 COMMON=(--strict-mcp-config --setting-sources "" --max-turns 1)
 NOTOOL=$'\n\n## 이 실행의 예외\n이 세션에는 도구가 없다. 파일을 읽거나 쓰지 말고 요구한 산출물의 본문만 그대로 출력한다. 설명·머리말·코드펜스를 붙이지 않는다.'
 
@@ -48,6 +60,10 @@ sys_of() { # sys_of <에이전트파일> <규칙집파일>
 for id in "${IDS[@]}"; do
   q="$BASE/prompts/$id.txt"
   [ -r "$q" ] || { echo "프롬프트 없음: $id" >&2; exit 2; }
+  if [ -n "${KW_REJUDGE:-}" ]; then
+    [ -s "$OUT/gen/skill_$id.md" ] && [ -s "$OUT/gen/imnotai_$id.md" ] || { echo "판정만 다시 하려는데 생성물이 없다: $id" >&2; exit 2; }
+    continue
+  fi
   echo "  생성 $id"
   claude -p "$(cat "$q")" --append-system-prompt "$(cat "$PLUGIN/SKILL.md")" --model "$MODEL" "${COMMON[@]}" \
     > "$OUT/gen/skill_$id.md" 2>/dev/null < /dev/null
@@ -98,30 +114,45 @@ print(f"    변경률 {metrics_v2.change_rate(a, b, ignore_markup=True) * 100:.1
 PY
 done
 
+# 본문만 남긴다. 양쪽에 같은 규칙을 쓴다.
+python3 - "$OUT" "${IDS[@]}" <<'PY'
+import re, sys
+out, ids = sys.argv[1], sys.argv[2:]
+for i in ids:
+    for side in ("skill", "imnotai"):
+        t = open(f"{out}/gen/{side}_{i}.md", encoding="utf-8").read()
+        t = re.sub(r"<!--\s*HUMANIZE-SUMMARY\s*-->.*?(<!--\s*/HUMANIZE-SUMMARY\s*-->|\Z)", "", t, flags=re.S).rstrip()
+        lines = t.split("\n")
+        cut = max((k for k, l in enumerate(lines) if l.strip() == "---"), default=-1)
+        if cut > 0 and len("\n".join(lines[:cut])) >= 0.5 * len(t):
+            t = "\n".join(lines[:cut]).rstrip()
+        open(f"{out}/body/{side}_{i}.md", "w", encoding="utf-8").write(t + "\n")
+PY
+
 echo
 for id in "${IDS[@]}"; do
   for o in 1 2; do
-    if [ "$o" = 1 ]; then r1="$OUT/gen/skill_$id.md"; r2="$OUT/gen/imnotai_$id.md"
-    else r1="$OUT/gen/imnotai_$id.md"; r2="$OUT/gen/skill_$id.md"; fi
+    if [ "$o" = 1 ]; then r1="$OUT/body/skill_$id.md"; r2="$OUT/body/imnotai_$id.md"
+    else r1="$OUT/body/imnotai_$id.md"; r2="$OUT/body/skill_$id.md"; fi
     {
-      cat "$BASE/judge-rubric.md"; echo
+      cat "$RUBRIC"; echo
       echo "## 요청"; cat "$BASE/prompts/$id.txt"; echo
       echo "## 글 1"; cat "$r1"; echo
       echo "## 글 2"; cat "$r2"
-    } > "$OUT/judge/${id}_o$o.prompt"
-    claude -p "$(cat "$OUT/judge/${id}_o$o.prompt")" --model "$JUDGE" "${COMMON[@]}" \
-      > "$OUT/judge/${id}_o$o.json" 2>/dev/null < /dev/null
+    } > "$JDIR/${id}_o$o.prompt"
+    claude -p "$(cat "$JDIR/${id}_o$o.prompt")" --model "$JUDGE" "${COMMON[@]}" \
+      > "$JDIR/${id}_o$o.json" 2>/dev/null < /dev/null
   done
 done
 
-python3 - "$OUT" "${IDS[@]}" <<'PY'
+python3 - "$JDIR" "${IDS[@]}" <<'PY'
 import json, re, sys, os, collections
 out, ids = sys.argv[1], sys.argv[2:]
 win = collections.Counter(); split = 0; bad = 0
 for i in ids:
     got = {}
     for o in ("1", "2"):
-        raw = open(f"{out}/judge/{i}_o{o}.json", encoding="utf-8").read()
+        raw = open(f"{out}/{i}_o{o}.json", encoding="utf-8").read()
         m = re.search(r"\{.*\}", raw, re.S)
         if not m:
             bad += 1
