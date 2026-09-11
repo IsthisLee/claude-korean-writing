@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="240" viewBox="0 0 1200 240" font-family="-apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', Helvetica, Arial, sans-serif">
-<rect width="1200" height="240" rx="14" fill="#1e2229"/>
-<text x="40" y="82" font-size="56" font-weight="700" fill="#f4f6f8" font-family="SF Mono, Menlo, Consolas, monospace">korean-writing</text>
-<text x="40" y="126" font-size="22" fill="#aab3bf">Claude Code가 번역투와 AI 티 없는 한국어를 쓰게 하는 플러그인</text>
-<rect x="40" y="154" width="145" height="34" rx="17" fill="#2c323b"/><text x="112" y="177" text-anchor="middle" font-size="15" fill="#ffd166">쓸 때 · 작성 스킬</text><rect x="197" y="154" width="204" height="34" rx="17" fill="#2c323b"/><text x="299" y="177" text-anchor="middle" font-size="15" fill="#ffd166">다 쓴 뒤 · im-not-ai 윤문</text><rect x="413" y="154" width="160" height="34" rx="17" fill="#2c323b"/><text x="493" y="177" text-anchor="middle" font-size="15" fill="#ffd166">저장할 때 · 검사 훅</text>
-<text x="40" y="216" font-size="13" fill="#aab3bf">Claude Code plugin · MIT · 외부 전송 없음</text>
-</svg>
