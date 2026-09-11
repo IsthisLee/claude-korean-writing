@@ -46,7 +46,7 @@
 
 Claude Code's Korean is grammatically fine. It still reads wrong: word order carried over from English, metaphors that arrived through English, and stock phrases that land in the same spot of every document. When 205 Korean documents that had accumulated on one machine were run through the hook, 85 were flagged and only one of those was written before 2024. The rest are 2026 files written by Claude, most of them for em-dash interjections.
 
-Patching this with a prompt means pasting that prompt into every session, and asking for a cleanup afterwards is already too late: polishing a finished draft leaves its shape mostly in place. In blind judging the polish changed 0 to 18% of the text (0% for the notice compared below), and text written under the rules from the start beat the polished drafts 49 to 0 over 56 pairs. So the three moments when Korean text gets made each get an owner. Installing turns on all three at once, and there is nothing to remember to call.
+Patching this with a prompt means pasting that prompt into every session, and asking for a cleanup afterwards is already too late: polishing a finished draft changes little. When drafts were polished in our tests, at most 18% of the text changed, and the notice compared below did not change at all. Across 56 comparisons of the same request, an AI judge who was not told which text was which picked the one written under the rules from the start 49 times and never picked the polished draft. So the three moments when Korean text gets made each get an owner. Installing turns on all three at once, and there is nothing to remember to call.
 
 | Moment                                                        | What covers it                                                                                           | When it runs                             | Where the rules live                     |
 | ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | ---------------------------------------- | ---------------------------------------- |
@@ -80,7 +80,7 @@ fluent-korean covers a different moment, so the two can be installed together. T
 
 <p align="center"><img src="docs/before-after.svg" alt="The same notice request written without the plugin and polished afterwards, next to the one written with the skill from the start" width="100%"></p>
 
-On the left, a notice written without the plugin and then polished by im-not-ai. The polish did not change a single character, so the bold text, the numbered list and the length report tacked on after the body all stayed. On the right, the same request written with the `korean-writing` skill from the start; a judge who did not know which was which picked it both times, with the order swapped. This is one pair; the full judging is in the Verification section. `tools/render-before-after.py` draws the image from the real outputs in `docs/samples/before-after/`.
+On the left, a notice written without the plugin and then polished by im-not-ai. The polish did not change a single character, so the bold text, the numbered list and the length report tacked on after the body all stayed. On the right, the same request written with the `korean-writing` skill from the start. An AI judge, not told which was which, was asked twice (the second time with the order swapped) and picked the right-hand text both times. This is one example; the full comparison is in the Verification section. `tools/render-before-after.py` draws the image from the real outputs in `docs/samples/before-after/`.
 
 ### Sentences, before and after
 
@@ -200,7 +200,7 @@ It asks once, right before writing, whether the text is a chat reply or a `.md` 
 3. **Attach a sample of your own writing if you have a voice.** The skill follows the sample's endings and sentence length before its own rules. This has not been measured yet.
 4. **Choose 「적용」 when asked.** If you need long side explanations, choose 「적용 안 함」.
 5. **Have it saved as a `.md` file.** The check hook hands back each flagged spot with its line number and Claude fixes it in the same turn ([experiment](./docs/experiments/hook-loop/)).
-6. **Polish drafts that already exist** with `/korean-writing:humanize`. For new text, writing under the rules from the start beat writing first and polishing afterwards (49 to 0 over 56 pairs).
+6. **Polish drafts that already exist with `/korean-writing:humanize`.** For new text, writing under the rules from the start works better than writing first and polishing afterwards: across 56 comparisons it was picked 49 times, and the polished draft never was.
 
 Hand a draft to the polish skill and the fixed text comes back with a one-line status: an estimated change rate and a grade from A to D. Below it, three to six of the main edits are shown side by side, before and after. If more than half the text changed, you get that fact instead of a result. A text changed by half is a rewrite, not a polish.
 
