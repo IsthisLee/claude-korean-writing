@@ -8,11 +8,12 @@
 
 | 버전       | 보안 수정                                       |
 | ---------- | ----------------------------------------------- |
-| 2.0.x      | 지원                                            |
-| 1.3.x      | 지원하지 않음. 2.0.x 로 올려 주세요             |
-| 1.2.x      | 지원하지 않음. 2.0.x 로 올려 주세요             |
-| 1.1.x      | 지원하지 않음. 2.0.x 로 올려 주세요             |
-| 1.0.x      | 지원하지 않음. 2.0.x 로 올려 주세요             |
+| 2.1.x      | 지원                                            |
+| 2.0.x      | 지원하지 않음. 2.1.x 로 올려 주세요             |
+| 1.3.x      | 지원하지 않음. 2.1.x 로 올려 주세요             |
+| 1.2.x      | 지원하지 않음. 2.1.x 로 올려 주세요             |
+| 1.1.x      | 지원하지 않음. 2.1.x 로 올려 주세요             |
+| 1.0.x      | 지원하지 않음. 2.1.x 로 올려 주세요             |
 | 1.0.0 미만 | 해당 없음 (1.0.0 이 첫 릴리스)                  |
 
 이 표의 지원 판은 `plugin/.claude-plugin/plugin.json` 의 버전을 따릅니다. 둘이 어긋나면 CI 의 `버전 표기 일치` 작업이 막습니다.
@@ -87,11 +88,12 @@ Security fixes land on the latest minor only. Older lines are not backported, so
 
 | Version | Security fixes                     |
 | ------- | ---------------------------------- |
-| 2.0.x   | Supported                          |
-| 1.3.x   | Not supported. Please move to 2.0.x |
-| 1.2.x   | Not supported. Please move to 2.0.x |
-| 1.1.x   | Not supported. Please move to 2.0.x |
-| 1.0.x   | Not supported. Please move to 2.0.x |
+| 2.1.x   | Supported                          |
+| 2.0.x   | Not supported. Please move to 2.1.x |
+| 1.3.x   | Not supported. Please move to 2.1.x |
+| 1.2.x   | Not supported. Please move to 2.1.x |
+| 1.1.x   | Not supported. Please move to 2.1.x |
+| 1.0.x   | Not supported. Please move to 2.1.x |
 | < 1.0.0 | N/A (1.0.0 is the first release)   |
 
 This table tracks the version in `plugin/.claude-plugin/plugin.json`. The `버전 표기 일치` CI job fails if the two drift apart.

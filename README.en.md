@@ -40,7 +40,7 @@
   <a href="#faq">FAQ</a>
 </p>
 
-> **v2.0.0**: The check hook now reports each flagged spot's line number and an excerpt, and rules can be switched off one by one (a file-head marker, `.korean-writing.json`, the plugin setting `disabled_rules`). The `crafting-effective-readmes` skill, unrelated to Korean prose, is gone. The writing rules and the character-count skill also install into other agents with `npx skills add`. Details: [CHANGELOG.md](CHANGELOG.md)
+> **v2.1.0**: Claude now asks in Korean whether to apply the skill instead of raising a permission prompt, and choosing not to apply no longer stops the work. The tagline changed, and the README gained a before/after comparison and a guide to getting the best text. Details: [CHANGELOG.md](CHANGELOG.md)
 
 ## What kind of plugin is this
 
@@ -583,9 +583,9 @@ The GitHub release is not built on that laptop. Once the tag lands, [`release.ym
 You can try the zip for one session without installing it, and verify where it came from:
 
 ```bash
-gh release download v2.0.0 -p '*.zip'
-gh attestation verify korean-writing-v2.0.0.zip -R IsthisLee/claude-korean-writing
-claude --plugin-url ./korean-writing-v2.0.0.zip
+gh release download v2.1.0 -p '*.zip'
+gh attestation verify korean-writing-v2.1.0.zip -R IsthisLee/claude-korean-writing
+claude --plugin-url ./korean-writing-v2.1.0.zip
 ```
 
 ## Sources and license

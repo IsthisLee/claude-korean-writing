@@ -40,7 +40,7 @@
   <a href="#자주-묻는-질문">FAQ</a>
 </p>
 
-> **v2.0.0**: 검사 훅이 걸린 자리의 줄 번호와 발췌를 함께 알리고 규칙을 골라 끌 수 있게 됐습니다(파일 머리 표시, `.korean-writing.json`, 플러그인 설정 `disabled_rules`). 한국어 산문과 관계없던 `crafting-effective-readmes` 스킬은 뺐습니다. 작성 규칙과 글자 수 스킬은 `npx skills add` 로 다른 에이전트에도 깔립니다. 상세: [CHANGELOG.md](CHANGELOG.md)
+> **v2.1.0**: 스킬을 적용할지 권한 창 대신 Claude 가 한국어로 묻고 「적용 안 함」 을 골라도 작업이 멈추지 않습니다. 소개 문구를 바꾸고 README 에 전후 비교 그림과 좋은 글을 받는 순서를 넣었습니다. 상세: [CHANGELOG.md](CHANGELOG.md)
 
 ## 어떤 플러그인인가
 
@@ -594,9 +594,9 @@ GitHub 릴리스 자체는 이 노트북에서 만들지 않습니다. 태그가
 받은 zip은 설치하지 않고 한 세션만 띄워 볼 수 있습니다. 증명은 `gh` 로 확인합니다.
 
 ```bash
-gh release download v2.0.0 -p '*.zip'
-gh attestation verify korean-writing-v2.0.0.zip -R IsthisLee/claude-korean-writing
-claude --plugin-url ./korean-writing-v2.0.0.zip
+gh release download v2.1.0 -p '*.zip'
+gh attestation verify korean-writing-v2.1.0.zip -R IsthisLee/claude-korean-writing
+claude --plugin-url ./korean-writing-v2.1.0.zip
 ```
 
 ## 출처와 라이선스
