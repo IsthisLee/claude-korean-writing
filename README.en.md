@@ -1,7 +1,7 @@
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/banner.en.svg">
-  <source media="(prefers-color-scheme: light)" srcset="docs/banner-light.en.svg">
-  <img src="docs/banner.en.svg" alt="korean-writing" width="100%">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/hero.en.svg">
+  <source media="(prefers-color-scheme: light)" srcset="docs/hero-light.en.svg">
+  <img src="docs/hero.en.svg" alt="korean-writing: sentences Claude Code actually wrote next to the same sentences fixed by the rules, and the three moments it covers" width="100%">
 </picture>
 
 <p align="center">
@@ -308,6 +308,7 @@ The check hook runs right after `Edit`, `Write` or `MultiEdit` touches a `.md` f
 | `tools/measure.sh` | Pushes every Korean `.md` under a directory through the hook and reports flagged files and counts per code. Whether a flagged file was written by a person or by Claude is a human call                                     |
 | `tools/release.sh` | Aligns `plugin.json`, the README badges and CHANGELOG to one version, then commits and tags. With `--push` it also pushes and creates the GitHub release                                                                    |
 | `tools/render-hook-output.py` | Builds a document from ground-truth sentences, feeds it to the hook and draws the output as the README image (`docs/hook-output.svg`). Rerun it after changing the hook's messages |
+| `tools/render-hero.py` | Draws the four README top images (`docs/hero*.svg`). Stops if a left-hand sentence is not in the ground truth |
 | `plugin/scripts/*.py`       | The nine scripts of the polishing pipeline, vendored from im-not-ai: input preparation and routing, the change-rate gate, modality restoration, injected-comma removal, chunk reassembly. They run only on a polish request |
 
 ## The verdict rules
@@ -460,6 +461,7 @@ korean-writing/
 │   ├── install-git-hook.sh           installs or removes the pre-commit check hook
 │   ├── measure.sh                    false-positive measurement over a corpus
 │   ├── release.sh                    version, marketplace manifest, badges, tag
+│   ├── render-hero.py                draws the README top image
 │   └── render-hook-output.py         redraws the README hook-output image from real output
 ├── docs/
 │   ├── (banners in Korean and English, light and dark; hook output demo; social preview)

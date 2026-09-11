@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="240" viewBox="0 0 1200 240" font-family="-apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', Helvetica, Arial, sans-serif">
-<rect width="1200" height="240" rx="14" fill="#f6f8fa"/>
-<text x="40" y="82" font-size="56" font-weight="700" fill="#1f2328" font-family="SF Mono, Menlo, Consolas, monospace">korean-writing</text>
-<text x="40" y="126" font-size="22" fill="#57606a">Makes Claude Code write Korean without translationese or AI tells</text>
-<rect x="40" y="154" width="193" height="34" rx="17" fill="#e7ecf1"/><text x="136" y="177" text-anchor="middle" font-size="15" fill="#7a4b00">while writing · skill</text><rect x="245" y="154" width="254" height="34" rx="17" fill="#e7ecf1"/><text x="372" y="177" text-anchor="middle" font-size="15" fill="#7a4b00">afterwards · im-not-ai polish</text><rect x="511" y="154" width="173" height="34" rx="17" fill="#e7ecf1"/><text x="598" y="177" text-anchor="middle" font-size="15" fill="#7a4b00">on save · lint hook</text>
-<text x="40" y="216" font-size="13" fill="#57606a">Claude Code plugin · MIT · no network</text>
-</svg>

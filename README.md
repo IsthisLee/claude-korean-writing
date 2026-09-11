@@ -1,7 +1,7 @@
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/banner.svg">
-  <source media="(prefers-color-scheme: light)" srcset="docs/banner-light.svg">
-  <img src="docs/banner.svg" alt="korean-writing" width="100%">
+  <source media="(prefers-color-scheme: dark)" srcset="docs/hero.svg">
+  <source media="(prefers-color-scheme: light)" srcset="docs/hero-light.svg">
+  <img src="docs/hero.svg" alt="korean-writing: Claude Code가 실제로 쓴 문장과 규칙대로 고친 문장, 쓸 때·저장할 때·다 쓴 뒤 세 시점" width="100%">
 </picture>
 
 <p align="center">
@@ -308,6 +308,7 @@ line_contract: Empty string => 0 lines; otherwise count CRLF, LF, CR, U+2028, U+
 | `tools/measure.sh` | 디렉터리 아래 한국어 `.md`를 전부 훅에 넣어 걸린 파일과 코드별 수를 냅니다. 걸린 파일이 사람 글인지 Claude 글인지는 사람이 판단합니다                       |
 | `tools/release.sh` | 버전 하나로 `plugin.json`, README 배지, CHANGELOG를 맞추고 커밋과 태그를 만듭니다. `--push`면 push와 GitHub 릴리스까지                                      |
 | `tools/render-hook-output.py` | 정답 데이터 문장으로 문서를 만들어 훅에 넣고 그 출력을 README 의 그림(`docs/hook-output.svg`)으로 그립니다. 훅의 안내를 바꿨으면 다시 돌립니다 |
+| `tools/render-hero.py` | README 맨 위 그림(`docs/hero*.svg`) 네 장을 그립니다. 왼쪽 문장이 정답 데이터에 없으면 멈춥니다 |
 | `plugin/scripts/*.py`       | im-not-ai에서 내장한 윤문 파이프라인의 스크립트 아홉. 입력 준비와 경로 판정, 변경률 게이트, 서법 복원, 쉼표 역주입 제거, 청크 재조립. 윤문 요청 때만 돕니다 |
 
 ## 판정 규칙
@@ -471,6 +472,7 @@ korean-writing/
 │   ├── install-git-hook.sh           커밋 직전 검사용 pre-commit 훅 설치·제거
 │   ├── measure.sh                    실제 문서 뭉치 오탐 측정
 │   ├── release.sh                    버전·마켓플레이스·배지·태그
+│   ├── render-hero.py                README 맨 위 그림을 그림
 │   └── render-hook-output.py         README 의 훅 출력 그림을 실제 출력으로 다시 그림
 ├── docs/
 │   ├── (배너 한·영 밝음·어두움, 훅 출력 데모, 소셜 프리뷰)
