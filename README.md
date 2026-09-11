@@ -145,6 +145,16 @@ claude plugin install korean-writing
 
 따로 받는 패키지는 없습니다. CI가 macOS와 Linux에서 같은 검사를 돌리고 Windows는 Git Bash나 WSL이 필요한데 아직 돌려 보지 못했습니다.
 
+### Claude Code 밖에서
+
+작성 규칙과 글자 수 스킬은 [Agent Skills](https://agentskills.io/specification) 형식이라 Codex·Cursor·Gemini CLI 같은 다른 에이전트에도 깔립니다. [Skills CLI](https://skills.sh)가 저장소에서 스킬을 찾아 넣습니다.
+
+```bash
+npx skills add IsthisLee/claude-korean-writing -s korean-writing -s korean-character-count -g
+```
+
+훅 둘과 윤문 파이프라인은 Claude Code 에서만 돕니다. 훅은 Claude Code 의 훅 이벤트에 걸리고 윤문은 Claude Code 서브에이전트를 부르기 때문입니다. 그래서 다른 에이전트에서는 쓸 때의 규칙과 글자 수 세기만 남습니다. 2026-09-11 에 격리한 HOME 에서 Codex·Cursor 용으로 깔아 두 스킬의 파일이 들어가고 글자 수 스크립트가 그 자리에서 도는 것까지 확인했습니다. 각 에이전트 안에서 스킬이 뜨는지는 확인하지 못했습니다. `korean-writing` 스킬은 플러그인 폴더를 통째로 스킬 폴더로 쓰므로 훅과 윤문 파일도 함께 복사되지만 다른 에이전트는 그 파일을 쓰지 않습니다.
+
 ## 부탁하는 법
 
 평소처럼 말하면 됩니다. 스킬은 요청을 보고 스스로 뜹니다. `korean-writing` 은 뜨기 전에 적용할지 묻습니다. 아래 문장은 그대로 붙여 써도 됩니다.
