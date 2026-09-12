@@ -53,6 +53,18 @@ echo "판정: $JUDGE · 기준서 $(basename "$RUBRIC")"
 COMMON=(--strict-mcp-config --setting-sources "" --max-turns 1)
 NOTOOL=$'\n\n## 이 실행의 예외\n이 세션에는 도구가 없다. 파일을 읽거나 쓰지 말고 요구한 산출물의 본문만 그대로 출력한다. 설명·머리말·코드펜스를 붙이지 않는다.'
 
+# 계정 한도에 걸리면 claude 가 안내 문구를 본문 자리에 내놓는다. 그것을 글로 저장하면 측정이 통째로 거짓이 된다.
+# 실측: 2026-09-11 판정 중 한도에 걸려 「You've hit your weekly limit」 64자가 글 열 개 자리에 들어갔다.
+check_text() {
+  local f=$1
+  if [ ! -s "$f" ]; then echo "생성 실패(빈 파일): $f" >&2; return 1; fi
+  if grep -q -E "hit your (weekly|usage) limit|usage limit reached|Credit balance is too low" "$f"; then
+    echo "계정 한도에 걸렸다. 한도가 풀린 뒤 다시 돌린다: $f" >&2; return 1
+  fi
+  if [ "$(wc -m < "$f" | tr -d ' ')" -lt 120 ]; then echo "생성이 너무 짧다(120자 미만): $f" >&2; return 1; fi
+  return 0
+}
+
 sys_of() { # sys_of <에이전트파일> <규칙집파일>
   cat "$PLUGIN/agents/$1"; echo; echo "## 규칙집"; echo; cat "$PLUGIN/skills/humanize-korean/references/$2"; printf '%s' "$NOTOOL"
 }
@@ -69,9 +81,9 @@ for id in "${IDS[@]}"; do
     > "$OUT/gen/skill_$id.md" 2>/dev/null < /dev/null
   claude -p "$(cat "$q")" --model "$MODEL" "${COMMON[@]}" \
     > "$OUT/gen/plain_$id.md" 2>/dev/null < /dev/null
-  if [ ! -s "$OUT/gen/skill_$id.md" ] || [ ! -s "$OUT/gen/plain_$id.md" ]; then
-    echo "생성 실패: $id" >&2; exit 1
-  fi
+  for f in "$OUT/gen/skill_$id.md" "$OUT/gen/plain_$id.md"; do
+    check_text "$f" || exit 1
+  done
 
   echo "  윤문 $id"
   run="$OUT/work/$id"; mkdir -p "$run"; cp "$OUT/gen/plain_$id.md" "$run/01_input.txt"
@@ -104,6 +116,7 @@ $(cat "$run/05_rewritten.md")" \
         --model "$MODEL" "${COMMON[@]}" > "$OUT/gen/imnotai_$id.md" 2>/dev/null < /dev/null ;;
   esac
   [ -s "$OUT/gen/imnotai_$id.md" ] || cp "$run/05_rewritten.md" "$OUT/gen/imnotai_$id.md"
+  check_text "$OUT/gen/imnotai_$id.md" || exit 1
   python3 - "$run/01_input.txt" "$OUT/gen/imnotai_$id.md" <<'PY'
 import sys, os
 sys.path.insert(0, os.path.join(os.environ["KW_REPO"], "plugin/skills/humanize-korean/references"))
@@ -174,8 +187,13 @@ for i in ids:
         split += 1
         print(f"  판정 {i} -> 순서에 따라 갈림")
 print(f"\n스킬 승 {win['skill']} / im-not-ai 승 {win['imnotai']} / 무 {win['tie']} / 갈림 {split} / 판정 실패 {bad}")
+decided = win["skill"] + win["imnotai"] + win["tie"] + split
 if bad:
     print("판정이 실패했다. 계정 사용량이 남아 있는지 확인하라 (실측: 소진 메시지가 JSON 자리에 들어온다).")
+if decided == 0:
+    # 판정이 하나도 서지 않았다. 「회귀 없음」 으로 끝내면 돌리지도 못한 판을 통과로 읽게 된다.
+    print("판정 불가. 결과로 쓰지 않는다.")
+    sys.exit(2)
 print("스킬이 졌다." if win["imnotai"] > win["skill"] else "회귀 없음.")
 sys.exit(1 if win["imnotai"] > win["skill"] else 0)
 PY
