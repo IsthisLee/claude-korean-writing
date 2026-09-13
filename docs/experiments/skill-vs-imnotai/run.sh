@@ -65,6 +65,27 @@ check_text() {
   return 0
 }
 
+# 한 글을 만든다. 실패가 두 가지라 대응도 두 가지다.
+# 계정 한도는 기다리는 것 말고 할 일이 없으므로 그 자리에서 멈춘다.
+# 턴 한도(`Error: Reached max turns (1)`)와 빈 출력이 나오면 세 번까지 다시 만든다. 한 쌍이 죽으면
+# 뒤의 판정 84건까지 통째로 못 도는 것이 더 비싸서다. 되풀이해 죽으면 원인이 따로 있다는 뜻이다.
+# 실측 2026-09-13: L3 이 세 번 내리 죽었고 원인은 아래 생성 호출에 도구 안내가 빠진 것이었다.
+gen_to() { # gen_to <출력파일> <프롬프트파일> [claude 에 넘길 인자...]
+  local out=$1 q=$2 try
+  shift 2
+  for try in 1 2 3; do
+    claude -p "$(cat "$q")" "$@" --model "$MODEL" "${COMMON[@]}" > "$out" 2>/dev/null < /dev/null
+    if grep -q -E "hit your (weekly|usage) limit|usage limit reached|Credit balance is too low" "$out"; then
+      echo "계정 한도에 걸렸다. 한도가 풀린 뒤 다시 돌린다: $out" >&2
+      return 1
+    fi
+    check_text "$out" 2>/dev/null && return 0
+    echo "    다시 생성 $try/3: $(basename "$out")" >&2
+    sleep 20   # 실패가 잇따르면 잠깐 기다렸다 부른다
+  done
+  check_text "$out"
+}
+
 sys_of() { # sys_of <에이전트파일> <규칙집파일>
   cat "$PLUGIN/agents/$1"; echo; echo "## 규칙집"; echo; cat "$PLUGIN/skills/humanize-korean/references/$2"; printf '%s' "$NOTOOL"
 }
@@ -77,13 +98,12 @@ for id in "${IDS[@]}"; do
     continue
   fi
   echo "  생성 $id"
-  claude -p "$(cat "$q")" --append-system-prompt "$(cat "$PLUGIN/SKILL.md")" --model "$MODEL" "${COMMON[@]}" \
-    > "$OUT/gen/skill_$id.md" 2>/dev/null < /dev/null
-  claude -p "$(cat "$q")" --model "$MODEL" "${COMMON[@]}" \
-    > "$OUT/gen/plain_$id.md" 2>/dev/null < /dev/null
-  for f in "$OUT/gen/skill_$id.md" "$OUT/gen/plain_$id.md"; do
-    check_text "$f" || exit 1
-  done
+  # 도구가 없다는 말을 안 하면 모델이 첫 턴에 도구를 부르려다 턴을 다 써서 본문 없이 끝난다.
+  # 실측 2026-09-13: 이 안내 없이 부른 L1 과 L3 이 `Error: Reached max turns (1)` 로 죽었고,
+  # 같은 프롬프트와 같은 턴 한도에 이 안내만 붙여 따로 다섯 번 부르니 모두 본문이 나왔다.
+  # 두 쪽에 똑같은 문구를 붙여 쌍 안의 조건을 맞춘다.
+  gen_to "$OUT/gen/skill_$id.md" "$q" --append-system-prompt "$(cat "$PLUGIN/SKILL.md")$NOTOOL" || exit 1
+  gen_to "$OUT/gen/plain_$id.md" "$q" --append-system-prompt "$NOTOOL" || exit 1
 
   echo "  윤문 $id"
   run="$OUT/work/$id"; mkdir -p "$run"; cp "$OUT/gen/plain_$id.md" "$run/01_input.txt"
