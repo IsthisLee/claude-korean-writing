@@ -94,7 +94,10 @@ for id in "${IDS[@]}"; do
   q="$BASE/prompts/$id.txt"
   [ -r "$q" ] || { echo "프롬프트 없음: $id" >&2; exit 2; }
   if [ -n "${KW_REJUDGE:-}" ]; then
-    [ -s "$OUT/gen/skill_$id.md" ] && [ -s "$OUT/gen/imnotai_$id.md" ] || { echo "판정만 다시 하려는데 생성물이 없다: $id" >&2; exit 2; }
+    if [ ! -s "$OUT/gen/skill_$id.md" ] || [ ! -s "$OUT/gen/imnotai_$id.md" ]; then
+      echo "판정만 다시 하려는데 생성물이 없다: $id" >&2
+      exit 2
+    fi
     continue
   fi
   echo "  생성 $id"
