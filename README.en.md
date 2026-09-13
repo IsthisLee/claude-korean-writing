@@ -175,18 +175,18 @@ The two hooks have no name to call: they run when their condition is met and sta
 
 ### Why it asks before writing
 
-When Claude calls `korean-writing` on its own, it asks in Korean right before writing. It shows in one line what it is about to write and offers 「적용」 (apply) or 「적용 안 함」 (don't apply). Claude adds one sentence of its own opinion on whether the rules suit this piece and marks the option it recommends with 「(추천)」; the recommendation is a suggestion and the choice stays yours. Choosing not to apply does not stop the work; Claude carries on without the rules.
+When Claude calls `korean-writing` on its own, it asks in Korean right before writing. It shows in one line what it is about to write and offers 「적용」 (apply), 「적용하고 설명은 넉넉히」 (apply, and keep the explanations generous) or 「적용 안 함」 (don't apply). Claude adds one sentence of its own opinion on whether the rules suit this piece and marks the option it recommends with 「(추천)」; the recommendation is a suggestion and the choice stays yours. Choosing not to apply does not stop the work; Claude carries on without the rules.
 
-It asks because the rules make text shorter. Dates, numbers and conditions written into the request were never dropped in the measurement (27 items). What shrinks is the explanation Claude adds on its own. Asked for a document explaining debouncing, text written without the rules ran 661 Korean characters and all 8 runs explained that changing `delay` restarts the timer; with the rules it ran 461 characters and only 4 of 8 did ([`EVALUATION.md`](EVALUATION.md) J3, Korean). For a document that needs those side explanations, choose 「적용 안 함」 or put the explanation you need into the request.
+It asks because the rules make text shorter. Dates, numbers and conditions written into the request were never dropped in the measurement (27 items). What shrinks is the explanation Claude adds on its own. Asked for a document explaining debouncing, text written without the rules ran 661 Korean characters and all 8 runs explained that changing `delay` restarts the timer; with the rules it ran 461 characters and only 4 of 8 did ([`EVALUATION.md`](EVALUATION.md) J3, Korean). For a document that needs those side explanations, choose 「적용하고 설명은 넉넉히」. Whether that option actually changes the output was measured on the same task: with the rules alone 62 of 88 items survived, and with this option 72 of 88 did, matching the run with no rules at all, at 564 Korean characters. A permutation test puts the rules-alone condition significantly lower (p=0.014).
 
-It asks once, right before writing, whether the text is a chat reply or a `.md` file. The check hook that runs after a file is saved never asks. Typing `/korean-writing` yourself, or asking for it by name ("korean-writing 스킬로 써줘"), applies it without asking.
+It asks once, right before writing, whether the text is a chat reply or a `.md` file. The check hook that runs on save never asks, but it does follow this answer: choose 「적용 안 함」 and the file you were writing gets no check notices either, so the plugin stops pushing rules you just turned down. Other documents are still checked, and choosing 「적용」 next time brings the check back with it. Typing `/korean-writing` yourself, or asking for it by name ("korean-writing 스킬로 써줘"), applies it without asking.
 
 ### Getting the best text
 
 1. **Put the facts in the request.** Dates, numbers, conditions and the audience come through even with the rules on (J3).
 2. **State the length if it matters.** Text written under the rules tends to come out shorter than asked (C10); ask for more if it falls short.
 3. **Attach a sample of your own writing if you have a voice.** The skill follows the sample's endings and sentence length before its own rules. This has not been measured yet.
-4. **Choose 「적용」 when asked.** If you need long side explanations, choose 「적용 안 함」.
+4. **Choose 「적용」 when asked.** For a document that is only useful with its side explanations, such as defaults and how something works, choose 「적용하고 설명은 넉넉히」. For a formal document whose wording must stay as written, choose 「적용 안 함」.
 5. **Have it saved as a `.md` file.** The check hook hands back each flagged spot with its line number and Claude fixes it in the same turn ([experiment](./docs/experiments/hook-loop/)).
 6. **Polish drafts that already exist with `/korean-writing:humanize`.** For new text, writing under the rules from the start works better than writing first and polishing afterwards: across 14 re-measured pairs every judge picked it more often, though the primary judgement fell short of the bar for naming a winner ([EVALUATION.md](EVALUATION.md) section L, in Korean).
 
@@ -200,6 +200,7 @@ It can be switched off at several scopes, and individual rules can be turned off
 | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | One file             | `<!-- korean-writing: ignore -->` at the top. For contracts, or a catalog of bad examples, where flagging every time makes no sense |
 | Some rules in one file | `<!-- korean-writing: disable K1 K9 -->` at the top. For a document that uses em dashes on purpose, where only a rule or two does not fit |
+| The piece you are writing now | Choose 「적용 안 함」 in the pre-write prompt. The file you were writing gets no check notices either |
 | A repository         | Commit a `.korean-writing.json` so the whole team shares one standard. Example below                                               |
 | Some rules, persistently | The plugin setting `disabled_rules`, or `KOREAN_WRITING_DISABLE_RULES=K1,K9`                                                  |
 | Whole session        | `KOREAN_WRITING_HOOK_DISABLED=1`. Turns off both the check hook and the skill-confirm hook                                         |
