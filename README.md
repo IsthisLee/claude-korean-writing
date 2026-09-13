@@ -1,7 +1,7 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/hero.svg">
   <source media="(prefers-color-scheme: light)" srcset="docs/hero-light.svg">
-  <img src="docs/hero.svg" alt="korean-writing: Claude Code가 실제로 쓴 문장과 규칙대로 고친 문장, 쓸 때·저장할 때·다 쓴 뒤 세 시점" width="100%">
+  <img src="docs/hero.svg" alt="korean-writing: Claude Code가 실제로 쓴 문장과 규칙대로 고친 문장, 처음 작성할 때·저장할 때·수정할 때 세 시점" width="100%">
 </picture>
 
 <p align="center">
@@ -10,9 +10,9 @@
 
 <p align="center">
   <strong>Claude Code가 번역투와 AI 티 없는 한국어를 쓰게 하는 플러그인입니다.</strong><br>
-  새 글은 첫 줄부터 규칙대로 쓰고 <code>.md</code>로 저장하면 그 턴 안에서 AI 티를 짚어 Claude에게 돌려줍니다.<br>
-  이미 쓴 글은 내장한 <a href="https://github.com/epoko77-ai/im-not-ai">im-not-ai</a>로 다듬습니다.<br>
-  설치는 두 줄이고 설정할 것은 없습니다. 원문은 이 컴퓨터를 벗어나지 않습니다.
+  새 글은 처음부터 규칙대로 쓰고 <code>.md</code>로 저장하면 그 턴 안에서 AI 티를 짚어 Claude에게 돌려줍니다.<br>
+  이미 써 둔 글은 사실은 그대로 두고 문체만 다듬습니다.<br>
+  설치는 두 줄이고 설정할 것은 없습니다. 내용은 에이전트 외부로 전송되지 않습니다.
 </p>
 
 <p align="center">
@@ -50,11 +50,15 @@ Claude Code의 한국어는 문법이 틀리지 않습니다. 그런데도 읽�
 
 | 시점                                        | 무엇이 맡나                                                                                 | 언제 움직이나                   | 규칙이 적힌 곳                           |
 | ------------------------------------------- | ------------------------------------------------------------------------------------------- | ------------------------------- | ---------------------------------------- |
-| **쓸 때**<br>슬랙·메일·보고서·README       | `korean-writing` 스킬이 첫 줄부터 규칙대로 씁니다. 모델이 스스로 부를 때는 먼저 적용할지 묻습니다 | 써 달라는 요청이 오면           | `plugin/SKILL.md`                        |
+| **처음 작성할 때**<br>슬랙·메일·보고서·README | `korean-writing` 스킬이 첫 줄부터 규칙대로 씁니다. 모델이 스스로 부를 때는 먼저 적용할지 묻습니다 | 써 달라는 요청이 오면           | `plugin/SKILL.md`                        |
 | **저장할 때**<br>`.md`로 남는 것            | PostToolUse 훅이 방금 쓴 부분을 검사하고 걸린 자리를 같은 턴에 Claude에게 돌려줍니다         | `Edit`·`Write`·`MultiEdit` 직후 | `plugin/hooks-handlers/posttooluse.sh`   |
-| **다 쓴 뒤**<br>남이 준 초안, 예전 문서     | 윤문 파이프라인이 사실은 두고 문체만 고칩니다                                               | 다듬어 달라는 요청이 오면       | `plugin/skills/humanize-korean/SKILL.md` |
+| **수정할 때**<br>남이 준 초안, 예전 문서 | 윤문 파이프라인이 사실은 두고 문체만 고칩니다                                               | 다듬어 달라는 요청이 오면       | `plugin/skills/humanize-korean/SKILL.md` |
 
 여기에 글자 수 스킬이 하나 더 붙습니다. 글자 수는 모델의 어림 대신 스크립트가 셉니다.
+
+맨 위 그림에 붙은 `K6`·`K7` 같은 코드는 저장할 때 도는 검사 훅이 잡는 열 가지 패턴의 이름입니다. 전부 [판정 규칙](#판정-규칙)에 있습니다. 세 시점이 같은 목록을 쓰지는 않습니다. 처음 작성할 때 쓰는 스킬은 이보다 넓은 글쓰기 규칙을 따르고 수정할 때 쓰는 윤문은 im-not-ai의 분류를 씁니다. 열 가지는 그 가운데 정규식으로 멀쩡한 문장을 건드리지 않고 걸러낼 수 있는 것만 고른 것입니다.
+
+검사가 도는 때는 `.md` 파일이 저장되는 순간입니다. 처음 쓸 때든 나중에 고칠 때든 파일을 건드리면 그때마다 방금 쓴 부분을 봅니다. 채팅 답으로만 받은 글에는 돌지 않고 스킬이 규칙대로 쓰는 동안에도 정규식은 돌지 않습니다.
 
 > 코드에 붙는 린터를 한국어 산문에 붙인 것과 같습니다. 걸린 자리는 그 턴 안에 Claude에게 돌아가므로 사람이 보기 전에 고쳐집니다. AI 티가 든 초안을 저장해 달라고 한 실측 3회에서 Claude는 매번 초안을 먼저 저장한 뒤 훅이 짚은 항목을 같은 턴에 모두 고쳤습니다. 플러그인 없이 돌린 3회는 초안 그대로 저장하고 끝났습니다([실험](./docs/experiments/hook-loop/)).
 
@@ -62,9 +66,9 @@ Claude Code의 한국어는 문법이 틀리지 않습니다. 그런데도 읽�
 
 ### 같은 요청, 두 결과
 
-<p align="center"><img src="docs/before-after.svg" alt="같은 칼럼 요청을 다 쓴 뒤 윤문한 글과 스킬로 처음부터 쓴 글에서 판정자가 짚은 문장" width="100%"></p>
+<p align="center"><img src="docs/before-after-column.svg" alt="같은 칼럼 요청을 다 쓴 뒤 고친 글과 처음부터 규칙대로 쓴 글에서 같은 자리를 맡는 대목끼리 짝지은 그림" width="100%"></p>
 
-칼럼 한 편을 두 방식으로 쓴 결과에서 판정자가 짚은 문장만 뽑았습니다. 왼쪽은 규칙 없이 쓴 칼럼을 im-not-ai로 다듬은 글입니다. 다듬은 뒤에도 「먼저·다음으로·마지막으로」로 늘어놓는 틀과 「더 멀리 간다」 같은 마무리가 남았습니다. 오른쪽은 같은 요청을 `korean-writing` 스킬로 처음부터 쓴 글이고 어느 글인지 알리지 않고 AI 판정자에게 두 번 물었을 때 두 번 다 이쪽을 골랐습니다. 한 번의 예이고 여러 번 견준 결과는 [검증](#검증)에 있습니다. 전문은 `docs/samples/before-after/` 에 있고 그림은 `tools/render-before-after.py` 가 그립니다.
+칼럼 한 편을 두 방식으로 쓴 결과입니다. 여는 대목은 여는 대목과, 마지막 문장은 마지막 문장과 짝지어 놓았습니다. 왼쪽은 규칙 없이 쓴 칼럼을 im-not-ai로 다듬은 글이고 다듬은 뒤에도 「먼저·다음으로·마지막으로」로 늘어놓는 틀과 「더 멀리 간다」 같은 마무리가 남았습니다. 오른쪽은 같은 요청을 `korean-writing` 스킬로 처음부터 쓴 글입니다. 어느 글인지 알리지 않고 AI 판정자에게 두 번 물었을 때 두 번 다 이쪽을 골랐고 「판정자가 짚은 곳」 은 그 판정문에 그대로 나온 표현입니다. 한 번의 예이고 여러 번 견준 결과는 [검증](#검증)에 있습니다. 전문은 `docs/samples/before-after/` 에 있고 그림은 `tools/render-before-after.py` 가 그립니다.
 
 ### 문장, 전과 후
 
@@ -171,7 +175,7 @@ npx skills add IsthisLee/claude-korean-writing -s korean-writing -s korean-chara
 
 ### 쓰기 전에 묻는 이유
 
-모델이 `korean-writing` 을 스스로 부르면 글을 쓰기 직전에 Claude 가 한국어로 묻습니다. 무엇을 쓰려는지 한 줄로 보여 주고 「적용」 과 「적용 안 함」 가운데 고르게 합니다. 「적용 안 함」 을 골라도 작업은 멈추지 않고 규칙 없이 이어서 씁니다.
+모델이 `korean-writing` 을 스스로 부르면 글을 쓰기 직전에 Claude 가 한국어로 묻습니다. 무엇을 쓰려는지 한 줄로 보여 주고 「적용」 과 「적용 안 함」 가운데 고르게 합니다. 이때 Claude 는 이 글에 규칙이 맞는지 제 의견을 한 문장으로 붙이고 추천하는 쪽 선택지에 「(추천)」 을 답니다. 추천은 참고일 뿐이고 고르는 것은 사람입니다. 「적용 안 함」 을 골라도 작업은 멈추지 않고 규칙 없이 이어서 씁니다.
 
 묻는 이유는 규칙을 켜면 글이 짧아지기 때문입니다. 요청에 적은 날짜·수치·조건은 실측에서 하나도 빠지지 않았습니다(27항목). 줄어든 것은 요청에 없던 설명을 Claude 가 알아서 보태는 부분입니다. 디바운스 설명 문서를 써 달라고 했을 때 규칙 없이 쓴 글은 한글 661자였고 `delay` 가 바뀌면 타이머를 새로 건다는 설명이 8번 모두 들어갔습니다. 규칙을 켜니 461자가 됐고 그 설명은 8번 중 4번만 들어갔습니다([EVALUATION.md](EVALUATION.md) J3). 곁가지 설명까지 필요한 문서라면 「적용 안 함」 을 고르거나 그 설명을 요청에 적으면 됩니다.
 
@@ -289,10 +293,11 @@ line_contract: Empty string => 0 lines; otherwise count CRLF, LF, CR, U+2028, U+
 | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `plugin/scripts/check.sh`   | 파일을 통째로 훅에 넣어 검사합니다. 써 둔 문서를 점검하거나 CI·pre-commit에서 씁니다. 걸린 파일이 있으면 종료 코드 1                                        |
 | `tools/install-git-hook.sh` | 커밋 직전에 스테이지된 `.md` 를 같은 기준으로 검사하는 git 훅을 깝니다. 이미 다른 `pre-commit` 이 있으면 덮어쓰지 않고 넣을 두 줄만 알려 줍니다. `--uninstall` 로 지우고 `git commit --no-verify` 로 건너뜁니다 |
+| `tools/guard.sh` | 홈 경로(`/Users/<이름>`)·세션 임시 경로·`.private/` 파일이 공개 저장소에 섞이지 않게 막습니다. `.private/guard-patterns` 에 개인 패턴을 더할 수 있습니다. `.githooks/pre-commit` 이 커밋 직전에, CI 가 저장소 전체에 부릅니다 |
 | `tools/measure.sh` | 디렉터리 아래 한국어 `.md`를 전부 훅에 넣어 걸린 파일과 코드별 수를 냅니다. 걸린 파일이 사람 글인지 Claude 글인지는 사람이 판단합니다                       |
 | `tools/release.sh` | 버전 하나로 `plugin.json`, README 배지, CHANGELOG를 맞추고 커밋과 태그를 만듭니다. `--push`면 push와 GitHub 릴리스까지                                      |
 \1
-| `tools/render-before-after.py` | `docs/samples/before-after/` 의 실제 생성물에서 판정자가 짚은 문장을 뽑아 전후 비교 그림(`docs/before-after.svg`)을 그립니다. 뽑은 문장이 원문에 없으면 멈춥니다 |
+| `tools/render-before-after.py` | `docs/samples/before-after/` 의 실제 생성물에서 판정자가 짚은 문장을 뽑아 전후 비교 그림(`docs/before-after-column.svg`)을 그립니다. 뽑은 문장이 원문에 없으면 멈춥니다 |
 | `tools/render-hero.py` | README 맨 위 그림(`docs/hero*.svg`) 네 장을 그립니다. 왼쪽 문장이 정답 데이터에 없으면 멈춥니다 |
 | `plugin/scripts/*.py`       | im-not-ai에서 내장한 윤문 파이프라인의 스크립트 아홉. 입력 준비와 경로 판정, 변경률 게이트, 서법 복원, 쉼표 역주입 제거, 청크 재조립. 윤문 요청 때만 돕니다 |
 
@@ -454,6 +459,7 @@ korean-writing/
 │   ├── ground-truth.json             실제로 생성됐던 위반 문장 10건
 │   └── clean.json                    같은 맥락의 정상 문장 5건
 ├── tools/
+│   ├── guard.sh                      공개 저장소 가드. 홈 경로·개인 패턴·.private/ 파일을 막음
 │   ├── install-git-hook.sh           커밋 직전 검사용 pre-commit 훅 설치·제거
 │   ├── measure.sh                    실제 문서 뭉치 오탐 측정
 │   ├── release.sh                    버전·마켓플레이스·배지·태그
@@ -470,6 +476,7 @@ korean-writing/
 │       ├── hook-loop/                훅이 짚은 자리를 Claude 가 같은 턴에 고치는지
 │       ├── skill-vs-imnotai/         스킬 대 im-not-ai 블라인드 판정 게이트
 │       └── task-performance/         v1.1.0 까지 넣던 주입이 일을 방해했는지 본 기록
+├── .githooks/pre-commit              커밋 직전 가드와 한국어 문서 검사. git config core.hooksPath .githooks 로 켬
 ├── .github/                          CI 워크플로 넷, 이슈 양식 3종, PR 양식, CODEOWNERS, dependabot, CI 전용 npm 도구
 ├── .claude/settings.json             기여자용 프로젝트 설정
 ├── .gitattributes                    셸 스크립트 LF 고정
@@ -489,7 +496,7 @@ korean-writing/
 
 한국어를 자연스럽게 만드는 도구는 이미 여럿 있습니다. 가장 널리 쓰이는 것은 다 쓴 글을 고치는 윤문 도구이고 이 플러그인의 윤문도 그중 하나인 im-not-ai를 커밋째 고정해 내장한 것입니다. 이 플러그인이 더하는 것은 그 앞의 두 시점입니다. 글을 쓰는 순간과 Claude가 파일을 저장한 바로 그 턴입니다.
 
-| 도구                                                                  | 쓸 때                                                     | 저장할 때                                           | 다 쓴 뒤                             | 네트워크                                          |
+| 도구                                                                  | 처음 작성할 때                                            | 저장할 때                                           | 수정할 때                            | 네트워크                                          |
 | --------------------------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------- | ------------------------------------ | ------------------------------------------------- |
 | **korean-writing**                                                    | 작성 스킬이 첫 줄부터 규칙대로 씀                          | 편집 직후 훅이 검사해 같은 턴에 Claude에게 돌려줌   | im-not-ai 내장                       | 쓰지 않음. CI가 막음                              |
 | [im-not-ai](https://github.com/epoko77-ai/im-not-ai)                  |                                                           |                                                     | 윤문 파이프라인(1~3콜)               | 쓰지 않음                                         |
@@ -611,3 +618,7 @@ claude --plugin-url ./korean-writing-v2.1.0.zip
 | `plugin/skills/korean-character-count/`                                                                  | [k-skill](https://github.com/NomaDamas/k-skill)                                                                                | 스크립트는 그대로, 설명서는 실행 경로만, SKILL.md는 다시 씀 |
 
 나머지는 이 저장소에서 썼습니다. `korean-writing` 스킬, 검사 훅 전체, 정답 데이터, 검증 기준이 그것입니다. 가져온 파일의 라이선스는 전부 MIT이고 원 저작권 표시는 [`plugin/NOTICE.md`](./plugin/NOTICE.md)에 모아 두었습니다. 이 저장소의 라이선스도 [MIT](./LICENSE)입니다.
+
+---
+
+<p align="center"><sub>Built with <a href="https://claude.com/claude-code">Claude Code</a> · <a href="./LICENSE">MIT</a></sub></p>
