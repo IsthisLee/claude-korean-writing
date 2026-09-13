@@ -1,0 +1,62 @@
+{
+ "seed": 20260911,
+ "run": "run-notool-20260913",
+ "pairs": {
+  "01": {
+   "A": "imnotai",
+   "B": "skill"
+  },
+  "02": {
+   "A": "skill",
+   "B": "imnotai"
+  },
+  "03": {
+   "A": "skill",
+   "B": "imnotai"
+  },
+  "04": {
+   "A": "skill",
+   "B": "imnotai"
+  },
+  "05": {
+   "A": "imnotai",
+   "B": "skill"
+  },
+  "06": {
+   "A": "imnotai",
+   "B": "skill"
+  },
+  "07": {
+   "A": "skill",
+   "B": "imnotai"
+  },
+  "08": {
+   "A": "skill",
+   "B": "imnotai"
+  },
+  "L1": {
+   "A": "skill",
+   "B": "imnotai"
+  },
+  "L2": {
+   "A": "imnotai",
+   "B": "skill"
+  },
+  "L3": {
+   "A": "imnotai",
+   "B": "skill"
+  },
+  "L4": {
+   "A": "skill",
+   "B": "imnotai"
+  },
+  "L5": {
+   "A": "skill",
+   "B": "imnotai"
+  },
+  "L6": {
+   "A": "imnotai",
+   "B": "skill"
+  }
+ }
+}

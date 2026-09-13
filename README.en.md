@@ -46,7 +46,7 @@
 
 Claude Code's Korean is grammatically fine. It still reads wrong: word order carried over from English, metaphors that arrived through English, and stock phrases that land in the same spot of every document. When 205 Korean documents that had accumulated on one machine were run through the hook, 85 were flagged and only one of those was written before 2024. The rest are 2026 files written by Claude, most of them for em-dash interjections.
 
-Patching this with a prompt means pasting that prompt into every session, and asking for a cleanup afterwards is already too late: polishing a finished draft changes little. When drafts were polished in our tests, at most 18% of the text changed, and one notice did not change at all. Across 56 comparisons of the same request, an AI judge who was not told which text was which picked the one written under the rules from the start 49 times and never picked the polished draft. So the three moments when Korean text gets made each get an owner. Installing turns on all three at once, and there is nothing to remember to call.
+Patching this with a prompt means pasting that prompt into every session, and asking for a cleanup afterwards is already too late: polishing a finished draft changes little. When drafts were polished in our tests, at most 18% of the text changed, and one notice did not change at all. Across 14 pairs of the same request, three AI judges who were not told which text was which all picked the one written under the rules from the start more often. In the primary run, though, half the pairs flipped when the order was swapped, so this does not settle the question (see Verification). So the three moments when Korean text gets made each get an owner. Installing turns on all three at once, and there is nothing to remember to call.
 
 | Moment                                                        | What covers it                                                                                           | When it runs                             | Where the rules live                     |
 | ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | ---------------------------------------- | ---------------------------------------- |
@@ -188,7 +188,7 @@ It asks once, right before writing, whether the text is a chat reply or a `.md` 
 3. **Attach a sample of your own writing if you have a voice.** The skill follows the sample's endings and sentence length before its own rules. This has not been measured yet.
 4. **Choose 「적용」 when asked.** If you need long side explanations, choose 「적용 안 함」.
 5. **Have it saved as a `.md` file.** The check hook hands back each flagged spot with its line number and Claude fixes it in the same turn ([experiment](./docs/experiments/hook-loop/)).
-6. **Polish drafts that already exist with `/korean-writing:humanize`.** For new text, writing under the rules from the start works better than writing first and polishing afterwards: across 56 comparisons it was picked 49 times, and the polished draft never was.
+6. **Polish drafts that already exist with `/korean-writing:humanize`.** For new text, writing under the rules from the start works better than writing first and polishing afterwards: across 14 re-measured pairs every judge picked it more often, though the primary judgement fell short of the bar for naming a winner ([EVALUATION.md](EVALUATION.md) section L, in Korean).
 
 Hand a draft to the polish skill and the fixed text comes back with a one-line status: an estimated change rate and a grade from A to D. Below it, three to six of the main edits are shown side by side, before and after. If more than half the text changed, you get that fact instead of a result. A text changed by half is a rewrite, not a polish.
 
@@ -363,7 +363,7 @@ The pass criteria and the measurements are in [`EVALUATION.md`](./EVALUATION.md)
 | Correct code on detected items     | 10 / 10                                                                         |
 | Writing-request triggers           | 5 / 5, with 0 / 5 misfires on code work                                         |
 | Mutation testing                   | 23 / 23 injected defects caught                                                 |
-| Skill vs im-not-ai polished text   | 49 won, 0 lost out of 56 blind pairs. With the follow-the-writer section added in v2.0.0: 3 won, 1 lost out of the default 4 pairs |
+| Skill vs im-not-ai polished text   | Re-measured with a neutral rubric on 14 pairs: 6-1 (p=0.125) up to 13-1 (p=0.002) depending on the judge model; the primary judgement did not clear the bar |
 | Same-turn fix after a hook finding | 3 / 3; 0 / 3 without the plugin ([experiment](./docs/experiments/hook-loop/)) |
 | Always-on context cost             | about 730 tokens in an isolated HOME (four skill descriptions 430 + three agents 297) |
 | Network calls                      | 0                                                                               |
@@ -379,7 +379,7 @@ The skill itself was compared with and without on four identical prompts. On cla
 
 | Place                      | Always-on tokens        | Extra when it runs             | Time                                     | Quality evidence                                        |
 | -------------------------- | ----------------------- | ------------------------------ | ---------------------------------------- | ------------------------------------------------------- |
-| The `korean-writing` skill | 70 for the description  | About 10,100 for the body      | One reply                                | 49 won, 0 lost out of 56 blind pairs against im-not-ai  |
+| The `korean-writing` skill | 70 for the description  | About 10,100 for the body      | One reply                                | 6-1 up to 13-1 out of 14 blind pairs against im-not-ai  |
 | Polishing                  | 230 plus 773 for agents | About 14,100 per call, 1 to 3  | Fast 130s $0.64, strict 451s $1.64       | Rests on im-not-ai's own measurements; change-rate gates at 30% and 50% |
 | The check hook             | **0**                   | 0; it never calls an LLM       | 35 to 43 ms                              | 10/10 violations, 0/5 false positives, 1 of 32 pre-2024 files |
 
@@ -409,7 +409,7 @@ GitHub Actions repeats the checks on macOS and Linux for every push and pull req
 
 - Contracts, terms of service, legal documents and official letters are out of scope; formality is their requirement. Code, logs, commands, quotations, proper nouns and English source text are left alone.
 - Spelling and spacing are not checked. Style only.
-- The polishing pipeline was not written here; it is im-not-ai's, vendored as it is. Its own quality rests on that project's measurements; what this repository measured is that text written from the start under the skill holds up against text that pipeline polished (49 won, 0 lost out of 56 blind pairs).
+- The polishing pipeline was not written here; it is im-not-ai's, vendored as it is. Its own quality rests on that project's measurements; what this repository measured is that text written from the start under the skill holds up against text that pipeline polished (14 blind pairs, 6-1 up to 13-1 by judge model; the primary judgement did not clear the bar).
 
 ## Repository layout
 
