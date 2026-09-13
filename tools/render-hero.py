@@ -27,11 +27,13 @@ ROWS = [
 TEXT = {
     "ko": {"tag1": "Claude Code 플러그인", "tag2": "번역투와 AI 티 없는 한국어로 쓰게 합니다",
            "left": "Claude Code가 실제로 쓴 문장", "right": "규칙대로 고친 문장",
-           "stages": [("쓸 때", "작성 스킬이 처음부터 규칙대로"), ("저장할 때", "검사 훅이 걸린 줄을 짚어 줌"), ("다 쓴 뒤", "im-not-ai로 윤문")],
+           "kcap": "K = 저장할 때 검사",
+           "stages": [("처음 작성할 때", "작성 스킬이 처음부터 규칙대로"), ("저장할 때", "검사 훅이 걸린 줄을 짚어 줌"), ("수정할 때", "im-not-ai로 윤문")],
            "foot": "네트워크를 쓰지 않습니다 · MIT"},
     "en": {"tag1": "A Claude Code plugin", "tag2": "Korean without translationese or AI tells",
            "left": "Written by Claude Code", "right": "Fixed by the rules",
-           "stages": [("While writing", "the skill writes to the rules"), ("On save", "the hook points at flagged lines"), ("Afterwards", "im-not-ai polishing")],
+           "kcap": "K = on-save check",
+           "stages": [("When first written", "the skill writes to the rules"), ("On save", "the hook points at flagged lines"), ("When revised", "im-not-ai polishing")],
            "foot": "No network · MIT"},
 }
 THEME = {
@@ -72,6 +74,7 @@ def render(lang, theme):
          t(W - M, 84, tx["tag1"], 20, c["dim"], 400, anchor="end"),
          t(W - M, 116, tx["tag2"], 24, c["text"], 700, anchor="end"),
          f'<line x1="{M}" y1="148" x2="{W - M}" y2="148" stroke="{c["rule"]}" stroke-width="2"/>',
+         t(M, 186, tx["kcap"], 14, c["dim"], 700),
          t(X_BEFORE, 186, tx["left"], 15, c["before"], 700),
          t(X_AFTER, 186, tx["right"], 15, c["after"], 700)]
     y = 238

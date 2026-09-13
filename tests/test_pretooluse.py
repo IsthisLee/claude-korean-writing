@@ -22,6 +22,7 @@ REPO = HERE.parent
 PLUGIN = pathlib.Path(os.environ.get("KW_PLUGIN_ROOT") or (REPO / "plugin")).resolve()
 HOOK = PLUGIN / "hooks-handlers" / "pretooluse-skill.sh"
 MARK = "korean-writing 문체 규칙을 적용할까요"
+MORE = "적용하고 설명은 넉넉히"
 FAILS = []
 
 
@@ -101,6 +102,8 @@ for name in ("korean-writing:korean-writing", "korean-writing"):
     check(f"{name} → 요청 맥락을 질문 예시에 넣는다(요청 요약이 없으면 사용자 요청)", "운영팀에 보낼 옵션 변경" in why, why[:160])
     check(f"{name} → 줄어드는 것은 곁가지 설명이라고 구체적으로 적고 실측 언급은 없다",
           "곁가지 설명" in why and "모두 담습니다" in why and "EVALUATION" not in why and "J3" not in why, why[:160])
+    check(f"{name} → 추천하는 쪽을 표시하게 한다", "(추천)" in why, why[:160])
+    check(f"{name} → 묻는 자리에 제 의견을 붙이게 한다", "네 의견을 한 문장" in why, why[:160])
 
 rc, out, _ = run(call(args="가" * 100, tp=transcript(human(REQ))))
 check("요청 요약(args)이 있으면 그것을 60자에서 잘라 쓴다", ("「" + "가" * 60 + "…」") in decision(out).get("permissionDecisionReason", ""), out[:100])
@@ -120,6 +123,14 @@ check("「적용 안 함」 이면 막고 스킬 없이 이어 가게 한다",
       and "이어 간다" in h.get("permissionDecisionReason", ""), out[:160])
 rc, out, _ = run(call(tp=transcript(human(REQ), ask_tool("q1", Q), answered("q1", Q, "나중에 정할게"))))
 check("다른 자유 답도 적용으로 보지 않는다", decision(out).get("permissionDecision") == "deny", out[:120])
+rc, out, _ = run(call(tp=transcript(human(REQ), ask_tool("q1", Q), answered("q1", Q, "적용 (추천)"))))
+check("추천 표시가 붙은 「적용 (추천)」 도 적용으로 읽는다", rc == 0 and out == "", out[:120])
+rc, out, _ = run(call(tp=transcript(human(REQ), ask_tool("q1", Q), answered("q1", Q, "적용 안 함 (추천)"))))
+check("「적용 안 함 (추천)」 은 적용으로 보지 않는다", decision(out).get("permissionDecision") == "deny", out[:120])
+rc, out, _ = run(call(tp=transcript(human(REQ), ask_tool("q1", Q), answered("q1", Q, MORE))))
+check(f"「{MORE}」 도 통과시킨다", rc == 0 and out == "", out[:120])
+rc, out, _ = run(call(tp=transcript(human(REQ), ask_tool("q1", Q), answered("q1", Q, MORE + " (추천)"))))
+check(f"「{MORE} (추천)」 도 통과시킨다", rc == 0 and out == "", out[:120])
 rc, out, _ = run(call(tp=transcript(human("어제 쓴 공지 고쳐줘"), ask_tool("q1", Q), answered("q1", Q, "적용"), human(REQ))))
 check("지난 요청에서 받은 답은 이번 요청에 쓰지 않고 다시 묻는다",
       "AskUserQuestion" in decision(out).get("permissionDecisionReason", ""), out[:120])
