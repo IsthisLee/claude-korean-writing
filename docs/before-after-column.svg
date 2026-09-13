@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="1056" viewBox="0 0 1280 1056">
+<rect width="1280" height="1056" rx="16" fill="#1e2229"/>
+<text x="56" y="68" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif" font-size="28" font-weight="700" fill="#f2f4f7" text-anchor="start">같은 요청, 두 결과</text>
+<text x="56" y="100" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif" font-size="17" font-weight="400" fill="#9aa4b2" text-anchor="start">요청: 국내 제조업의 AI 도입 현황과 과제를 다룬 칼럼을 써 줘. 1500자 정도.</text>
+<rect x="56" y="134" width="564" height="76" rx="12" fill="#262b33"/>
+<text x="78" y="167" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif" font-size="21" font-weight="700" fill="#f2f4f7" text-anchor="start">다 쓴 뒤에 고친 글</text>
+<text x="78" y="194" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif" font-size="15" font-weight="400" fill="#ff8fa3" text-anchor="start">규칙 없이 쓴 칼럼을 im-not-ai로 윤문</text>
+<rect x="660" y="134" width="564" height="76" rx="12" fill="#262b33"/>
+<text x="682" y="167" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif" font-size="21" font-weight="700" fill="#f2f4f7" text-anchor="start">처음부터 규칙대로 쓴 글</text>
+<text x="682" y="194" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif" font-size="15" font-weight="400" fill="#7ee0a3" text-anchor="start">같은 요청, 같은 모델, 같은 날</text>
+<text x="56" y="240" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif" font-size="15" font-weight="700" fill="#9aa4b2" text-anchor="start">글을 여는 대목</text>
+<line x1="176" y1="235" x2="1224" y2="235" stroke="#39404b"/>
+<rect x="56" y="254" width="564" height="130" rx="12" fill="#262b33"/>
+<text x="78" y="295" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif" font-size="21" font-weight="400" fill="#e6eaf0" text-anchor="start">불량 검사에 비전 AI를 붙이고 설비 진동 데이터로</text>
+<text x="78" y="327" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif" font-size="21" font-weight="400" fill="#e6eaf0" text-anchor="start">고장을 미리 잡아내는 예지 정비를 시험한다.</text>
+<rect x="660" y="254" width="564" height="130" rx="12" fill="#262b33"/>
+<text x="682" y="295" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif" font-size="21" font-weight="400" fill="#e6eaf0" text-anchor="start">삼성전자나 현대차 같은 대기업 공장에서 AI가</text>
+<text x="682" y="327" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif" font-size="21" font-weight="400" fill="#e6eaf0" text-anchor="start">불량을 잡아내고 설비 고장을 미리 알려 준다는</text>
+<text x="682" y="359" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif" font-size="21" font-weight="400" fill="#e6eaf0" text-anchor="start">소식은 이제 낯설지 않다.</text>
+<text x="56" y="410" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif" font-size="15" font-weight="700" fill="#9aa4b2" text-anchor="start">같은 사실을 말하는 대목 — 품질이 좋은 공장일수록 불량 사례가 모자란다</text>
+<line x1="596" y1="405" x2="1224" y2="405" stroke="#39404b"/>
+<rect x="56" y="424" width="564" height="130" rx="12" fill="#262b33"/>
+<text x="78" y="465" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif" font-size="21" font-weight="400" fill="#e6eaf0" text-anchor="start">품질 관리를 잘해 불량률이 낮은 공장은 학습시킬</text>
+<text x="78" y="497" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif" font-size="21" font-weight="400" fill="#e6eaf0" text-anchor="start">불량 사례가 적어 오히려 모델을 만들기 어렵다.</text>
+<rect x="660" y="424" width="564" height="130" rx="12" fill="#262b33"/>
+<text x="682" y="465" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif" font-size="21" font-weight="400" fill="#e6eaf0" text-anchor="start">품질을 성실하게 관리해 온 공장이 도리어 AI</text>
+<text x="682" y="497" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif" font-size="21" font-weight="400" fill="#e6eaf0" text-anchor="start">앞에서 애를 먹는 셈이다.</text>
+<rect x="682" y="506" width="249" height="26" rx="13" fill="#2d333d"/>
+<text x="694" y="530" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif" font-size="13" font-weight="700" fill="#7ee0a3" text-anchor="start">판정자가 짚은 곳: 애를 먹는 셈이다</text>
+<text x="56" y="580" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif" font-size="15" font-weight="700" fill="#9aa4b2" text-anchor="start">제안을 내놓는 대목</text>
+<line x1="206" y1="575" x2="1224" y2="575" stroke="#39404b"/>
+<rect x="56" y="594" width="564" height="162" rx="12" fill="#262b33"/>
+<text x="78" y="635" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif" font-size="21" font-weight="400" fill="#e6eaf0" text-anchor="start">먼저 지원 기준을 … 다음으로 업종별 데이터 …</text>
+<text x="78" y="667" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif" font-size="21" font-weight="400" fill="#e6eaf0" text-anchor="start">마지막으로 외부 전문가를 …</text>
+<rect x="78" y="676" width="301" height="26" rx="13" fill="#2d333d"/>
+<text x="90" y="700" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif" font-size="13" font-weight="700" fill="#ff8fa3" text-anchor="start">판정자가 짚은 곳: 먼저·다음으로·마지막으로</text>
+<rect x="660" y="594" width="564" height="162" rx="12" fill="#262b33"/>
+<text x="682" y="635" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif" font-size="21" font-weight="400" fill="#e6eaf0" text-anchor="start">지역 테크노파크나 대학에 모델 관리 인력을 두고</text>
+<text x="682" y="667" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif" font-size="21" font-weight="400" fill="#e6eaf0" text-anchor="start">한 사람이 공장 여러 곳을 맡는 방식도 생각해 볼</text>
+<text x="682" y="699" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif" font-size="21" font-weight="400" fill="#e6eaf0" text-anchor="start">만하다.</text>
+<text x="56" y="782" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif" font-size="15" font-weight="700" fill="#9aa4b2" text-anchor="start">글을 닫는 마지막 문장</text>
+<line x1="230" y1="777" x2="1224" y2="777" stroke="#39404b"/>
+<rect x="56" y="796" width="564" height="162" rx="12" fill="#262b33"/>
+<text x="78" y="837" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif" font-size="21" font-weight="400" fill="#e6eaf0" text-anchor="start">비싼 솔루션부터 산 공장보다 설비 한 대의</text>
+<text x="78" y="869" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif" font-size="21" font-weight="400" fill="#e6eaf0" text-anchor="start">데이터를 꾸준히 쌓아 온 공장이 더 멀리 간다.</text>
+<rect x="78" y="878" width="223" height="26" rx="13" fill="#2d333d"/>
+<text x="90" y="902" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif" font-size="13" font-weight="700" fill="#ff8fa3" text-anchor="start">판정자가 짚은 곳: 더 멀리 간다</text>
+<rect x="660" y="796" width="564" height="162" rx="12" fill="#262b33"/>
+<text x="682" y="837" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif" font-size="21" font-weight="400" fill="#e6eaf0" text-anchor="start">몇 곳에 보급했는지는 그만 세고 3년 뒤에도</text>
+<text x="682" y="869" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif" font-size="21" font-weight="400" fill="#e6eaf0" text-anchor="start">시스템을 돌리는 공장이 몇 곳인지 세면 어디서</text>
+<text x="682" y="901" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif" font-size="21" font-weight="400" fill="#e6eaf0" text-anchor="start">막히는지가 먼저 보인다.</text>
+<text x="56" y="992" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif" font-size="17" font-weight="400" fill="#e6eaf0" text-anchor="start">어느 글인지 알리지 않고 AI 판정자에게 두 번 물었더니(두 번째는 순서를 바꿔서) 두 번 다 오른쪽을 골랐습니다.</text>
+<text x="56" y="1022" font-family="'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif" font-size="15" font-weight="400" fill="#9aa4b2" text-anchor="start">글에서 같은 자리를 맡는 대목끼리 짝지었습니다. 전문은 docs/samples/before-after/ · 생성과 판정 claude-opus-5 · 2026-09-11</text>
+</svg>
