@@ -1,6 +1,6 @@
 # NOTICE
 
-이 플러그인은 MIT 라이선스입니다([LICENSE](./LICENSE)). 아래 파일은 다른 MIT 프로젝트에서 가져왔고 각 저작권 표시를 그대로 유지합니다. 허가 문구는 LICENSE의 MIT 본문과 같습니다.
+이 플러그인은 MIT 라이선스입니다([LICENSE](./LICENSE)). 아래 파일은 다른 MIT 프로젝트에서 가져왔고 각 저작권 표시를 그대로 유지합니다. MIT는 저작권 표시와 허가 문구를 함께 싣도록 요구하므로 항목마다 허가 문구 전문을 붙였습니다.
 
 ## im-not-ai (Humanize KR)
 
@@ -26,6 +26,24 @@
     Copyright (c) 2026 epoko77-ai
     https://github.com/epoko77-ai/im-not-ai
 
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+
 ## k-skill
 
     skills/korean-character-count/scripts/korean_character_count.js   수정 없음
@@ -35,3 +53,21 @@
     MIT License
     Copyright (c) 2026
     https://github.com/NomaDamas/k-skill
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
