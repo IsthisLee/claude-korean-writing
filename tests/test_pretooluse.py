@@ -22,6 +22,7 @@ REPO = HERE.parent
 PLUGIN = pathlib.Path(os.environ.get("KW_PLUGIN_ROOT") or (REPO / "plugin")).resolve()
 HOOK = PLUGIN / "hooks-handlers" / "pretooluse-skill.sh"
 MARK = "korean-writing 문체 규칙을 적용할까요"
+MORE = "적용하고 설명은 넉넉히"
 FAILS = []
 
 
@@ -126,6 +127,10 @@ rc, out, _ = run(call(tp=transcript(human(REQ), ask_tool("q1", Q), answered("q1"
 check("추천 표시가 붙은 「적용 (추천)」 도 적용으로 읽는다", rc == 0 and out == "", out[:120])
 rc, out, _ = run(call(tp=transcript(human(REQ), ask_tool("q1", Q), answered("q1", Q, "적용 안 함 (추천)"))))
 check("「적용 안 함 (추천)」 은 적용으로 보지 않는다", decision(out).get("permissionDecision") == "deny", out[:120])
+rc, out, _ = run(call(tp=transcript(human(REQ), ask_tool("q1", Q), answered("q1", Q, MORE))))
+check(f"「{MORE}」 도 통과시킨다", rc == 0 and out == "", out[:120])
+rc, out, _ = run(call(tp=transcript(human(REQ), ask_tool("q1", Q), answered("q1", Q, MORE + " (추천)"))))
+check(f"「{MORE} (추천)」 도 통과시킨다", rc == 0 and out == "", out[:120])
 rc, out, _ = run(call(tp=transcript(human("어제 쓴 공지 고쳐줘"), ask_tool("q1", Q), answered("q1", Q, "적용"), human(REQ))))
 check("지난 요청에서 받은 답은 이번 요청에 쓰지 않고 다시 묻는다",
       "AskUserQuestion" in decision(out).get("permissionDecisionReason", ""), out[:120])

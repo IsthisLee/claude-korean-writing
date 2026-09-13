@@ -81,7 +81,7 @@ for task in ITEMS:
 
 verdict = {}
 for task in ITEMS:
-    ns = {c: sorted(n for n in got if n.startswith(f"{task}_{c}_")) for c in "AS"}
+    ns = {c: sorted(n for n in got if n.startswith(f"{task}_{c}_")) for c in ("A", "S", "M")}
     if not ns["A"] or not ns["S"]: continue
     tot = {c: [sum(got[n].values()) for n in ns[c]] for c in "AS"}
     ln = {c: statistics.median(hangul(texts[n]) for n in ns[c]) for c in "AS"}
@@ -98,5 +98,18 @@ for task in ITEMS:
         if mark: drops.append(it)
         print(f"    {it:20} A {a}/{len(ns['A'])}  S {s}/{len(ns['S'])}  Fisher p={fp:.3f}{mark}")
     verdict[task] = "빠진다" if (lower and p < 0.05) or drops else "증거 없음"
+    # M 은 스킬에 「설명은 넉넉히」 지시를 더한 조건이다. 확인 창의 둘째 선택지가 진짜인지 보려면
+    # A 에 가까워졌는지(설명이 되살아났는지)와 S 와 갈리는지(고른 것이 뭔가 바꾸는지)를 함께 봐야 한다.
+    if ns["M"]:
+        tm = [sum(got[n].values()) for n in ns["M"]]
+        lm = statistics.median(hangul(texts[n]) for n in ns["M"])
+        print(f"    M {sum(tm)}/{k*len(ns['M'])} {tm}  한글 중앙값 {lm:.0f}"
+              f"   A 대비 순열검정 p={perm_p_lower(tot['A'], tm):.3f} (M 이 낮은가)"
+              f"   S 대비 p={perm_p_lower(tm, tot['S']):.3f} (S 가 낮은가)")
+        for it in ITEMS[task]:
+            s = sum(got[n][it] for n in ns["S"]); m = sum(got[n][it] for n in ns["M"])
+            fp = fisher_p(s, len(ns["S"]) - s, m, len(ns["M"]) - m)
+            if m > s and fp < 0.05:
+                print(f"    {it:20} S {s}/{len(ns['S'])}  M {m}/{len(ns['M'])}  Fisher p={fp:.3f}  <- M 에서 되살아남")
     print(f"    판정: {verdict[task]}" + (f" (항목: {', '.join(drops)})" if drops else ""))
 print("\n종합:", verdict)
