@@ -19,6 +19,8 @@
 #                       "ignore"(그 파일이 있는 폴더 기준 경로 패턴). .git 이 있는 폴더에서 멈춘다
 #         파일 하나     파일 머리 10줄 안에 한 줄로 선 <!-- korean-writing: ignore --> 나
 #                       <!-- korean-writing: disable K1 K9 -->
+#         거절한 글     쓰기 전 확인 창에서 「적용 안 함」 을 고르면 그때 손댄 .md 에는 알리지 않는다.
+#                       세션 기록(transcript_path)에서 가장 최근 답을 읽는다. 답이 「적용」 이면 평소대로 검사한다
 #         scripts/check.sh 는 세션 전체 끄기만 걷어내고 부른다. 부르는 것 자체가 검사하라는 뜻이다.
 
 set -uo pipefail
@@ -315,6 +317,86 @@ if n_file >= 6 and total_file and n_file / total_file >= 0.30:
 
 hits = [h for h in hits if h[0] not in disabled]
 if not hits:
+    sys.exit(0)
+
+# 사용자가 이 글에는 규칙을 쓰지 않기로 했으면 알리지 않는다.
+# 쓰기 전 확인 창(pretooluse-skill.sh)에서 「적용 안 함」 을 고른 뒤에도 이 훅이 편집마다 쉼표와 줄표를
+# 지적했다. 방금 거절한 규칙을 같은 플러그인이 계속 들이미는 꼴이라 고쳤다(2026-09-13 사용자 보고).
+# 범위는 그 거절 뒤에 손댄 .md 하나로 좁힌다. 거절과 무관한 다른 문서는 평소대로 검사한다.
+# 가장 최근 답이 「적용」 이면 거절은 지나간 일이므로 평소대로 검사한다.
+# 기록을 못 읽으면 검사한다. 걸린 것이 있을 때만 읽으므로 평소 경로의 비용은 그대로다.
+# scripts/check.sh 는 transcript_path 를 주지 않는다. 직접 부른 검사는 여기서 조용해지지 않는다.
+CONFIRM_MARK = "korean-writing 문체 규칙을 적용할까요"
+ANS_RE = re.compile(r"\"[^\"]*" + re.escape(CONFIRM_MARK) + r"[^\"]*\"=\"([^\"]*)\"")
+EDIT_TOOLS = ("Edit", "Write", "MultiEdit")
+
+
+def confirm_answer(e):
+    # 이 항목이 확인 창 질문에 대한 답이면 고른 선택지를 돌려준다. pretooluse-skill.sh 와 같은 방식이다.
+    if not isinstance(e, dict):
+        return None
+    r = e.get("toolUseResult")
+    if isinstance(r, dict) and isinstance(r.get("answers"), dict):
+        for q, a in r["answers"].items():
+            if CONFIRM_MARK in str(q):
+                return str(a)
+    c = (e.get("message") or {}).get("content")
+    if isinstance(c, list):
+        for b in c:
+            if isinstance(b, dict) and b.get("type") == "tool_result":
+                t = b.get("content")
+                t = t if isinstance(t, str) else json.dumps(t, ensure_ascii=False)
+                m = ANS_RE.search(t)
+                if m:
+                    return m.group(1)
+    return None
+
+
+def edited_md_paths(e):
+    c = (e.get("message") or {}).get("content") if isinstance(e, dict) else None
+    for b in (c if isinstance(c, list) else []):
+        if isinstance(b, dict) and b.get("type") == "tool_use" and b.get("name") in EDIT_TOOLS:
+            fp = ((b.get("input") or {}) if isinstance(b.get("input"), dict) else {}).get("file_path")
+            if isinstance(fp, str) and fp.endswith(".md"):
+                yield fp
+
+
+def declined_for(tp, target):
+    limit = 4 * 1024 * 1024
+    try:
+        with open(os.path.expanduser(tp), "rb") as f:
+            f.seek(0, 2)
+            size = f.tell()
+            f.seek(max(0, size - limit))
+            data = f.read().decode("utf-8", "replace")
+    except Exception:
+        return False
+    lines = data.split("\n")
+    if size > limit:
+        lines = lines[1:]          # 잘린 첫 줄은 버린다
+    entries = []
+    for line in lines:
+        try:
+            entries.append(json.loads(line))
+        except Exception:
+            pass
+    at, answer = -1, None
+    for i, e in enumerate(entries):
+        a = confirm_answer(e)
+        if a is not None:
+            at, answer = i, a
+    if answer is None:
+        return False
+    a = answer.strip()
+    if a.startswith("적용") and not re.search(r"안|않|말", a):
+        return False               # 적용하기로 했다
+    after = [p for e in entries[at + 1:] for p in edited_md_paths(e)]
+    # 거절 뒤 첫 .md 편집이거나 그때 손댄 그 파일일 때만 넘어간다.
+    return not after or target in after
+
+
+tp = d.get("transcript_path")
+if isinstance(tp, str) and tp and declined_for(tp, path):
     sys.exit(0)
 
 # 위치 찾기. 판정과 같은 정규식을 줄과 열을 보존한 본문에 다시 돌린다.

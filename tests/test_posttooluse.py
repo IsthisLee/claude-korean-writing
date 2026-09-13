@@ -30,11 +30,11 @@ FILLER = "이번 배포에서 고칠 곳이 나왔다. 담당자가 수강생을
 FAILS = []
 
 
-def run(content, path="/tmp/x.md", tool="Write", key="content", env=None):
-    payload = json.dumps(
-        {"tool_name": tool, "tool_input": {"file_path": path, key: content}},
-        ensure_ascii=False,
-    )
+def run(content, path="/tmp/x.md", tool="Write", key="content", env=None, tp=None):
+    body = {"tool_name": tool, "tool_input": {"file_path": path, key: content}}
+    if tp is not None:
+        body["transcript_path"] = tp
+    payload = json.dumps(body, ensure_ascii=False)
     full_env = {**os.environ, **env} if env else None
     p = subprocess.run([str(HOOK)], input=payload, capture_output=True, text=True, env=full_env)
     return p.returncode, p.stdout + p.stderr
@@ -425,6 +425,53 @@ if "korean-writing" not in out:
     print("  x 스킬 지목")
 else:
     print("  o 교정 안내에 스킬 지목")
+
+print("\n적용 안 함을 고른 글에는 알리지 않는다")
+CONFIRM_Q = "이 글에 korean-writing 문체 규칙을 적용할까요?"
+DECLINED_SAMPLE = FILLER + "이것은 훅이 아니라 스킬이다. 저것은 규칙이 아니라 안내다. 그것은 검사가 아니라 알림이다."
+
+
+def transcript(*entries):
+    f = tempfile.NamedTemporaryFile("w", suffix=".jsonl", delete=False, encoding="utf-8")
+    for e in entries:
+        f.write(json.dumps(e, ensure_ascii=False) + "\n")
+    f.close()
+    return f.name
+
+
+def answered(label):
+    return {"type": "user", "toolUseResult": {"answers": {CONFIRM_Q: label}},
+            "message": {"role": "user", "content": [
+                {"type": "tool_result", "tool_use_id": "q1",
+                 "content": f'Your questions have been answered: "{CONFIRM_Q}"="{label}". You can now continue.'}]}}
+
+
+def wrote(p):
+    return {"type": "assistant", "message": {"role": "assistant", "content": [
+        {"type": "tool_use", "id": "e1", "name": "Write", "input": {"file_path": p}}]}}
+
+
+def confirm_case(name, want_hit, tp, path="/tmp/x.md"):
+    rc, out = run(DECLINED_SAMPLE, path=path, tp=tp)
+    if (rc == 2) if want_hit else (rc == 0):
+        print(f"  o {name}")
+    else:
+        FAILS.append(f"[거절 처리] {name}: exit {rc} {out.strip()[:120]}")
+        print(f"  x {name}")
+
+
+confirm_case("기록을 주지 않으면 평소대로 지적한다", True, None)
+confirm_case("거절한 뒤 그 파일을 고치면 조용하다", False, transcript(answered("적용 안 함"), wrote("/tmp/x.md")))
+confirm_case("거절 뒤 아직 아무것도 안 고쳤으면 조용하다", False, transcript(answered("적용 안 함")))
+confirm_case("거절과 무관한 다른 파일은 지적한다", True, transcript(answered("적용 안 함"), wrote("/tmp/other.md")))
+confirm_case("적용을 골랐으면 지적한다", True, transcript(answered("적용"), wrote("/tmp/x.md")))
+confirm_case("적용하고 설명은 넉넉히도 적용으로 읽는다", True,
+             transcript(answered("적용하고 설명은 넉넉히"), wrote("/tmp/x.md")))
+confirm_case("추천 표시가 붙은 거절도 거절이다", False,
+             transcript(answered("적용 안 함 (추천)"), wrote("/tmp/x.md")))
+confirm_case("나중에 적용을 고르면 다시 지적한다", True,
+             transcript(answered("적용 안 함"), wrote("/tmp/x.md"), answered("적용"), wrote("/tmp/x.md")))
+confirm_case("없는 기록 파일이면 지적한다", True, "/tmp/kw-no-such-transcript.jsonl")
 
 print("\n이상 입력에 죽지 않는다")
 for label, payload in [
