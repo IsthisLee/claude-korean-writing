@@ -30,6 +30,12 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: 공개 저장소에 개인 식별 정보가 없는가
+        run: |
+          # 홈 경로(/Users/<이름>)와 세션 임시 경로가 공개 저장소에 올라가지 않게 막는다.
+          # 로컬 훅(.githooks/pre-commit)은 사람마다 켜야 하지만 여기는 건너뛸 수 없다.
+          tools/guard.sh --all
+
       - name: plugin/ 에 들어가면 안 되는 것
         run: |
           python3 - <<'PY'

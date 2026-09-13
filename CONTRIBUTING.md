@@ -22,6 +22,7 @@
 ```bash
 git clone https://github.com/IsthisLee/claude-korean-writing
 cd claude-korean-writing
+git config core.hooksPath .githooks  # 커밋 직전 검사: 개인 식별 정보 가드와 한국어 문서 검사
 
 python3 tests/test_posttooluse.py    # 훅 회귀 테스트
 plugin/scripts/check.sh README.md CONTRIBUTING.md    # 문서가 자기 훅을 통과하는가

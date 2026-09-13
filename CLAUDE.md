@@ -13,7 +13,7 @@ Claude Code 가 쓰는 한국어 글의 품질과 자연스러움을 맡는 플�
 ```
 plugin/     설치본. 매니페스트·훅·스킬·에이전트·명령·런타임 스크립트·LICENSE·NOTICE
 tests/      회귀 테스트와 정답 데이터
-tools/      관리자 스크립트(release·measure·install-git-hook)
+tools/      관리자 스크립트(release·measure·install-git-hook·guard·그림 그리기)
 docs/        실험과 그림
 .github/    CI·이슈 양식·CI 전용 npm 도구
 루트 문서    README·CHANGELOG·EVALUATION·CONTRIBUTING·SECURITY·SUPPORT·CODE_OF_CONDUCT
@@ -53,9 +53,11 @@ python3 tests/test_pretooluse.py      # 스킬 확인 훅 회귀 테스트
 plugin/scripts/check.sh --all         # 저장소가 쓴 .md 가 자기 훅을 통과하는가
 ```
 
+처음 받았으면 `git config core.hooksPath .githooks` 로 커밋 직전 검사를 켭니다. `tools/guard.sh` 가 홈 경로(`/Users/<이름>`)·세션 임시 경로·`.private/` 파일을 막고 스테이지된 한국어 `.md` 를 검사합니다. 개인 패턴을 더 막으려면 `.private/guard-patterns` 에 한 줄씩 적습니다. CI 의 「설치본 경계」 작업이 같은 가드를 저장소 전체에 돌립니다. 2026-09-11 에 실험 파일 셋이 홈 절대 경로를 담은 채 공개돼 있던 것을 계기로 넣었습니다.
+
 ## 지켜야 하는 것
 
-**네트워크를 쓰지 않습니다.** 훅도 스킬도 스크립트도 원문을 외부로 보내지 않습니다. README 가 이것을 약속하고 있으므로, 네트워크 호출을 넣는 변경은 그 약속을 깨뜨립니다. 필요하다고 판단되면 코드를 넣기 전에 이슈로 먼저 논의합니다.
+**네트워크를 쓰지 않습니다.** 훅도 스킬도 스크립트도 원문을 에이전트 외부로 보내지 않습니다. README 가 이것을 약속하고 있으므로, 네트워크 호출을 넣는 변경은 그 약속을 깨뜨립니다. 필요하다고 판단되면 코드를 넣기 전에 이슈로 먼저 논의합니다.
 
 **훅은 편집을 되돌리지 않습니다.** 걸린 항목을 stderr 로 알리고 종료 코드 2 로 끝냅니다. 사람이 쓰던 작업을 막는 설계가 아닙니다.
 

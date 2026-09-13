@@ -22,6 +22,7 @@ There is no build step.
 ```bash
 git clone https://github.com/IsthisLee/claude-korean-writing
 cd claude-korean-writing
+git config core.hooksPath .githooks     # pre-commit checks: personal-info guard and Korean doc check
 
 python3 tests/test_posttooluse.py       # hook regression tests
 plugin/scripts/check.sh README.en.md CONTRIBUTING.en.md # do the docs pass their own hook

@@ -49,3 +49,6 @@ docs/experiments/*/out/
 docs/experiments/*/subout/
 docs/experiments/*/skillout/
 docs/experiments/*/judge/
+
+# 개인 파일과 가드 패턴(tools/guard.sh)
+.private/

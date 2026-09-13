@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# 이 저장소의 커밋 직전 검사. 켜기: git config core.hooksPath .githooks
+# 1. 공개 저장소 가드(tools/guard.sh): 개인 식별 정보와 .private/ 파일
+# 2. 스테이지된 한국어 .md 를 편집 훅과 같은 기준으로 검사(plugin/scripts/check.sh). CI 도 같은 검사를 돈다
+# 건너뛰기는 git commit --no-verify 뿐이다. 사람이 의도해서 할 때만 쓴다. CI 의 같은 검사는 건너뛸 수 없다.
+set -u
+root="$(git rev-parse --show-toplevel)"
+"$root/tools/guard.sh" --staged || exit 1
+git diff --cached --name-only --diff-filter=ACM -z -- '*.md' | xargs -0 -r "$root/plugin/scripts/check.sh" >/dev/null || {
+  echo "한국어 문서 검사에 걸렸다. plugin/scripts/check.sh <파일> 로 자세히 본다."; exit 1; }
+exit 0
